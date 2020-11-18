@@ -1,0 +1,60 @@
+﻿@model TemplateContext<Slide>
+
+@{
+	Slide contextObject = Model.Object;
+}
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" type="text/css" href="..\styles\pres.css" />
+		<link rel="stylesheet" type="text/css" href="..\styles\master.css" />
+	</head>
+	<body>
+			
+		<div class="slide master-bg">
+			@foreach (var shape in contextObject.Shapes)
+			{
+				var margin = Model.Global.Get<int>("slideMargin");
+				var origin = new Point(margin, 0);
+
+				if (shape is AutoShape)
+				{
+					var subModel = Model.SubModel((AutoShape)shape);
+					subModel.Local.Put("origin", origin);
+
+					@Include("autoshape", subModel)        
+            }
+            else if (shape is VideoFrame)
+            {
+            var subModel = Model.SubModel((VideoFrame)shape);
+            subModel.Local.Put<Point>("origin", origin);
+
+            @Include("videoFrame", subModel)
+            }
+				else if (shape is PictureFrame)
+				{
+					var subModel = Model.SubModel((PictureFrame)shape);
+					subModel.Local.Put("origin", origin);
+
+					@Include("pictureframe", subModel)
+				}
+				else if (shape is Table)
+				{
+					var subModel = Model.SubModel((Table)shape);
+					subModel.Local.Put("origin", origin);
+
+					@Include("table", subModel)
+                }
+                else if (shape is Shape)
+                {
+                    var subModel = Model.SubModel((Shape)shape);
+                    subModel.Local.Put("origin", origin);
+
+                    @Include("shape", subModel)
+                }
+            }
+		</div>
+		
+	</body>
+</html>

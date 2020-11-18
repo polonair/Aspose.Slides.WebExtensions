@@ -1,0 +1,17 @@
+obj/
+classes/
+generated/
+*.suo
+bin/
+*_out*
+* Out*
+*_out_*
+* out*
+*.ldb
+Thumbs.db
+_ReSharper*/
+*.user
+*.vsmdi
+*.userprefs
+packages/
+*.gitattributes

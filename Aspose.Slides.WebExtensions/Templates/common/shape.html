@@ -1,0 +1,33 @@
+﻿@model TemplateContext<Shape>
+    
+
+
+@{
+	Shape contextObject = Model.Object;
+	
+	var origin = Model.Local.Get<Point>("origin");
+	var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
+										(int)contextObject.X + origin.X,
+										(int)contextObject.Y + origin.Y,
+										(int)contextObject.Width,
+										(int)contextObject.Height);
+	var textStyle = "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
+
+    string imgSrc = ShapeHelper.GetShapeAsImageURL<Shape>
+    (contextObject, Model);
+
+    }
+
+    @{
+    <div class="shape" style="@positionStyle background-image: url(@imgSrc); background-size: 100% 100%;">
+        @if (contextObject is AutoShape)
+        {
+        AutoShape shape = contextObject as AutoShape;
+        var subModel = Model.SubModel((TextFrame)shape.TextFrame);
+        subModel.Local.Put("origin", origin);
+        subModel.Local.Put("parent", shape);
+
+        @Include("textframe", subModel)
+        }
+    </div>
+    }

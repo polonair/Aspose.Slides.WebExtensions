@@ -1,0 +1,51 @@
+﻿@model TemplateContext<Presentation> 
+
+@{
+    IFontData[] fonts = Model.Object.FontsManager.GetEmbeddedFonts();
+    foreach (var font in fonts) {
+    <text>@@font-face
+{
+    font-family: "@font.FontName";
+    src: url("@FontHelper.GetEmbeddedFontUrl(font, FontStyle.Regular)");
+}
+    </text>
+    }
+}
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: #e6e6e6;
+    }
+
+    .bg {
+    }
+
+    .slide {
+        width: @(Model.Object.SlideSize.Size.Width + "px");
+        height: @(Model.Object.SlideSize.Size.Height + "px");
+        margin: @(Model.Global.Get<int>("slideMargin") + "px");
+        outline: 1px solid #c6c6c6;
+    }
+
+    .shape {
+        position: absolute;
+    }
+
+    .table {
+        position: absolute;
+        border-collapse: collapse;
+    }
+
+    .paragraph {
+        position: absolute;
+    }
+
+    .pictureframe {
+        position: absolute;
+    }
+
+    .thumbnail {
+        margin: @(Model.Global.Get<int>("slideMargin") + "px");
+        margin-top: @(Model.Global.Get<int>("slideMargin") + "px");
+    }

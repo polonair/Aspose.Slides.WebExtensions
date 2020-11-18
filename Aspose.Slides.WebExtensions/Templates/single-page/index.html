@@ -1,0 +1,29 @@
+﻿@model TemplateContext<Presentation>
+	
+@{
+	Presentation contextObject = Model.Object;
+}
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title>@contextObject.DocumentProperties.Title</title>
+	<link rel="stylesheet" type="text/css" href="pres.css" />
+	<link rel="stylesheet" type="text/css" href="master.css" />
+</head>
+<body>
+	<div class="bg">
+		@foreach (Slide slide in contextObject.Slides)
+		{
+			if (slide.Hidden)
+			{
+				continue;
+			}
+			
+			@Include("slide", Model.SubModel(slide))
+		}
+	</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+﻿@model TemplateContext<Presentation>
+	
+@{
+	Presentation contextObject = Model.Object;
+}
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8" />
+		<title>@contextObject.DocumentProperties.Title</title>
+		<link rel="stylesheet" type="text/css" href="styles\pres.css" />
+		<link rel="stylesheet" type="text/css" href="styles\master.css" />
+	</head>
+	<frameset cols="220, *">
+	  <frame src="slides\menu.html" name="menu_page" />
+	  <frame src="slides\slide1.html" name="slide_page" />
+	  
+	  <noframes>
+		 <body>Your browser does not support frames.</body>
+	  </noframes>
+   </frameset>
+</html>

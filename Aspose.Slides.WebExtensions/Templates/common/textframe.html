@@ -1,0 +1,34 @@
+﻿@model TemplateContext<TextFrame>
+
+@{
+	TextFrame contextObject = Model.Object;
+	var textFrameFormatEffective = contextObject.TextFrameFormat.GetEffective();
+	
+	var origin = Model.Local.Get<Point>("origin");
+	var parentAutoShape = Model.Local.Get<AutoShape>("parent");
+}
+
+@functions
+{
+	string GetTextFrameStyle(TextFrame textFrame)
+	{
+		string positioningStyle = TextHelper.GetTextPositioningStyle(textFrame, Model.Local.Get<AutoShape>("parent"));
+		string columnsParameters = TextHelper.GetTextFrameColumnsStyle(textFrame.TextFrameFormat.GetEffective());
+		
+		return string.Join(" ", positioningStyle, columnsParameters);
+	}
+}
+
+<div class="textframe" style="@GetTextFrameStyle(contextObject)">
+	@for(int i = 0; i < contextObject.Paragraphs.Count; i++)
+	{
+		var para = contextObject.Paragraphs[i];
+		var subModel = Model.SubModel((Paragraph)para);
+
+		subModel.Local.Put("parent", contextObject);
+		subModel.Local.Put("parentContainerSize", new SizeF(parentAutoShape.Width, parentAutoShape.Height));
+        subModel.Local.Put("tableContent", false);
+
+		@Include("paragraph", subModel)
+	}
+</div>

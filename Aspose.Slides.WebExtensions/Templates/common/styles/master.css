@@ -1,0 +1,10 @@
+﻿@model TemplateContext<MasterSlide>
+
+@{
+	var effectiveBg = Model.Object.Background.GetEffective();
+	var color = ColorTranslator.ToHtml(effectiveBg.FillFormat.SolidFillColor); 
+}
+
+.master-bg {
+	background-color: @color;
+}
