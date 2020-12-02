@@ -32,21 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Aspose.Slides, Version=20.11.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\Aspose.Slides.NET.20.11.0\lib\net4.0-client\Aspose.Slides.dll</HintPath>
-    </Reference>
-    <Reference Include="MimeTypesMap, Version=1.0.8.0, Culture=neutral, PublicKeyToken=1b320cc08ad5aa89, processorArchitecture=MSIL">
-      <HintPath>..\..\Packages\MimeTypesMap.1.0.8\lib\net452\MimeTypesMap.dll</HintPath>
-    </Reference>
-    <Reference Include="RazorEngine, Version=3.10.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
-      <HintPath>..\..\Packages\RazorEngine.3.10.0\lib\net45\RazorEngine.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\Packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -70,28 +58,60 @@
     <Compile Include="ThumbnailOutputFile.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Content Include="Templates\common\autoshape.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\shape.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\paragraph.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\pictureFrame.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\styles\master.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\styles\pres.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\table.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\textframe.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\multi-page\index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\multi-page\menu.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\multi-page\slide.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page\index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page\slide.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\common\autoshape.html" />
-    <Content Include="Templates\common\shape.html" />
-    <Content Include="Templates\common\paragraph.html" />
-    <Content Include="Templates\common\pictureFrame.html" />
-    <Content Include="Templates\common\styles\master.css" />
-    <Content Include="Templates\common\styles\pres.css" />
-    <Content Include="Templates\common\table.html" />
-    <Content Include="Templates\common\textframe.html" />
-    <Content Include="Templates\multi-page\index.html" />
-    <Content Include="Templates\multi-page\menu.html" />
-    <Content Include="Templates\multi-page\slide.html" />
-    <Content Include="Templates\single-page\index.html" />
-    <Content Include="Templates\single-page\slide.html" />
+    <PackageReference Include="Aspose.Slides.NET">
+      <Version>20.11.0</Version>
+    </PackageReference>
+    <PackageReference Include="MimeTypesMap">
+      <Version>1.0.8</Version>
+    </PackageReference>
+    <PackageReference Include="RazorEngine">
+      <Version>3.10.0</Version>
+    </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>XCOPY "$(ProjectDir)Templates" "$(ProjectDir)$(OutDir)Templates\" /E /Y
-XCOPY "$(ProjectDir)$(OutDir)Templates\common" "$(ProjectDir)$(OutDir)Templates\single-page\" /E /Y
-XCOPY "$(ProjectDir)$(OutDir)Templates\common" "$(ProjectDir)$(OutDir)Templates\multi-page\" /E /Y</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
