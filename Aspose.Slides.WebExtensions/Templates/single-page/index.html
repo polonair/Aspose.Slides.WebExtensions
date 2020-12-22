@@ -1,29 +1,34 @@
 ﻿@model TemplateContext<Presentation>
-	
+    
 @{
-	Presentation contextObject = Model.Object;
+    Presentation contextObject = Model.Object;
 }
 
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta charset="utf-8" />
-	<title>@contextObject.DocumentProperties.Title</title>
-	<link rel="stylesheet" type="text/css" href="pres.css" />
-	<link rel="stylesheet" type="text/css" href="master.css" />
+    <meta charset="utf-8" />
+    <title>@contextObject.DocumentProperties.Title</title>
+    <link rel="stylesheet" type="text/css" href="pres.css" />
+    <link rel="stylesheet" type="text/css" href="master.css" />
+    <script src="jquery.js"></script>
+    <script src="main.js"></script>
 </head>
 <body>
-	<div class="bg">
-		@foreach (Slide slide in contextObject.Slides)
-		{
-			if (slide.Hidden)
-			{
-				continue;
-			}
-			
-			@Include("slide", Model.SubModel(slide))
-		}
-	</div>
+    <div class="bg">
+        @foreach (Slide slide in contextObject.Slides)
+        {
+            if (slide.Hidden)
+            {
+                continue;
+            }
+            
+            @Include("slide", Model.SubModel(slide))
+        }
+    </div>
+    
+    <div class="navigation" id="PrevSlide" style="left: 375px; top: 580px;">Prev Slide</div>
+    <div class="navigation" id="NextSlide" style="left: 485px; top: 580px;">Next Slide</div>
 </body>
 </html>

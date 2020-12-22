@@ -2,14 +2,22 @@
 
 @{
     IFontData[] fonts = Model.Object.FontsManager.GetEmbeddedFonts();
-    foreach (var font in fonts) {
-    <text>@@font-face
-{
-    font-family: "@font.FontName";
-    src: url("@FontHelper.GetEmbeddedFontUrl(font, FontStyle.Regular)");
-}
-    </text>
+    foreach (var font in fonts) 
+    {
+        <text>@@font-face
+        {
+            font-family: "@font.FontName";
+            src: url("@FontHelper.GetEmbeddedFontUrl(font, FontStyle.Regular)");
+        }
+        </text>
     }
+      
+      var animateTransitions = Model.Global.Get<bool>("animateTransitions");
+      string slidePosition = "";
+      if (animateTransitions)
+      {
+            slidePosition = "position: absolute;";
+      }
 }
 
     body {
@@ -26,6 +34,7 @@
         height: @(Model.Object.SlideSize.Size.Height + "px");
         margin: @(Model.Global.Get<int>("slideMargin") + "px");
         outline: 1px solid #c6c6c6;
+        @slidePosition
     }
 
     .shape {
@@ -49,3 +58,15 @@
         margin: @(Model.Global.Get<int>("slideMargin") + "px");
         margin-top: @(Model.Global.Get<int>("slideMargin") + "px");
     }
+      
+    .navigation {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            border: solid black 1px;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 50px;
+            display: none;
+            cursor: pointer;
+      }

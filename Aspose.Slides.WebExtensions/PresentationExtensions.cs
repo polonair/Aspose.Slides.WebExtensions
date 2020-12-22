@@ -51,6 +51,7 @@ namespace Aspose.Slides.WebExtensions
 
             document.Global.Put("slideMargin", 10);
             document.Global.Put("embedImages", options.EmbedImages);
+            document.Global.Put("animateTransitions", options.AnimateTransitions);
             document.Global.Put("imagesPath", imagesPath);
             document.Global.Put("fontsPath", fontsPath);
             document.Global.Put("mediaPath", mediaPath);
@@ -70,6 +71,7 @@ namespace Aspose.Slides.WebExtensions
             SetGlobals(document, options, outputPath);
             document.Global.Put("slidesPath", outputPath);
             document.Global.Put("stylesPath", outputPath);
+            document.Global.Put("scriptsPath", outputPath);
 
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
 
@@ -92,9 +94,11 @@ namespace Aspose.Slides.WebExtensions
 
             string slidesPath = Path.Combine(outputPath, "slides");
             string stylesPath = Path.Combine(outputPath, "styles");
+            string scriptsPath = Path.Combine(outputPath, "scripts");
 
             document.Global.Put("slidesPath", slidesPath);
             document.Global.Put("stylesPath", stylesPath);
+            document.Global.Put("scriptsPath", scriptsPath);
 
             document.AddMultiPageInputTemplates(templatesPath);
             document.AddMultiPageOutputFiles(slidesPath, pres);
@@ -128,9 +132,11 @@ namespace Aspose.Slides.WebExtensions
         private static void AddCommonInputOutput(this WebDocument document, WebDocumentOptions options, string templatesPath, string outputPath, Presentation pres)
         {
             string stylesPath = document.Global.Get<string>("stylesPath");
+            string scriptsPath = document.Global.Get<string>("scriptsPath");
 
             document.Input.AddTemplate<Presentation>("styles-pres", Path.Combine(templatesPath, @"styles\pres.css"));
             document.Input.AddTemplate<MasterSlide>("styles-master", Path.Combine(templatesPath, @"styles\master.css"));
+            document.Input.AddTemplate<Presentation>("scripts-main", Path.Combine(templatesPath, @"scripts\main.js"));
 
             document.Input.AddTemplate<Presentation>("index", Path.Combine(templatesPath, "index.html"));
             document.Input.AddTemplate<Slide>("slide", Path.Combine(templatesPath, "slide.html"));
@@ -149,9 +155,11 @@ namespace Aspose.Slides.WebExtensions
             document.Output.Add(Path.Combine(outputPath, "index.html"), "index", pres);
             document.Output.Add(Path.Combine(stylesPath, "pres.css"), "styles-pres", pres);
             document.Output.Add(Path.Combine(stylesPath, "master.css"), "styles-master", (MasterSlide)pres.Masters[0]);
+            document.Output.Add(Path.Combine(scriptsPath, "main.js"), "scripts-main", pres);
 
             document.AddEmbeddedFontsOutput(document.Global.Get<string>("fontsPath"), pres);
             document.AddVideoOutput(document.Global.Get<string>("mediaPath"), pres);
+            document.AddScriptsOutput(scriptsPath, Path.Combine(templatesPath, @"scripts\jquery-3.5.1.min.js"), "jquery.js");
 
             if (!options.EmbedImages)
             {
@@ -300,5 +308,18 @@ namespace Aspose.Slides.WebExtensions
             }
         }
 
+        private static void AddScriptsOutput(this WebDocument document, string outputPath, string inputFile, string scriptName)
+        {
+            string scriptContent;
+            using (var fs = File.Open(inputFile, FileMode.Open))
+            using (var sr = new StreamReader(fs))
+            {
+                scriptContent = sr.ReadToEnd();
+            }
+
+            var script = new ScriptOutputFile(scriptContent);
+
+            document.Output.Add(Path.Combine(outputPath, scriptName), script);
+        }
     }
 }
