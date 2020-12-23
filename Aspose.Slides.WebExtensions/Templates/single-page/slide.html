@@ -7,49 +7,54 @@
 
 }
     
-<div id="slide-@slideNumber" class="slide master-bg" data-transition-type="@contextObject.SlideShowTransition.Type" style="display: @(animateTransitions ? "none" : "block")">
-    @foreach (var shape in contextObject.Shapes)
-    {
-        var margin = Model.Global.Get<int>("slideMargin");
-        var visibleSlideNumber = animateTransitions ? 1 : slideNumber;
-        var slideOriginY = ((int)contextObject.Presentation.SlideSize.Size.Height * (visibleSlideNumber - 1)) + (margin * visibleSlideNumber);
-        var origin = new Point(margin, slideOriginY);
-
-
-        if (shape is AutoShape && (((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.Rectangle || ((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.NotDefined))
+<div id="slide-@slideNumber" class="slide master-bg" 
+     data-transition-type="@contextObject.SlideShowTransition.Type"
+     data-transition-speed="@contextObject.SlideShowTransition.Speed"
+     style="display: @(animateTransitions ? "none" : "block");">
+    <div class="slide-content">
+        @foreach (var shape in contextObject.Shapes)
         {
-            var subModel = Model.SubModel((AutoShape)shape);
-            subModel.Local.Put<Point>("origin", origin);
-
-            @Include("autoshape", subModel)
+            var margin = Model.Global.Get<int>("slideMargin");
+            var visibleSlideNumber = animateTransitions ? 1 : slideNumber;
+            var slideOriginY = ((int)contextObject.Presentation.SlideSize.Size.Height * (visibleSlideNumber - 1)) + (margin * visibleSlideNumber);
+            var origin = new Point(margin, slideOriginY);
+    
+    
+            if (shape is AutoShape && (((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.Rectangle || ((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.NotDefined))
+            {
+                var subModel = Model.SubModel((AutoShape)shape);
+                subModel.Local.Put<Point>("origin", origin);
+    
+                @Include("autoshape", subModel)
+            }
+            else if (shape is VideoFrame)
+            {
+                var subModel = Model.SubModel((VideoFrame)shape);
+                subModel.Local.Put<Point> ("origin", origin);
+    
+                @Include("videoframe", subModel)
+            }
+            else if (shape is PictureFrame)
+            {
+                var subModel = Model.SubModel((PictureFrame)shape);
+                subModel.Local.Put<Point>("origin", origin);
+    
+                @Include("pictureframe", subModel)
+            }
+            else if (shape is Table)
+            {
+                var subModel = Model.SubModel((Table)shape);
+                subModel.Local.Put<Point>("origin", origin);
+    
+                @Include("table", subModel)
+            }
+            else if (shape is Shape)
+            {
+                var subModel = Model.SubModel((Shape)shape);
+                subModel.Local.Put("origin", origin);
+    
+                @Include("shape", subModel)
+            }
         }
-        else if (shape is VideoFrame)
-        {
-            var subModel = Model.SubModel((VideoFrame)shape);
-            subModel.Local.Put<Point> ("origin", origin);
-
-            @Include("videoframe", subModel)
-        }
-        else if (shape is PictureFrame)
-        {
-            var subModel = Model.SubModel((PictureFrame)shape);
-            subModel.Local.Put<Point>("origin", origin);
-
-            @Include("pictureframe", subModel)
-        }
-        else if (shape is Table)
-        {
-            var subModel = Model.SubModel((Table)shape);
-            subModel.Local.Put<Point>("origin", origin);
-
-            @Include("table", subModel)
-        }
-        else if (shape is Shape)
-        {
-            var subModel = Model.SubModel((Shape)shape);
-            subModel.Local.Put("origin", origin);
-
-            @Include("shape", subModel)
-        }
-    }
+    </div>
 </div>

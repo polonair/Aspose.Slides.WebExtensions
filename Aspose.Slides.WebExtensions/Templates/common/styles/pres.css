@@ -28,13 +28,18 @@
 
     .bg {
     }
-
+    
     .slide {
         width: @(Model.Object.SlideSize.Size.Width + "px");
         height: @(Model.Object.SlideSize.Size.Height + "px");
-        margin: @(Model.Global.Get<int>("slideMargin") + "px");
         outline: 1px solid #c6c6c6;
+        overflow: hidden;
+        margin: @(Model.Global.Get<int>("slideMargin") + "px");
         @slidePosition
+    }
+
+    .slide-content {
+        
     }
 
     .shape {
