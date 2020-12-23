@@ -2,15 +2,21 @@
 
 @{
     Slide contextObject = Model.Object;
+    bool animateTransitions = Model.Global.Get<bool>("animateTransitions");
+    int slideNumber = Model.Local.Get<int>("slideNumber");
 }
     
-<div class="slide master-bg">
+<div id="slide-@slideNumber" class="slide master-bg">
     @foreach (var shape in contextObject.Shapes)
     {
         var margin = Model.Global.Get<int>("slideMargin");
         var visibleSlideNumber = SlideHelper.GetVisibleSlideNumber(contextObject);
-        var slideOriginY = ((int)contextObject.Presentation.SlideSize.Size.Height * (visibleSlideNumber - 1)) + (margin * (contextObject.SlideNumber));
-        var origin = new Point(margin, slideOriginY);
+
+        Point origin = new Point(margin, 0);
+        if(!animateTransitions) {
+            var slideOriginY = ((int)contextObject.Presentation.SlideSize.Size.Height * (visibleSlideNumber - 1)) + (margin * (contextObject.SlideNumber));
+            origin = new Point(margin, slideOriginY);
+        }
 
         if (shape is AutoShape && (((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.Rectangle || ((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.NotDefined))
         {

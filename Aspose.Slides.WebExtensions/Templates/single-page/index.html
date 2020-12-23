@@ -2,6 +2,7 @@
     
 @{
     Presentation contextObject = Model.Object;
+    int slideNumber = 1;
 }
 
 <!DOCTYPE html>
@@ -23,8 +24,10 @@
             {
                 continue;
             }
-            
-            @Include("slide", Model.SubModel(slide))
+
+            var subModel = Model.SubModel(slide);
+            subModel.Local.Put<int> ("slideNumber", slideNumber++);
+            @Include("slide", subModel)
         }
     </div>
     

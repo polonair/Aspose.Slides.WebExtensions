@@ -9,11 +9,14 @@ namespace SinglePageApp
     {
         static void Main(string[] args)
         {
-            Presentation pres = new Presentation("demo.pptx");
+            new License().SetLicense(@"c:\bin\aspose\git\slides-net\src\test\bin\Debug\Aspose.Total.Product.Family.lic");
 
-            WebDocument document = pres.ToSinglePageWebDocument("templates\\single-page",
-              @"single-page-output");
-            document.Save();
+            using (Presentation pres = new Presentation("demo.pptx"))
+            {
+                WebDocument document = pres.ToSinglePageWebDocument("templates\\single-page",
+                    @"single-page-output");
+                document.Save();
+            }
 
             Console.WriteLine("HTML export is complete...");
         }
