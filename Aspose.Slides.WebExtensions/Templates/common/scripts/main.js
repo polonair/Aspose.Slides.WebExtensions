@@ -19,15 +19,29 @@ $(document).ready(function(){
 
 
 function InitTransitions() {
-      
-    $('.slide').hide();
-    $('#slide-1').show();
+    PlayTransition('#slide-1');
     
     $('#PrevSlide').show();
     $('#NextSlide').show();
+
       
     $("#PrevSlide").click(function(){ ShowPrev(); });
     $("#NextSlide").click(function(){ ShowNext(); });
+}
+
+function PlayTransition(slideId) {
+    var slide = $(slideId);
+    var transitionType = slide.data("transitionType");
+    
+    if(transitionType === "Fade") {
+        Fade(slideId);
+    } else {
+        $(slideId).show();    
+    }
+}
+
+function Fade(slideId) {
+    $(slideId).fadeIn();
 }
 
 function ShowNext() {

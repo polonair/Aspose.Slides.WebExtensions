@@ -7,7 +7,7 @@
 
 }
     
-<div id="slide-@slideNumber" class="slide master-bg">
+<div id="slide-@slideNumber" class="slide master-bg" data-transition-type="@contextObject.SlideShowTransition.Type" style="display: @(animateTransitions ? "none" : "block")">
     @foreach (var shape in contextObject.Shapes)
     {
         var margin = Model.Global.Get<int>("slideMargin");

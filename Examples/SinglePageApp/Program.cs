@@ -9,7 +9,7 @@ namespace SinglePageApp
     {
         static void Main(string[] args)
         {
-            using (Presentation pres = new Presentation("demo.pptx"))
+            using (Presentation pres = new Presentation("demo-transitions.pptx"))
             {
                 WebDocument document = pres.ToSinglePageWebDocument("templates\\single-page",
                     @"single-page-output");
