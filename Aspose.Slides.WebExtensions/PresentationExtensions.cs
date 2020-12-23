@@ -169,6 +169,7 @@ namespace Aspose.Slides.WebExtensions
                 document.AddShapeAsImagesOutput<SmartArt.SmartArt>(imagesPath, pres);
                 document.AddShapeAsImagesOutput<AutoShape>(imagesPath, pres);
                 document.AddShapeAsImagesOutput<Connector>(imagesPath, pres);
+                document.AddShapeAsImagesOutput<GroupShape>(imagesPath, pres);
             }
         }
 

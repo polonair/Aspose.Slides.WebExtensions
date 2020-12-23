@@ -52,13 +52,27 @@
     <Compile Include="Helpers\FillHelper.cs" />
     <Compile Include="Helpers\TextHelper.cs" />
     <Compile Include="FileOutputSaver.cs" />
+    <Compile Include="Helpers\VideoHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RazorTemplateEngine.cs" />
     <Compile Include="PresentationExtensions.cs" />
+    <Compile Include="ScriptOutputFile.cs" />
     <Compile Include="ThumbnailOutputFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\common\autoshape.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\bullet.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\portion.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\scripts\jquery-3.5.1.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\scripts\main.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\common\shape.html">
@@ -80,6 +94,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\common\textframe.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\videoFrame.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\multi-page\index.html">
