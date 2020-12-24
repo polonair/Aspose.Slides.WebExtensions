@@ -65,7 +65,6 @@ namespace Aspose.Slides.WebExtensions
         {
             CheckArguments(options, templatesPath, outputPath);
 
-
             WebDocument document = new WebDocument(options);
 
             SetGlobals(document, options, outputPath);
@@ -74,7 +73,6 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("scriptsPath", outputPath);
 
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
-
             return document;
         }
 
@@ -228,6 +226,7 @@ namespace Aspose.Slides.WebExtensions
 
                 string path = Path.Combine(outputPath, string.Format("thumbnail{0}.png", index));
 
+                // todo: images must by disposed
                 document.Output.Add(path, new ThumbnailOutputFile(thumbnail));
             }
         }
@@ -273,6 +272,7 @@ namespace Aspose.Slides.WebExtensions
 
                 string path = Path.Combine(outputPath, string.Format("{0}{1}.png", typeof(T).Name.ToLower(), counter++));
 
+                // todo: images must by disposed
                 document.Output.Add(path, new ThumbnailOutputFile(thumbnail), shape);
 
 

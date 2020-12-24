@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Aspose.Slides;
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.WebExtensions;

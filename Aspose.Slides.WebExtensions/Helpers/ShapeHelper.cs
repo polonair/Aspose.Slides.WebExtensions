@@ -63,6 +63,16 @@ namespace Aspose.Slides.WebExtensions.Helpers
             {
                 result.AddRange(slide.Shapes.OfType<T>());
             }
+            
+            foreach (var slide in pres.LayoutSlides)
+            {
+                result.AddRange(slide.Shapes.OfType<T>());
+            }
+            
+            foreach (var slide in pres.Masters)
+            {
+                result.AddRange(slide.Shapes.OfType<T>());
+            }
 
             return result;
         }
