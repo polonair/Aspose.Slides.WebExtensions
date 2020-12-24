@@ -5,11 +5,15 @@
     var animateTransitions = Model.Global.Get<bool>("animateTransitions").ToString().ToLower();
     var pagesCount = contextObject.Slides.Count;
     var imagesPath = Model.Global.Get<string>("imagesPath");
+    var slideWidth = contextObject.SlideSize.Size.Width;
+    var slideHeight = contextObject.SlideSize.Size.Height;
 }
 
 
 var currentVisiblePage = 1;
 var maxVisiblePage = @pagesCount;
+var frameWidth = @slideWidth;
+var frameHeight = @slideHeight;
 
 $(document).ready(function(){
       
@@ -43,8 +47,12 @@ function PlayTransition(slideId, prevSlideId) {
     if(transitionType === 'Fade') {
         Fade(slideId, prevSlideId); 
     } else if(transitionType === 'Push') {
-        Push(slideId, prevSlideId);        
-    } else if(transitionType === 'Wipe') {
+        Push(slideId, prevSlideId);
+    } else if(transitionType === 'Pull') {
+        Pull(slideId, prevSlideId);
+    }else if(transitionType === 'Cover') {
+        Cover(slideId, prevSlideId);
+    }else if(transitionType === 'Wipe') {
         Wipe(slideId, prevSlideId);        
     } else {
         $(prevSlideId).hide();
@@ -88,37 +96,105 @@ function Fade(slideId, prevSlideId) {
 }
 
 function Push(slideId, prevSlideId) {    
-    var height = $(prevSlideId).height();
     var duration = GetDuration(slideId);
     
-    var slideContent = GetSlideContentSelector(slideId);
-    var prevSlideContent = GetSlideContentSelector(prevSlideId);
-    $(slideContent).css('position', 'relative');
-    $(slideContent).css('top', height + 'px');
+    $(slideId).show();
+    StackSlides(prevSlideId, slideId);
     
-    var slideContentEl = $(slideContent);
-    $(prevSlideId).append(slideContentEl);
-     
     anime({
-        targets: [ prevSlideContent, slideContent ],  
+        targets: slideId,
+        duration: 10,
+        translateY: frameHeight,
         easing: 'linear',
-        translateY: height * -1,
-        duration: duration / 2,
         complete: function() {
-            $(slideId).append(slideContentEl);
+            StackSlides(slideId, prevSlideId);
+            
+            anime({
+                targets: slideId,  
+                translateY: 0,
+                duration: duration,
+                easing: 'linear',
+                complete: function() {
+                    $(prevSlideId).hide();
+                    PlayTransitionEnd();
+                } 
+            });
+            
+            anime({
+                targets: prevSlideId,  
+                translateY: -frameHeight,
+                duration: duration,
+                easing: 'linear',
+                complete: function() {
+                    anime({
+                        targets: prevSlideId,  
+                        translateY: 0,
+                        duration: 10,
+                        easing: 'linear'
+                    });
+                }
+            });
+        }
+    });
+}
+
+function Pull(slideId, prevSlideId) {    
+    var duration = GetDuration(slideId);
+    
+    $(slideId).show();
+    StackSlides(prevSlideId, slideId);
+    
+    anime({
+        targets: prevSlideId,  
+        translateX: -frameWidth,
+        duration: duration,
+        easing: 'linear',
+        complete: function() {
+            anime({
+                targets: prevSlideId,
+                duration: 10,
+                translateX: 0,
+                easing: 'linear'
+            });
+        
+            StackSlides(slideId, prevSlideId);
             $(prevSlideId).hide();
-            $(slideId).show();
             PlayTransitionEnd();
         } 
     });
 }
 
-function Wipe(slideId, prevSlideId) {
-
+function Cover(slideId, prevSlideId) {    
+    var duration = GetDuration(slideId);
+    
+    $(slideId).show();
+    StackSlides(prevSlideId, slideId);
+    
+    anime({
+        targets: slideId,
+        duration: 10,
+        translateX: frameWidth,
+        easing: 'linear',
+        complete: function() {
+            StackSlides(slideId, prevSlideId);
+                
+            anime({
+                targets: slideId,  
+                translateX: 0,
+                duration: duration,
+                easing: 'linear',
+                complete: function() {
+                      
+                    $(prevSlideId).hide();
+                    PlayTransitionEnd();
+                } 
+            });
+        }
+    });
 }
 
-function GetSlideContentSelector(slideId) {
-    return slideId + ' .slide-content';
+function Wipe(slideId, prevSlideId) {
+
 }
 
 function StackSlides(foreground, background) {

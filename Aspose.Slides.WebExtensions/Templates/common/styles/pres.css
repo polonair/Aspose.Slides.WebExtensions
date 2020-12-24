@@ -27,6 +27,10 @@
     }
 
     .bg {
+        width: @(Model.Object.SlideSize.Size.Width + "px");
+        height: @(Model.Object.SlideSize.Size.Height + "px");
+        overflow: hidden; 
+        position: fixed;
     }
     
     .slide {

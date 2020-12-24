@@ -158,7 +158,7 @@ namespace Aspose.Slides.WebExtensions
             document.AddEmbeddedFontsOutput(document.Global.Get<string>("fontsPath"), pres);
             document.AddVideoOutput(document.Global.Get<string>("mediaPath"), pres);
             document.AddScriptsOutput(scriptsPath, Path.Combine(templatesPath, @"scripts\jquery-3.5.1.min.js"), "jquery.js");
-            document.AddScriptsOutput(scriptsPath, Path.Combine(templatesPath, @"scripts\anime.min.js"), "anime.min.js");
+            document.AddScriptsOutput(scriptsPath, Path.Combine(templatesPath, @"scripts\anime.min.js"), "anime.js");
 
             if (!options.EmbedImages)
             {

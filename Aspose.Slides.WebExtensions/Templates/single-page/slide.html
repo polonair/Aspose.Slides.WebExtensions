@@ -54,7 +54,7 @@
      data-transition-type="@contextObject.SlideShowTransition.Type"
      data-transition-speed="@contextObject.SlideShowTransition.Speed"
      style="display: @(animateTransitions ? "none" : "block");">
-    <div class="slide-content">
+    
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
         {
             if(shape.Placeholder == null) {
@@ -73,5 +73,5 @@
         {
             @EmitShape(shape, contextObject, animateTransitions, slideNumber);
         }
-    </div>
+
 </div>
