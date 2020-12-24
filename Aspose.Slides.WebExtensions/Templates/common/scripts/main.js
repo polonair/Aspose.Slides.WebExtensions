@@ -96,7 +96,30 @@ function Fade(slideId, prevSlideId) {
 }
 
 function Push(slideId, prevSlideId) {    
+    
     var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    
+    var translateX = 0;
+    var translateY = 0;
+    
+    switch (direction) {
+        case 'Right':
+            translateX = -frameWidth;
+            break;
+        case 'Left':
+            translateX = frameWidth;
+            break;
+        case 'Down':
+            translateY = -frameHeight;
+            break;
+        case 'Up':
+            translateY = frameHeight;
+            break;
+        default:
+            alert(direction);
+            break;
+    }
     
     $(slideId).show();
     StackSlides(prevSlideId, slideId);
@@ -104,13 +127,16 @@ function Push(slideId, prevSlideId) {
     anime({
         targets: slideId,
         duration: 10,
-        translateY: frameHeight,
+        translateX: translateX,
+        translateY: translateY,
         easing: 'linear',
         complete: function() {
+            
             StackSlides(slideId, prevSlideId);
             
             anime({
                 targets: slideId,  
+                translateX: 0,
                 translateY: 0,
                 duration: duration,
                 easing: 'linear',
@@ -122,12 +148,15 @@ function Push(slideId, prevSlideId) {
             
             anime({
                 targets: prevSlideId,  
-                translateY: -frameHeight,
+                translateX: -translateX,
+                translateY: -translateY,
                 duration: duration,
                 easing: 'linear',
                 complete: function() {
+                    
                     anime({
                         targets: prevSlideId,  
+                        translateX: 0,
                         translateY: 0,
                         duration: 10,
                         easing: 'linear'
@@ -139,21 +168,63 @@ function Push(slideId, prevSlideId) {
 }
 
 function Pull(slideId, prevSlideId) {    
+
     var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    
+    var translateX = 0;
+    var translateY = 0;
+    
+    switch (direction) {
+        case 'Right':
+            translateX = frameWidth;
+            break;
+        case 'Left':
+            translateX = -frameWidth;
+            break;
+        case 'Down':
+            translateY = frameHeight;
+            break;
+        case 'Up':
+            translateY = -frameHeight;
+            break;
+        case 'LeftDown':
+            translateX = -frameWidth;
+            translateY = frameHeight;
+            break;
+        case 'LeftUp':
+            translateX = -frameWidth;
+            translateY = -frameHeight;
+            break;
+        case 'RightDown':
+            translateX = frameWidth;
+            translateY = frameHeight;
+            break;
+        case 'RightUp':
+            translateX = frameWidth;
+            translateY = -frameHeight;
+            break;
+        default:
+            alert(direction);
+            break;
+    }
     
     $(slideId).show();
     StackSlides(prevSlideId, slideId);
     
     anime({
         targets: prevSlideId,  
-        translateX: -frameWidth,
+        translateX: translateX,
+        translateY: translateY,
         duration: duration,
         easing: 'linear',
         complete: function() {
+            
             anime({
                 targets: prevSlideId,
                 duration: 10,
                 translateX: 0,
+                translateY: 0,
                 easing: 'linear'
             });
         
@@ -165,7 +236,46 @@ function Pull(slideId, prevSlideId) {
 }
 
 function Cover(slideId, prevSlideId) {    
+
     var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    
+    var translateX = 0;
+    var translateY = 0;
+    
+    switch (direction) {
+        case 'Right':
+            translateX = -frameWidth;
+            break;
+        case 'Left':
+            translateX = frameWidth;
+            break;
+        case 'Down':
+            translateY = -frameHeight;
+            break;
+        case 'Up':
+            translateY = frameHeight;
+            break;
+        case 'LeftDown':
+            translateX = frameWidth;
+            translateY = -frameHeight;
+            break;
+        case 'LeftUp':
+            translateX = frameWidth;
+            translateY = frameHeight;
+            break;
+        case 'RightDown':
+            translateX = -frameWidth;
+            translateY = -frameHeight;
+            break;
+        case 'RightUp':
+            translateX = -frameWidth;
+            translateY = frameHeight;
+            break;
+        default:
+            alert(direction);
+            break;
+    }
     
     $(slideId).show();
     StackSlides(prevSlideId, slideId);
@@ -173,14 +283,17 @@ function Cover(slideId, prevSlideId) {
     anime({
         targets: slideId,
         duration: 10,
-        translateX: frameWidth,
+        translateX: translateX,
+        translateY: translateY,
         easing: 'linear',
         complete: function() {
+            
             StackSlides(slideId, prevSlideId);
-                
+            
             anime({
                 targets: slideId,  
                 translateX: 0,
+                translateY: 0,
                 duration: duration,
                 easing: 'linear',
                 complete: function() {

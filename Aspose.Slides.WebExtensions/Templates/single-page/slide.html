@@ -53,6 +53,7 @@
 <div id="slide-@slideNumber" class="slide master-bg" 
      data-transition-type="@contextObject.SlideShowTransition.Type"
      data-transition-speed="@contextObject.SlideShowTransition.Speed"
+     data-transition-direction="@SlideHelper.GetSlideTransitionDirection(contextObject)"
      style="display: @(animateTransitions ? "none" : "block");">
     
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
