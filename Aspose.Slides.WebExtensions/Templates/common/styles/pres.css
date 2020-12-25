@@ -12,12 +12,8 @@
         </text>
     }
       
-      var animateTransitions = Model.Global.Get<bool>("animateTransitions");
-      string slidePosition = "";
-      if (animateTransitions)
-      {
-            slidePosition = "position: absolute;";
-      }
+      var animateTransitions = Model.Global.Get<bool>("animateTransitions");	  
+	  var margin = Model.Global.Get<int>("slideMargin");
 }
 
     body {
@@ -27,19 +23,19 @@
     }
 
     .bg {
-            @(animateTransitions ? "width: " + (Model.Object.SlideSize.Size.Width + 12) + "px;" : "")
-            @(animateTransitions ? "height: " + (Model.Object.SlideSize.Size.Height + 12) + "px;" : "")
+            @(animateTransitions ? "width: " + (Model.Object.SlideSize.Size.Width + margin * 2) + "px;" : "")
+            @(animateTransitions ? "height: " + (Model.Object.SlideSize.Size.Height + margin * 2) + "px;" : "")
             @(animateTransitions ? "overflow: hidden;" : "")
             @(animateTransitions ? "position: fixed;" : "")
     }
     
     .slide {
-        width: @(Model.Object.SlideSize.Size.Width + "px");
-        height: @(Model.Object.SlideSize.Size.Height + "px");
+        width: @((Model.Object.SlideSize.Size.Width + margin / 2) + "px");
+        height: @((Model.Object.SlideSize.Size.Height + margin / 2) + "px");
         outline: 1px solid #c6c6c6;
         overflow: hidden;
-        margin: @(Model.Global.Get<int>("slideMargin") + "px");
-        @slidePosition
+        margin: @(margin + "px");
+        @(animateTransitions ? "position: absolute;" : "")
     }
 
     .slide-content {

@@ -32,7 +32,7 @@
         }
     </div>
     
-    <button class="navigation" id="PrevSlide" style="left: 375px; top: 580px;">Prev Slide</button>
-    <button class="navigation" id="NextSlide" style="left: 485px; top: 580px;">Next Slide</button>
+    <button class="navigation" id="PrevSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 - 100 - 5)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Prev Slide</button>
+    <button class="navigation" id="NextSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 + 5)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Next Slide</button>
 </body>
 </html>
