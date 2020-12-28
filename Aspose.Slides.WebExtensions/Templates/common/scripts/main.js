@@ -50,10 +50,12 @@ function PlayTransition(slideId, prevSlideId) {
         Push(slideId, prevSlideId);
     } else if(transitionType === 'Pull') {
         Pull(slideId, prevSlideId);
-    }else if(transitionType === 'Cover') {
+    } else if(transitionType === 'Cover') {
         Cover(slideId, prevSlideId);
-    }else if(transitionType === 'Wipe') {
+    } else if(transitionType === 'Wipe') {
         Wipe(slideId, prevSlideId);        
+    } else if(transitionType === 'RandomBar') {
+        RandomBar(slideId, prevSlideId);        
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -309,6 +311,167 @@ function Cover(slideId, prevSlideId) {
 function Wipe(slideId, prevSlideId) {
 
 }
+
+
+function RandomBar(slideId, prevSlideId) {
+
+    var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    
+    
+    var bars = GenerateBars(direction == 'Vertical', 5, 70, 1);
+    ShuffleArray(bars);
+
+    $(slideId).css('opacity', '0.0');
+    $(slideId).show();
+
+    $('#effectsclip').empty();
+    $('#svgdiv').html($('#svgdiv').html());
+
+    StackSlides(slideId, prevSlideId);
+    
+    $(slideId).css('clip-path', 'url(#effectsclip)');
+    
+    var timeline = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        complete: function(anim) {
+            $('#effectsclip').empty();
+            $('#svgdiv').html($('#svgdiv').html());
+            $(slideId).css('clip-path', '');
+            $(prevSlideId).hide();
+            PlayTransitionEnd();
+        }
+      });
+      
+    
+    var finalBarsStartIndex = timeline.id;
+    var i, j, k;
+    var bigSteps = 1;
+    var curStepBegin = 0;
+    var eachStepLengh = Math.floor(bars.length / Math.max(bigSteps - 1, 1));
+    
+    var bigStepOpacityBase, curMinOpacity, curMaxOpacity;
+    var curStepLength, curStepBars, maxBarLength;
+    
+    var finalBars = [];
+    
+    for (i = 0; i < bigSteps; i++) {
+        
+        bigStepOpacityBase = (1 / bigSteps) * i;
+                
+        curStepLength = (i < bigSteps - 1) ? eachStepLengh : bars.length - curStepBegin;
+        curStepBars = bars.slice(curStepBegin, curStepBegin + curStepLength);
+        maxBarLength = Math.max.apply(Math, $.map(curStepBars, function (el) { return el.length }));
+        
+        for (j = 0; j < maxBarLength; j++) {
+            
+            var microStepBars = []
+            
+            for(k = 0; k < curStepBars.length; k++) {
+                if (j < curStepBars[k].length)
+                    microStepBars.push(curStepBars[k][j]);
+            }
+            
+            finalBars.push(microStepBars);
+            
+            curMinOpacity = bigStepOpacityBase + (1 / bigSteps / maxBarLength) * j;
+            curMaxOpacity = bigStepOpacityBase + (1 / bigSteps / maxBarLength) * (j + 1);
+            
+            timeline.add({
+                duration: duration / bigSteps / maxBarLength,
+                opacity: [curMinOpacity, curMaxOpacity],
+                easing: 'linear',
+                complete: function(anim) {
+                    
+                    var ii = anim.id - finalBarsStartIndex - 1;
+                    var jj;
+                    for (jj = 0; jj < finalBars[ii].length; jj++)
+                        $('#effectsclip').append(finalBars[ii][jj]);                    
+                    $('#svgdiv').html($('#svgdiv').html());
+                    
+                }
+            });
+        }
+        
+        curStepBegin += eachStepLengh;
+    }
+    
+    timeline.reset();
+    timeline.play();
+}
+
+function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
+    
+    var curPosition = 0;
+    var limit = vertical ? frameWidth : frameHeight;
+    var widths = [];
+        
+    while (curPosition < limit) {
+        
+        var nextBarWidth = Math.floor((Math.random() * (maxWidth - minWidth)) + minWidth);
+        if (curPosition + nextBarWidth > limit)
+            nextBarWidth = limit - curPosition;
+        
+        if (nextBarWidth > 1)
+            widths.push(nextBarWidth);
+        
+        curPosition += nextBarWidth;
+    };
+    
+    var result = [];
+    
+    var i;
+    var prevStart = 0;
+    for(i = 0; i < widths.length; i++) {
+        
+        var curBarPolygons = [];
+        var center = Math.floor((widths[i] + prevStart * 2) / 2);
+        
+        var left = center - gradationWidth;
+        var right = center;
+        while (left >= prevStart || right < prevStart + widths[i]) {
+            
+            if (left >= prevStart)
+                curBarPolygons.push(GeneratePolygon(vertical, left, gradationWidth));
+            if (right < prevStart + widths[i])
+                curBarPolygons.push(GeneratePolygon(vertical, right, gradationWidth));
+            
+            left -= gradationWidth;
+            right += gradationWidth;
+        }
+        
+        result.push(curBarPolygons);
+        
+        prevStart += widths[i];
+    }
+    
+    
+    return result;
+}
+
+function GeneratePolygon(vertical, start, width) { 
+    if (vertical)
+        return '<polygon points="' + start + ',0 ' + (start + width) + ',0 ' + (start + width) + ',' + frameHeight + ' ' + start + ',' + frameHeight + '" />'
+    else
+        return '<polygon points="0,' + start + ' ' + frameWidth + ',' + start + ' ' + frameWidth + ',' + (start + width) + ' 0,' + (start + width) + '" />'
+}
+
+function ShuffleArray(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+    
+    while (0 !== currentIndex) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+    
+    return array;
+}
+
+
 
 function StackSlides(foreground, background) {
     $(background).css("z-index", 1);

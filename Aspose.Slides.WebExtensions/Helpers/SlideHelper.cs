@@ -29,6 +29,9 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 case TransitionType.Cover:
                     result = ((IEightDirectionTransition)slide.SlideShowTransition.Value).Direction.ToString();
                     break;
+                case TransitionType.RandomBar:
+                    result = ((IOrientationTransition)slide.SlideShowTransition.Value).Direction.ToString();
+                    break;
             }
 
             return result;
