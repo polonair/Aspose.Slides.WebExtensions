@@ -53,11 +53,17 @@ function PlayTransition(slideId, prevSlideId) {
     } else if(transitionType === 'Cover') {
         Cover(slideId, prevSlideId);
     } else if(transitionType === 'Wipe') {
-        Wipe(slideId, prevSlideId);        
+        Wipe(slideId, prevSlideId);
     } else if(transitionType === 'RandomBar') {
-        RandomBar(slideId, prevSlideId);        
+        RandomBar(slideId, prevSlideId);
     } else if(transitionType === 'Flash') {
-        Flash(slideId, prevSlideId);        
+        Flash(slideId, prevSlideId);
+    } else if(transitionType === 'Wheel') {
+        Wheel(slideId, prevSlideId, 1);
+    } else if(transitionType === 'WheelReverse') {
+        Wheel(slideId, prevSlideId, 2);
+    } else if(transitionType === 'Wedge') {
+        Wheel(slideId, prevSlideId, 3);
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -453,9 +459,9 @@ function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
 
 function GenerateBarPolygon(vertical, start, width) { 
     if (vertical)
-        return '<polygon points="' + start + ',0 ' + (start + width) + ',0 ' + (start + width) + ',' + frameHeight + ' ' + start + ',' + frameHeight + '" />'
+        return '<polygon points="' + start + ',0 ' + (start + width) + ',0 ' + (start + width) + ',' + frameHeight + ' ' + start + ',' + frameHeight + '"/>'
     else
-        return '<polygon points="0,' + start + ' ' + frameWidth + ',' + start + ' ' + frameWidth + ',' + (start + width) + ' 0,' + (start + width) + '" />'
+        return '<polygon points="0,' + start + ' ' + frameWidth + ',' + start + ' ' + frameWidth + ',' + (start + width) + ' 0,' + (start + width) + '"/>'
 }
 
 function Flash(slideId, prevSlideId) {
@@ -517,6 +523,129 @@ function Flash(slideId, prevSlideId) {
     }
     
     timeline.play();
+}
+
+function Wheel(slideId, prevSlideId, wheelType) {
+    
+    var duration = GetDuration(slideId);
+    
+    var sectorsCount = 220;
+    var sectors = GenerateWheelSectors(wheelType, sectorsCount);
+    
+    
+    $(slideId).css('opacity', '0.8');
+    $(slideId).show();
+
+    $('#effectsclip').empty();
+    $('#svgdiv').html($('#svgdiv').html());
+
+    StackSlides(slideId, prevSlideId);
+    
+    $(slideId).css('clip-path', 'url(#effectsclip)');
+    
+    var timeline = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        complete: function(anim) {
+            $('#effectsclip').empty();
+            $('#svgdiv').html($('#svgdiv').html());
+            $(slideId).css('clip-path', '');
+            $(prevSlideId).hide();
+            PlayTransitionEnd();
+        }
+    });
+
+    var indexBase = timeline.id;
+    var opacityStep, curOpacity;
+    
+    curOpacity = 0.8;
+    opacityStep = (1 - curOpacity) / sectorsCount;
+    
+    for (var i = 0; i < sectorsCount; i++) {
+        
+        timeline.add({
+            duration: duration / sectorsCount,
+            opacity: [curOpacity, curOpacity + opacityStep],
+            easing: 'linear',
+            complete: function(anim) {
+                
+                var j = anim.id - indexBase - 1;
+                $('#effectsclip').append(sectors[j]);
+                $('#svgdiv').html($('#svgdiv').html());
+                
+            }
+        });
+        
+        curOpacity += opacityStep;
+    }
+    
+    timeline.play();
+}
+
+function GenerateWheelSectors(wheelType, sectorsCount) {
+        
+    var angleStep = 360 / sectorsCount;
+    var currentAngle = 0;
+    var radius = Math.max(frameWidth, frameHeight) + 10;
+    var centerX = frameWidth / 2;
+    var centerY = frameHeight / 2;
+    var angleFix = wheelType == 2 ? -2 : 2;
+    
+    var opts = {
+        cx: centerX,
+        cy: centerY,
+        radius: radius,
+        start_angle: angleFix ,
+        end_angle: wheelType == 2 ? -angleStep: angleStep
+    };
+    
+    var start, end, largeArcFlag;
+    var result = [];
+    
+    for (var i = 0; i < sectorsCount && opts.end_angle + angleFix < 362; i++) {
+        
+        start = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.end_angle + angleFix);
+        end = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.start_angle - angleFix);
+        largeArcFlag = opts.end_angle - opts.start_angle <= 180 ? "0" : "1";
+        
+        var pathData = [
+            "M", start.x, start.y,
+            "A", opts.radius, opts.radius, 0, largeArcFlag, 0, end.x, end.y,
+            "L", opts.cx, opts.cy,
+            "Z"
+        ].join(" ");
+        
+        if (wheelType == 2) {
+            opts.start_angle -= angleStep;
+            opts.end_angle -= angleStep;
+        }
+        else {
+            opts.start_angle += angleStep;
+            opts.end_angle += angleStep;
+        }
+        
+        result.push('<path d="' + pathData + '"/>');
+    }
+    
+    if (wheelType == 3) {
+        var resultRearranged = [];
+        for (var i = 0; i < sectorsCount / 2; i++) {
+            resultRearranged.push(result[i]);
+            resultRearranged.push(result[result.length - i]);
+        }
+        result = resultRearranged;
+    }
+    
+    return result;
+}
+
+function PolarToCartesian(centerX, centerY, radius, angleInDegrees) {
+    var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+
+    return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians))
+    };
 }
 
 function ShuffleArray(array) {
