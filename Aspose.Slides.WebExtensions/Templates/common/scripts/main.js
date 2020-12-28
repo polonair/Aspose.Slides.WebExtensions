@@ -56,6 +56,8 @@ function PlayTransition(slideId, prevSlideId) {
         Wipe(slideId, prevSlideId);        
     } else if(transitionType === 'RandomBar') {
         RandomBar(slideId, prevSlideId);        
+    } else if(transitionType === 'Flash') {
+        Flash(slideId, prevSlideId);        
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -342,7 +344,7 @@ function RandomBar(slideId, prevSlideId) {
             $(prevSlideId).hide();
             PlayTransitionEnd();
         }
-      });
+    });
       
     
     var finalBarsStartIndex = timeline.id;
@@ -397,7 +399,6 @@ function RandomBar(slideId, prevSlideId) {
         curStepBegin += eachStepLengh;
     }
     
-    timeline.reset();
     timeline.play();
 }
 
@@ -433,9 +434,9 @@ function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
         while (left >= prevStart || right < prevStart + widths[i]) {
             
             if (left >= prevStart)
-                curBarPolygons.push(GeneratePolygon(vertical, left, gradationWidth));
+                curBarPolygons.push(GenerateBarPolygon(vertical, left, gradationWidth));
             if (right < prevStart + widths[i])
-                curBarPolygons.push(GeneratePolygon(vertical, right, gradationWidth));
+                curBarPolygons.push(GenerateBarPolygon(vertical, right, gradationWidth));
             
             left -= gradationWidth;
             right += gradationWidth;
@@ -450,15 +451,77 @@ function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
     return result;
 }
 
-function GeneratePolygon(vertical, start, width) { 
+function GenerateBarPolygon(vertical, start, width) { 
     if (vertical)
         return '<polygon points="' + start + ',0 ' + (start + width) + ',0 ' + (start + width) + ',' + frameHeight + ' ' + start + ',' + frameHeight + '" />'
     else
         return '<polygon points="0,' + start + ' ' + frameWidth + ',' + start + ' ' + frameWidth + ',' + (start + width) + ' 0,' + (start + width) + '" />'
 }
 
+function Flash(slideId, prevSlideId) {
+    
+    var duration = GetDuration(slideId);
+    
+    $('#flash').show();
+    StackSlides('#flash', prevSlideId);
+    
+    
+    var timeline = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        complete: function(anim) {
+            
+            $('#flash').hide();
+            $(prevSlideId).hide();
+            PlayTransitionEnd();
+        }
+    });
+    
+    var flashDuration = 300;
+    var stepsCount = 100;
+    
+    var saturate = 2;
+    var brightness = 3;
+    var opacity = 0.4
+    var contrast = 1.5;
+    
+    var durationStep = (duration - flashDuration) / stepsCount;
+    var saturateStep = (saturate - 1) / stepsCount;
+    var brightnessStep = (brightness - 1) / stepsCount;
+    var contrastStep = (contrast - 1) / stepsCount;
+    var opacityStep = (1 - opacity) / stepsCount
+    
+    timeline.add({
+        duration: flashDuration,
+        complete: function(anim) {
+            
+            $(slideId).css('opacity', opacity);
+            $(slideId).css('filter', 'saturate(' + saturate + ') brightness(' + brightness + ') contrast(' + contrast + ')');
+            $(slideId).show();
+            StackSlides(slideId, prevSlideId);
+        }
+    });
+    
+    for(var i = 0; i < stepsCount; i++) {
+        
+        saturate -= saturateStep;
+        brightness -= brightnessStep;
+        contrast -= contrastStep;
+        opacity += opacityStep;
+        
+        timeline.add({
+            duration: durationStep,
+            opacity: opacity,
+            filter: 'saturate(' + saturate + ') brightness(' + brightness + ') contrast(' + contrast + ')'
+        });
+    }
+    
+    timeline.play();
+}
+
 function ShuffleArray(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    var currentIndex = array.length;
+    var temporaryValue, randomIndex;
     
     while (0 !== currentIndex) {
         randomIndex = Math.floor(Math.random() * currentIndex);
@@ -470,8 +533,6 @@ function ShuffleArray(array) {
     
     return array;
 }
-
-
 
 function StackSlides(foreground, background) {
     $(background).css("z-index", 1);
