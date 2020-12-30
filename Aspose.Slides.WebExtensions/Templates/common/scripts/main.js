@@ -64,6 +64,8 @@ function PlayTransition(slideId, prevSlideId) {
         Wheel(slideId, prevSlideId, 2);
     } else if(transitionType === 'Wedge') {
         Wheel(slideId, prevSlideId, 3);
+    } else if(transitionType === 'Dissolve') {
+        Dissolve(slideId, prevSlideId);
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -572,7 +574,6 @@ function Wheel(slideId, prevSlideId, wheelType) {
                 var j = anim.id - indexBase - 1;
                 $('#effectsclip').append(sectors[j]);
                 $('#svgdiv').html($('#svgdiv').html());
-                
             }
         });
         
@@ -634,6 +635,87 @@ function GenerateWheelSectors(wheelType, sectorsCount) {
             resultRearranged.push(result[result.length - i]);
         }
         result = resultRearranged;
+    }
+    
+    return result;
+}
+
+function Dissolve(slideId, prevSlideId) {
+    
+    var duration = GetDuration(slideId);
+    var stepsCount = 50;
+    
+    var tiles = GenerateDissolvePolygons();
+    ShuffleArray(tiles);
+    
+    $(slideId).css('opacity', '0.0');
+    $(slideId).show();
+
+    $('#effectsclip').empty();
+    $('#svgdiv').html($('#svgdiv').html());
+
+    StackSlides(slideId, prevSlideId);
+    
+    $(slideId).css('clip-path', 'url(#effectsclip)');
+    
+    var timeline = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        complete: function(anim) {
+            $('#effectsclip').empty();
+            $('#svgdiv').html($('#svgdiv').html());
+            $(slideId).css('clip-path', '');
+            $(prevSlideId).hide();
+            PlayTransitionEnd();
+        }
+    });
+
+    var indexBase = timeline.id;
+    var opacityStep, curOpacity;
+    var tilesCount = Math.ceil(tiles.length / stepsCount);
+    
+    curOpacity = 0;
+    opacityStep = (1 - curOpacity) / stepsCount;
+    
+    for (var i = 0; i < stepsCount; i++) {
+        
+        timeline.add({
+            duration: duration / stepsCount,
+            opacity: [curOpacity, curOpacity + opacityStep],
+            easing: 'linear',
+            complete: function(anim) {
+                
+                var j = anim.id - indexBase - 1;
+                
+                for (var k = tilesCount * j; k < tilesCount * (j + 1) && k < tiles.length; k++)
+                    $('#effectsclip').append(tiles[k]);
+                
+                $('#svgdiv').html($('#svgdiv').html());
+            }
+        });
+        
+        curOpacity += opacityStep;
+    }
+    
+    timeline.play();
+}
+
+function GenerateDissolvePolygons() {
+    
+    var result = [];
+    
+    var xStep = frameWidth / 54;
+    var yStep = frameHeight / 42;
+    var eps = 0.5;
+    
+    for(var i = 0; i < 54; i++) {
+        for(var j = 0; j < 42; j++) {
+        
+            var x = frameWidth / 54 * i;
+            var y = frameHeight / 42 * j;
+            
+            result.push(`<polygon points="${x - eps},${y - eps} ${x + xStep + eps},${y - eps} ${x + xStep + eps},${y + yStep + eps} ${x - eps},${y + yStep + eps}"/>`);
+        }
     }
     
     return result;
