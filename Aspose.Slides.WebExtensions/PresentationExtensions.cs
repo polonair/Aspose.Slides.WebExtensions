@@ -198,22 +198,15 @@ namespace Aspose.Slides.WebExtensions
                 string path;
                 string ext;
 
-                if (image.ContentType == "image/x-emf"
-                    || image.ContentType == "image/x-wmf") //save metafile as PNG to make it supported by various browsers  
-                {
+                if (image.ContentType == "image/x-emf" || image.ContentType == "image/x-wmf") // Output will convert metafiles to png
                     ext = "png";
-                    path = Path.Combine(outputPath, string.Format("image{0}.{1}", index, ext));
+                else
+                    ext = MimeTypesMap.GetExtension(image.ContentType);
 
-                    var bitmap = ImageHelper.MetafileToBitmap(image);
-                    document.Output.Add(path, new ThumbnailOutputFile(bitmap), image);
-
-                    continue;
-                }
-
-                ext = MimeTypesMap.GetExtension(image.ContentType);
                 path = Path.Combine(outputPath, string.Format("image{0}.{1}", index, ext));
 
-                document.Output.Add(path, image);
+                var outputFile = document.Output.Add(path, image);
+                document.Output.BindResource(outputFile, image);
             }
         }
 
@@ -227,7 +220,7 @@ namespace Aspose.Slides.WebExtensions
                 string path = Path.Combine(outputPath, string.Format("thumbnail{0}.png", index));
 
                 // todo: images must by disposed
-                document.Output.Add(path, new ThumbnailOutputFile(thumbnail));
+                document.Output.Add(path, thumbnail);
             }
         }
 
@@ -273,9 +266,8 @@ namespace Aspose.Slides.WebExtensions
                 string path = Path.Combine(outputPath, string.Format("{0}{1}.png", typeof(T).Name.ToLower(), counter++));
 
                 // todo: images must by disposed
-                document.Output.Add(path, new ThumbnailOutputFile(thumbnail), shape);
-
-
+                var outputFile = document.Output.Add(path, thumbnail);
+                document.Output.BindResource(outputFile, shape);
             }
         }
 
@@ -306,7 +298,8 @@ namespace Aspose.Slides.WebExtensions
                 string ext = MimeTypesMap.GetExtension(videoFrames[i].EmbeddedVideo.ContentType);
                 string path = Path.Combine(outputPath, string.Format("video{0}.{1}", i, ext));
 
-                document.Output.Add(path, video);
+                var outputFile = document.Output.Add(path, video);
+                document.Output.BindResource(outputFile, video);
             }
         }
 
@@ -319,9 +312,7 @@ namespace Aspose.Slides.WebExtensions
                 scriptContent = sr.ReadToEnd();
             }
 
-            var script = new ScriptOutputFile(scriptContent);
-
-            document.Output.Add(Path.Combine(outputPath, scriptName), script);
+            document.Output.Add(Path.Combine(outputPath, scriptName), scriptContent);
         }
     }
 }
