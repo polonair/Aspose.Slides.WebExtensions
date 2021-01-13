@@ -14,6 +14,7 @@ var currentVisiblePage = 1;
 var maxVisiblePage = @pagesCount;
 var frameWidth = @slideWidth;
 var frameHeight = @slideHeight;
+var polygonsCache = {};
 
 $(document).ready(function(){
       
@@ -38,6 +39,7 @@ function PlayTransition(slideId, prevSlideId) {
 
     var slide = $(slideId);
     var transitionType = slide.data('transitionType');
+    var direction = slide.data("transitionDirection");
     
     ResetAnimationProperties();
     
@@ -58,14 +60,14 @@ function PlayTransition(slideId, prevSlideId) {
         RandomBar(slideId, prevSlideId);
     } else if(transitionType === 'Flash') {
         Flash(slideId, prevSlideId);
-    } else if(transitionType === 'Wheel') {
-        Wheel(slideId, prevSlideId, 1);
-    } else if(transitionType === 'WheelReverse') {
-        Wheel(slideId, prevSlideId, 2);
-    } else if(transitionType === 'Wedge') {
-        Wheel(slideId, prevSlideId, 3);
+    } else if(transitionType === 'Wheel' || transitionType === 'WheelReverse' || transitionType === 'Wedge') {
+        Wheel(slideId, prevSlideId, transitionType);
     } else if(transitionType === 'Dissolve') {
         Dissolve(slideId, prevSlideId);
+    } else if(transitionType === 'Circle' || transitionType === 'Diamond' || transitionType === 'Plus') {
+        Shape(slideId, prevSlideId, transitionType);
+    } else if(transitionType === 'Zoom') {
+        Shape(slideId, prevSlideId, transitionType + direction);
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -410,62 +412,6 @@ function RandomBar(slideId, prevSlideId) {
     timeline.play();
 }
 
-function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
-    
-    var curPosition = 0;
-    var limit = vertical ? frameWidth : frameHeight;
-    var widths = [];
-        
-    while (curPosition < limit) {
-        
-        var nextBarWidth = Math.floor((Math.random() * (maxWidth - minWidth)) + minWidth);
-        if (curPosition + nextBarWidth > limit)
-            nextBarWidth = limit - curPosition;
-        
-        if (nextBarWidth > 1)
-            widths.push(nextBarWidth);
-        
-        curPosition += nextBarWidth;
-    };
-    
-    var result = [];
-    
-    var i;
-    var prevStart = 0;
-    for(i = 0; i < widths.length; i++) {
-        
-        var curBarPolygons = [];
-        var center = Math.floor((widths[i] + prevStart * 2) / 2);
-        
-        var left = center - gradationWidth;
-        var right = center;
-        while (left >= prevStart || right < prevStart + widths[i]) {
-            
-            if (left >= prevStart)
-                curBarPolygons.push(GenerateBarPolygon(vertical, left, gradationWidth));
-            if (right < prevStart + widths[i])
-                curBarPolygons.push(GenerateBarPolygon(vertical, right, gradationWidth));
-            
-            left -= gradationWidth;
-            right += gradationWidth;
-        }
-        
-        result.push(curBarPolygons);
-        
-        prevStart += widths[i];
-    }
-    
-    
-    return result;
-}
-
-function GenerateBarPolygon(vertical, start, width) { 
-    if (vertical)
-        return '<polygon points="' + start + ',0 ' + (start + width) + ',0 ' + (start + width) + ',' + frameHeight + ' ' + start + ',' + frameHeight + '"/>'
-    else
-        return '<polygon points="0,' + start + ' ' + frameWidth + ',' + start + ' ' + frameWidth + ',' + (start + width) + ' 0,' + (start + width) + '"/>'
-}
-
 function Flash(slideId, prevSlideId) {
     
     var duration = GetDuration(slideId);
@@ -525,119 +471,6 @@ function Flash(slideId, prevSlideId) {
     }
     
     timeline.play();
-}
-
-function Wheel(slideId, prevSlideId, wheelType) {
-    
-    var duration = GetDuration(slideId);
-    
-    var sectorsCount = 220;
-    var sectors = GenerateWheelSectors(wheelType, sectorsCount);
-    
-    
-    $(slideId).css('opacity', '0.8');
-    $(slideId).show();
-
-    $('#effectsclip').empty();
-    $('#svgdiv').html($('#svgdiv').html());
-
-    StackSlides(slideId, prevSlideId);
-    
-    $(slideId).css('clip-path', 'url(#effectsclip)');
-    
-    var timeline = anime.timeline({
-        targets: slideId,
-        autoplay: false,
-        complete: function(anim) {
-            $('#effectsclip').empty();
-            $('#svgdiv').html($('#svgdiv').html());
-            $(slideId).css('clip-path', '');
-            $(prevSlideId).hide();
-            PlayTransitionEnd();
-        }
-    });
-
-    var indexBase = timeline.id;
-    var opacityStep, curOpacity;
-    
-    curOpacity = 0.8;
-    opacityStep = (1 - curOpacity) / sectorsCount;
-    
-    for (var i = 0; i < sectorsCount; i++) {
-        
-        timeline.add({
-            duration: duration / sectorsCount,
-            opacity: [curOpacity, curOpacity + opacityStep],
-            easing: 'linear',
-            complete: function(anim) {
-                
-                var j = anim.id - indexBase - 1;
-                $('#effectsclip').append(sectors[j]);
-                $('#svgdiv').html($('#svgdiv').html());
-            }
-        });
-        
-        curOpacity += opacityStep;
-    }
-    
-    timeline.play();
-}
-
-function GenerateWheelSectors(wheelType, sectorsCount) {
-        
-    var angleStep = 360 / sectorsCount;
-    var currentAngle = 0;
-    var radius = Math.max(frameWidth, frameHeight) + 10;
-    var centerX = frameWidth / 2;
-    var centerY = frameHeight / 2;
-    var angleFix = wheelType == 2 ? -2 : 2;
-    
-    var opts = {
-        cx: centerX,
-        cy: centerY,
-        radius: radius,
-        start_angle: angleFix ,
-        end_angle: wheelType == 2 ? -angleStep: angleStep
-    };
-    
-    var start, end, largeArcFlag;
-    var result = [];
-    
-    for (var i = 0; i < sectorsCount && opts.end_angle + angleFix < 362; i++) {
-        
-        start = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.end_angle + angleFix);
-        end = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.start_angle - angleFix);
-        largeArcFlag = opts.end_angle - opts.start_angle <= 180 ? "0" : "1";
-        
-        var pathData = [
-            "M", start.x, start.y,
-            "A", opts.radius, opts.radius, 0, largeArcFlag, 0, end.x, end.y,
-            "L", opts.cx, opts.cy,
-            "Z"
-        ].join(" ");
-        
-        if (wheelType == 2) {
-            opts.start_angle -= angleStep;
-            opts.end_angle -= angleStep;
-        }
-        else {
-            opts.start_angle += angleStep;
-            opts.end_angle += angleStep;
-        }
-        
-        result.push('<path d="' + pathData + '"/>');
-    }
-    
-    if (wheelType == 3) {
-        var resultRearranged = [];
-        for (var i = 0; i < sectorsCount / 2; i++) {
-            resultRearranged.push(result[i]);
-            resultRearranged.push(result[result.length - i]);
-        }
-        result = resultRearranged;
-    }
-    
-    return result;
 }
 
 function Dissolve(slideId, prevSlideId) {
@@ -700,22 +533,313 @@ function Dissolve(slideId, prevSlideId) {
     timeline.play();
 }
 
+function Wheel(slideId, prevSlideId, wheelType) {
+    
+    var stepsCount = 150;
+    var sectors = GenerateWheelSectors(wheelType, stepsCount);
+    
+    AnimatePolygons(slideId, prevSlideId, sectors);
+}
+
+function Shape(slideId, prevSlideId, shapeType) {
+    
+    var stepsCount = 150;
+    
+    var polys = [];
+    if (shapeType == 'Circle')
+        polys = GenerateCircles(stepsCount);
+    else
+        polys = GenerateShapePolygons(stepsCount, shapeType);
+    
+    AnimatePolygons(slideId, prevSlideId, polys);
+}
+
+function AnimatePolygons(slideId, prevSlideId, polys) {
+    
+    var duration = GetDuration(slideId);
+    var stepsCount = polys.length;
+    var curOpacity = 0.8;
+    
+    $(slideId).css('opacity', curOpacity);
+    $(slideId).show();
+
+    $('#effectsclip').empty();
+    $('#svgdiv').html($('#svgdiv').html());
+
+    StackSlides(slideId, prevSlideId);
+    
+    $(slideId).css('clip-path', 'url(#effectsclip)');
+    
+    var timeline = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        complete: function(anim) {
+            $('#effectsclip').empty();
+            $('#svgdiv').html($('#svgdiv').html());
+            $(slideId).css('clip-path', '');
+            $(prevSlideId).hide();
+            PlayTransitionEnd();
+        }
+    });
+
+    var indexBase = timeline.id;
+    var opacityStep = (1 - curOpacity) / stepsCount;
+    
+    for (var i = 0; i < stepsCount; i++) {
+        
+        timeline.add({
+            duration: duration / stepsCount,
+            opacity: [curOpacity, curOpacity + opacityStep],
+            easing: 'linear',
+            complete: function(anim) {
+                
+                var j = anim.id - indexBase - 1;
+                $('#effectsclip').append(polys[j]);
+                $('#svgdiv').html($('#svgdiv').html());
+            }
+        });
+        
+        curOpacity += opacityStep;
+    }
+    
+    timeline.play();
+}
+
+function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
+    
+    var result = polygonsCache.Bars;
+    if (!result) {
+        
+        result = [];
+        var curPosition = 0;
+        var limit = vertical ? frameWidth : frameHeight;
+        var widths = [];
+            
+        while (curPosition < limit) {
+            
+            var nextBarWidth = Math.floor((Math.random() * (maxWidth - minWidth)) + minWidth);
+            if (curPosition + nextBarWidth > limit)
+                nextBarWidth = limit - curPosition;
+            
+            if (nextBarWidth > 1)
+                widths.push(nextBarWidth);
+            
+            curPosition += nextBarWidth;
+        };
+            
+    
+        var prevStart = 0;
+        for(var i = 0; i < widths.length; i++) {
+            
+            var curBarPolygons = [];
+            var center = Math.floor((widths[i] + prevStart * 2) / 2);
+            
+            var left = center - gradationWidth;
+            var right = center;
+            while (left >= prevStart || right < prevStart + widths[i]) {
+                
+                if (left >= prevStart)
+                    curBarPolygons.push(GenerateBarPolygon(vertical, left, gradationWidth));
+                if (right < prevStart + widths[i])
+                    curBarPolygons.push(GenerateBarPolygon(vertical, right, gradationWidth));
+                
+                left -= gradationWidth;
+                right += gradationWidth;
+            }
+            
+            result.push(curBarPolygons);
+            
+            prevStart += widths[i];
+        }
+        
+        polygonsCache.Bars = result;
+    }
+    
+    return result;
+}
+
+function GenerateBarPolygon(vertical, start, width) { 
+    if (vertical)
+        return `<polygon points="${start},${0} ${start + width},${0} ${start + width},${frameHeight} ${start},${frameHeight}"/>`;
+    else
+        return `<polygon points="${0},${start} ${frameWidth},${start} ${frameWidth},${start + width} ${0},${start + width}"/>`;
+}
+
 function GenerateDissolvePolygons() {
     
-    var result = [];
-    
-    var xStep = frameWidth / 54;
-    var yStep = frameHeight / 42;
-    var eps = 0.5;
-    
-    for(var i = 0; i < 54; i++) {
-        for(var j = 0; j < 42; j++) {
+    var result = polygonsCache.Dissolve;
+    if (!result) {
         
-            var x = frameWidth / 54 * i;
-            var y = frameHeight / 42 * j;
+        result = [];
+        var xStep = frameWidth / 54;
+        var yStep = frameHeight / 42;
+        var eps = 0.5;
+        
+        for(var i = 0; i < 54; i++) {
+            for(var j = 0; j < 42; j++) {
             
-            result.push(`<polygon points="${x - eps},${y - eps} ${x + xStep + eps},${y - eps} ${x + xStep + eps},${y + yStep + eps} ${x - eps},${y + yStep + eps}"/>`);
+                var x = frameWidth / 54 * i;
+                var y = frameHeight / 42 * j;
+                
+                result.push(`<polygon points="${x - eps},${y - eps} ${x + xStep + eps},${y - eps} ${x + xStep + eps},${y + yStep + eps} ${x - eps},${y + yStep + eps}"/>`);
+            }
         }
+        
+        polygonsCache.Dissolve = result;
+    }
+        
+    return result;
+}
+
+function GenerateShapePolygons(stepsCount, shapeType) {
+    
+    var result = polygonsCache[shapeType];
+    if (!result) {
+        
+        result = [];
+        var centerX = frameWidth / 2;
+        var centerY = frameHeight / 2;
+        
+        var xStep = frameWidth / stepsCount / 2;
+        var yStep = frameHeight / stepsCount / 2;
+        if (shapeType == 'Diamond') {
+            xStep *= 2;
+            yStep *= 2;
+        }
+        
+        var x, y;
+        
+        for(var i = 0; i < stepsCount; i++) {
+            
+            x = xStep * i;
+            y = yStep * i;
+            
+            if (shapeType == 'ZoomOut') {
+                x += xStep;
+                y += yStep;
+            }
+            
+            if (shapeType == 'Plus')
+                result.push(`<polygon points="${0},${centerY - y} ${centerX - x},${centerY - y} ${centerX - x},${0} ${centerX + x},${0} ${centerX + x},${centerY - y} ${frameWidth},${centerY - y} ${frameWidth},${centerY + y} ${centerX + x},${centerY + y} ${centerX + x},${frameHeight} ${centerX - x},${frameHeight} ${centerX - x},${centerY + y} ${0},${centerY + y}"/>`);
+            else if (shapeType == 'Diamond')
+                result.push(`<polygon points="${centerX - x},${centerY} ${centerX},${centerY - y} ${centerX + x},${centerY} ${centerX},${centerY + y}"/>`);
+            else if (shapeType == 'ZoomIn')
+                result.push(`<polygon points="${0},${0} ${frameWidth},${0} ${frameWidth},${y} ${x},${y} ${x},${frameHeight - y} ${frameWidth - x},${frameHeight - y} ${frameWidth - x},${y} ${frameWidth},${y} ${frameWidth},${frameHeight} ${0},${frameHeight}"/>`);
+            else if (shapeType == 'ZoomOut')
+                result.push(`<polygon points="${centerX - x},${centerY - y} ${centerX + x},${centerY - y} ${centerX + x},${centerY + y} ${centerX - x},${centerY + y}"/>`);
+        }
+    
+        polygonsCache[shapeType] = result;
+    }
+    
+    return result;
+}
+
+function GenerateWheelSectors(wheelType, stepsCount) {
+        
+    var result = polygonsCache[wheelType];
+    if (!result) {
+        
+        result = [];
+        var angleStep = 360 / stepsCount;
+        var currentAngle = 0;
+        var radius = Math.max(frameWidth, frameHeight) + 10;
+        var centerX = frameWidth / 2;
+        var centerY = frameHeight / 2;
+        var angleFix = wheelType == 'WheelReverse' ? -2 : 2;
+        
+        var opts = {
+            cx: centerX,
+            cy: centerY,
+            radius: radius,
+            start_angle: angleFix ,
+            end_angle: wheelType == 'WheelReverse' ? -angleStep: angleStep
+        };
+        
+        var start, end, largeArcFlag;
+        
+        for (var i = 0; i < stepsCount && opts.end_angle + angleFix < 362; i++) {
+            
+            start = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.end_angle + angleFix);
+            end = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.start_angle - angleFix);
+            largeArcFlag = opts.end_angle - opts.start_angle <= 180 ? "0" : "1";
+            
+            var pathData = [
+                "M", start.x, start.y,
+                "A", opts.radius, opts.radius, 0, largeArcFlag, 0, end.x, end.y,
+                "L", opts.cx, opts.cy,
+                "Z"
+            ].join(" ");
+            
+            if (wheelType == 'WheelReverse') {
+                opts.start_angle -= angleStep;
+                opts.end_angle -= angleStep;
+            }
+            else {
+                opts.start_angle += angleStep;
+                opts.end_angle += angleStep;
+            }
+            
+            result.push('<path d="' + pathData + '"/>');
+        }
+        
+        if (wheelType == 'Wedge') {
+            var resultRearranged = [];
+            for (var i = 0; i < stepsCount / 2; i++) {
+                resultRearranged.push(result[i]);
+                resultRearranged.push(result[result.length - i]);
+            }
+            result = resultRearranged;
+        }
+        
+        polygonsCache[wheelType] = result;    
+    }
+    
+    return result;
+}
+
+function GenerateCircles(stepsCount) {
+    
+    var result = polygonsCache.Circles;
+    if (!result) {
+    
+        result = [];
+        var centerX = frameWidth / 2;
+        var centerY = frameHeight / 2;
+        
+        var minRadius = 1;
+        var maxRadius = Math.max(frameWidth, frameHeight) / 2 * 1.4142;
+        var radiusStep = (maxRadius - minRadius) / stepsCount;
+        var radius = minRadius;
+
+        
+        var opts = {
+            cx: centerX,
+            cy: centerY,
+            radius: radius,
+            start_angle: 0,
+            end_angle: 359.999
+        };
+        
+        for(var i = 0; i < stepsCount; i++) {
+            
+            start = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.end_angle);
+            end = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.start_angle);
+            largeArcFlag = opts.end_angle - opts.start_angle <= 180 ? "0" : "1";
+            
+            var pathData = [
+                "M", start.x, start.y,
+                "A", opts.radius, opts.radius, 0, largeArcFlag, 0, end.x, end.y,
+                "L", opts.cx, opts.cy,
+                "Z"
+            ].join(" ");
+            
+            opts.radius += radiusStep;
+            
+            result.push('<path d="' + pathData + '"/>');
+        }
+        
+        polygonsCache.Circles = result;
     }
     
     return result;

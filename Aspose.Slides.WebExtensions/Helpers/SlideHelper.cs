@@ -32,6 +32,9 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 case TransitionType.RandomBar:
                     result = ((IOrientationTransition)slide.SlideShowTransition.Value).Direction.ToString();
                     break;
+                case TransitionType.Zoom:
+                    result = ((IInOutTransition)slide.SlideShowTransition.Value).Direction.ToString();
+					break;
             }
 
             return result;
