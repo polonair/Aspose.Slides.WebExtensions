@@ -56,8 +56,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RazorTemplateEngine.cs" />
     <Compile Include="PresentationExtensions.cs" />
-    <Compile Include="ScriptOutputFile.cs" />
-    <Compile Include="ThumbnailOutputFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\common\autoshape.html">

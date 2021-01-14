@@ -23,6 +23,8 @@ namespace Aspose.Slides.WebExtensions.Helpers
             switch (slide.SlideShowTransition.Type)
             {
                 case TransitionType.Push:
+                case TransitionType.Cube:
+                case TransitionType.Box:
                     result = ((ISideDirectionTransition)slide.SlideShowTransition.Value).Direction.ToString();
                     break;
                 case TransitionType.Pull:
