@@ -68,8 +68,8 @@ function PlayTransition(slideId, prevSlideId) {
         Shape(slideId, prevSlideId, transitionType);
     } else if(transitionType === 'Zoom') {
         Shape(slideId, prevSlideId, transitionType + direction);
-    } else if(transitionType === 'Cube') {
-        Cube(slideId, prevSlideId);
+    } else if(transitionType === 'Cube' || transitionType === 'Box') {
+        CubeBox(slideId, prevSlideId, transitionType);
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -475,11 +475,13 @@ function Flash(slideId, prevSlideId) {
     timeline.play();
 }
 
-function Cube(slideId, prevSlideId) {
+function CubeBox(slideId, prevSlideId, transitionType) {
     
     var duration = GetDuration(slideId);
     var direction = $(slideId).data("transitionDirection");
     
+    $('#blackboard').show();
+    StackSlides(prevSlideId, '#blackboard');
     StackSlides(prevSlideId, slideId);
     $(slideId).show();
     
@@ -492,6 +494,7 @@ function Cube(slideId, prevSlideId) {
             $(slideId).css('transform', '');
             $(prevSlideId).css('transform', '');
             $(prevSlideId).hide();
+            $('#blackboard').hide();
             PlayTransitionEnd();
         }
     });
@@ -513,15 +516,32 @@ function Cube(slideId, prevSlideId) {
     var rotateXVal = 0;
     var oppositeFix = (direction == 'Right' || direction == 'Down') ? -1 : 1;
     
-    if (direction == 'Left' || direction == 'Right') {
-        translateXVal = oppositeFix * (frameWidth / 2 + 1000);
-        translateXValNew = translateXVal - oppositeFix * 240; // fix for better sides collation...
-        rotateYVal = oppositeFix * 82;
+    if (transitionType == 'Cube') {
+        if (direction == 'Left' || direction == 'Right') {
+            translateXVal = oppositeFix * (frameWidth / 2 + 1000);
+            translateXValNew = translateXVal - oppositeFix * 240; // fix for better sides collation...
+            rotateYVal = oppositeFix * 82;
+        }
+        else {
+            translateYVal = oppositeFix * (frameHeight / 2 + 1000);
+            translateYValNew = translateYVal - oppositeFix * 550; // fix for better sides collation...
+            rotateXVal = oppositeFix * (-85);
+        }
     }
     else {
-        translateYVal = oppositeFix * (frameHeight / 2 + 1000);
-        translateYValNew = translateYVal - oppositeFix * 550; // fix for better sides collation...
-        rotateXVal = oppositeFix * (-85);
+        perspectiveVal = 3000;
+        translateZVal = -1500;
+        
+        if (direction == 'Left' || direction == 'Right') {
+            translateXVal = oppositeFix * (frameWidth / 2 - 1500);
+            translateXValNew = translateXVal + oppositeFix * 240; // fix for better sides collation...
+            rotateYVal = oppositeFix * (-98);
+        }
+        else {
+            translateYVal = oppositeFix * (frameHeight / 2 - 1500);
+            translateYValNew = translateYVal + oppositeFix * 550; // fix for better sides collation...
+            rotateXVal = oppositeFix * (95);
+        }
     }
     
     $(prevSlideId).css('transform', 'perspective(' + perspectiveVal + 'px)');
