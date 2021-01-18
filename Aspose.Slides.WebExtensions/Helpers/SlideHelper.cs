@@ -37,6 +37,10 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 case TransitionType.Zoom:
                     result = ((IInOutTransition)slide.SlideShowTransition.Value).Direction.ToString();
 					break;
+                case TransitionType.Gallery:
+                case TransitionType.Flip:
+                    result = ((ILeftRightDirectionTransition)slide.SlideShowTransition.Value).Direction.ToString();
+                    break;
             }
 
             return result;

@@ -70,6 +70,10 @@ function PlayTransition(slideId, prevSlideId) {
         Shape(slideId, prevSlideId, transitionType + direction);
     } else if(transitionType === 'Cube' || transitionType === 'Box') {
         CubeBox(slideId, prevSlideId, transitionType);
+    } else if(transitionType === 'Gallery') {
+        Gallery(slideId, prevSlideId);
+    } else if(transitionType === 'Flip') {
+        Flip(slideId, prevSlideId);
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -514,18 +518,18 @@ function CubeBox(slideId, prevSlideId, transitionType) {
     var translateYVal = 0;
     var translateYValNew = 0;
     var rotateXVal = 0;
-    var oppositeFix = (direction == 'Right' || direction == 'Down') ? -1 : 1;
+    var oppositeDir = (direction == 'Right' || direction == 'Down') ? -1 : 1;
     
     if (transitionType == 'Cube') {
         if (direction == 'Left' || direction == 'Right') {
-            translateXVal = oppositeFix * (frameWidth / 2 + 1000);
-            translateXValNew = translateXVal - oppositeFix * 240; // fix for better sides collation...
-            rotateYVal = oppositeFix * 82;
+            translateXVal = oppositeDir * (frameWidth / 2 + 1000);
+            translateXValNew = translateXVal - oppositeDir * 240; // fix for better sides collation...
+            rotateYVal = oppositeDir * 82;
         }
         else {
-            translateYVal = oppositeFix * (frameHeight / 2 + 1000);
-            translateYValNew = translateYVal - oppositeFix * 550; // fix for better sides collation...
-            rotateXVal = oppositeFix * (-85);
+            translateYVal = oppositeDir * (frameHeight / 2 + 1000);
+            translateYValNew = translateYVal - oppositeDir * 550; // fix for better sides collation...
+            rotateXVal = oppositeDir * (-85);
         }
     }
     else {
@@ -533,14 +537,14 @@ function CubeBox(slideId, prevSlideId, transitionType) {
         translateZVal = -1500;
         
         if (direction == 'Left' || direction == 'Right') {
-            translateXVal = oppositeFix * (frameWidth / 2 - 1500);
-            translateXValNew = translateXVal + oppositeFix * 240; // fix for better sides collation...
-            rotateYVal = oppositeFix * (-98);
+            translateXVal = oppositeDir * (frameWidth / 2 - 1500);
+            translateXValNew = translateXVal + oppositeDir * 240; // fix for better sides collation...
+            rotateYVal = oppositeDir * (-98);
         }
         else {
-            translateYVal = oppositeFix * (frameHeight / 2 - 1500);
-            translateYValNew = translateYVal + oppositeFix * 550; // fix for better sides collation...
-            rotateXVal = oppositeFix * (95);
+            translateYVal = oppositeDir * (frameHeight / 2 - 1500);
+            translateYValNew = translateYVal + oppositeDir * 550; // fix for better sides collation...
+            rotateXVal = oppositeDir * (95);
         }
     }
     
@@ -567,6 +571,145 @@ function CubeBox(slideId, prevSlideId, transitionType) {
     
     timeline_old.play();
     timeline_new.play();
+}
+
+function Gallery(slideId, prevSlideId,) {
+    
+    var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    
+    $('#blackboard').show();
+    StackSlides(prevSlideId, '#blackboard');
+    StackSlides(prevSlideId, slideId);
+    $(slideId).show();
+    
+    var timeline_old = anime.timeline({
+        targets: prevSlideId,
+        autoplay: false,
+        easing: 'easeInOutCirc',
+        complete: function(anim) {
+            
+            $(slideId).css('transform', '');
+            $(prevSlideId).css('transform', '');
+            $(prevSlideId).hide();
+            $('#blackboard').hide();
+            PlayTransitionEnd();
+        }
+    });
+    
+    var timeline_new = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        easing: 'easeInOutCirc',
+    });
+    
+    
+    var perspectiveVal = 3500;
+    var translateZVal = -400;
+    
+    var oppositeDir = (direction == 'Right') ? -1 : 1;
+    var translateZValFix = 40;
+    
+    var translateXVal = oppositeDir * 100;
+    var translateXValNew = oppositeDir * (frameWidth + translateZValFix);
+    var rotateYVal = oppositeDir * 30;
+    
+    $(prevSlideId).css('transform', 'perspective(' + perspectiveVal + 'px)');
+    $(slideId).css('transform', 'perspective(' + perspectiveVal + 'px) translateX(' + translateXValNew + 'px) translateZ(' + translateZValFix + 'px) rotateY(' + (-rotateYVal) + 'deg)');
+    
+    timeline_old.add({
+        duration: duration / 3,
+        translateX: -translateXVal,
+        rotateY: -rotateYVal,
+        translateZ: translateZVal,
+    });
+    
+    timeline_old.add({
+        duration: duration / 3,
+        translateX: oppositeDir * (-frameWidth) * 1.5,
+        translateZ: translateZVal * 3.05,
+    });
+    
+    timeline_old.add({
+        duration: duration / 3,
+        translateX: oppositeDir * (-frameWidth),
+        rotateY: 0,
+        translateZ: 0,
+    });
+    
+    timeline_new.add({
+        duration: duration / 3, // empty action
+    });
+    
+    timeline_new.add({
+        duration: duration / 3,
+        translateX: translateXVal - oppositeDir * translateZValFix,
+        translateZ: translateZVal * 1.55,
+    });
+    
+    timeline_new.add({
+        duration: duration / 3,
+        translateX: 0,
+        rotateY: 0,
+        translateZ: 0,
+    });
+    
+    timeline_old.play();
+    timeline_new.play();
+}
+
+function Flip(slideId, prevSlideId,) {
+    
+    var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    
+    $('#blackboard').show();
+    StackSlides(prevSlideId, '#blackboard');
+    StackSlides(prevSlideId, slideId);
+    $(slideId).show();
+    
+    var timeline_old = anime.timeline({
+        targets: prevSlideId,
+        autoplay: false,
+        easing: 'linear',
+        complete: function(anim) {
+            timeline_new.play();
+        }
+    });
+    
+    var timeline_new = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        easing: 'linear',
+        complete: function(anim) {
+            
+            $(slideId).css('transform', '');
+            $(prevSlideId).css('transform', '');
+            $(prevSlideId).hide();
+            $('#blackboard').hide();
+            PlayTransitionEnd();
+        }
+    });
+    
+    
+    var perspectiveVal = 3500;
+    var oppositeDir = (direction == 'Left') ? -1 : 1;
+    var rotateYVal = oppositeDir * 90;
+    
+    $(prevSlideId).css('transform', 'perspective(' + perspectiveVal + 'px)');
+    $(slideId).css('transform', 'perspective(' + perspectiveVal + 'px) rotateY(' + (-rotateYVal) + 'deg)');
+    
+    timeline_old.add({
+        duration: duration / 2,
+        rotateY: rotateYVal,
+    });
+    
+    timeline_new.add({
+        duration: duration / 2,
+        rotateY: 0,
+    });
+
+    timeline_old.play();
 }
 
 function Dissolve(slideId, prevSlideId) {
