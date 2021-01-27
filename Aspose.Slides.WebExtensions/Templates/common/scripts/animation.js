@@ -48,14 +48,12 @@ function PlayTransition(slideId, prevSlideId) {
     //   slide is hidden
     if(transitionType === 'Fade') {
         Fade(slideId, prevSlideId); 
-    } else if(transitionType === 'Push') {
-        Push(slideId, prevSlideId);
+    } else if(transitionType === 'Push' || transitionType === 'Pan') {
+        PushPan(slideId, prevSlideId, transitionType);
     } else if(transitionType === 'Pull') {
         Pull(slideId, prevSlideId);
     } else if(transitionType === 'Cover') {
         Cover(slideId, prevSlideId);
-    } else if(transitionType === 'Wipe') {
-        Wipe(slideId, prevSlideId);
     } else if(transitionType === 'RandomBar') {
         RandomBar(slideId, prevSlideId);
     } else if(transitionType === 'Flash') {
@@ -68,12 +66,24 @@ function PlayTransition(slideId, prevSlideId) {
         Shape(slideId, prevSlideId, transitionType);
     } else if(transitionType === 'Zoom') {
         Shape(slideId, prevSlideId, transitionType + direction);
-    } else if(transitionType === 'Cube' || transitionType === 'Box') {
-        CubeBox(slideId, prevSlideId, transitionType);
-    } else if(transitionType === 'Gallery') {
-        Gallery(slideId, prevSlideId);
+    } else if(transitionType === 'Split') {
+        Split(slideId, prevSlideId);
+    } else if(transitionType === 'Wipe') {
+        Wipe(slideId, prevSlideId);
+    } else if(transitionType === 'Cube' || transitionType === 'Box' || transitionType === 'Rotate' || transitionType === 'Orbit') {
+        CubeBoxRotateOrbit(slideId, prevSlideId, transitionType);
+    } else if(transitionType === 'Gallery' || transitionType === 'Conveyor') {
+        GalleryConveyor(slideId, prevSlideId, transitionType);
     } else if(transitionType === 'Flip') {
         Flip(slideId, prevSlideId);
+    } else if(transitionType === 'Flythrough' || transitionType === 'Warp') {
+        FlythroughWarp(slideId, prevSlideId, transitionType);
+    } else if(transitionType === 'Switch') {
+        Switch(slideId, prevSlideId);
+    } else if(transitionType === 'Reveal') {
+        Reveal(slideId, prevSlideId);
+    } else if(transitionType === 'Ferris') {
+        Ferris(slideId, prevSlideId);
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -115,7 +125,7 @@ function Fade(slideId, prevSlideId) {
     });
 }
 
-function Push(slideId, prevSlideId) {    
+function PushPan(slideId, prevSlideId, transitionType) {
     
     var duration = GetDuration(slideId);
     var direction = $(slideId).data("transitionDirection");
@@ -142,49 +152,49 @@ function Push(slideId, prevSlideId) {
     }
     
     $(slideId).show();
-    StackSlides(prevSlideId, slideId);
+        
+    if (transitionType == 'Pan')
+        $(slideId).css('opacity', '0');
+    $(slideId).css('transform', 'translateX(' + translateX + 'px) translateY(' + translateY + 'px)');
+    StackSlides(slideId, prevSlideId);
     
-    anime({
-        targets: slideId,
-        duration: 10,
-        translateX: translateX,
-        translateY: translateY,
+    var timeline_old = anime.timeline({
+        targets: prevSlideId,
+        autoplay: false,
         easing: 'linear',
-        complete: function() {
+        complete: function(anim) {
             
-            StackSlides(slideId, prevSlideId);
-            
-            anime({
-                targets: slideId,  
-                translateX: 0,
-                translateY: 0,
-                duration: duration,
-                easing: 'linear',
-                complete: function() {
-                    $(prevSlideId).hide();
-                    PlayTransitionEnd();
-                } 
-            });
-            
-            anime({
-                targets: prevSlideId,  
-                translateX: -translateX,
-                translateY: -translateY,
-                duration: duration,
-                easing: 'linear',
-                complete: function() {
-                    
-                    anime({
-                        targets: prevSlideId,  
-                        translateX: 0,
-                        translateY: 0,
-                        duration: 10,
-                        easing: 'linear'
-                    });
-                }
-            });
+            $(slideId).css('transform', '');
+            $(slideId).css('opacity', '1');
+            $(prevSlideId).css('transform', '');
+            $(prevSlideId).css('opacity', '1');
+            $(prevSlideId).hide();
+            PlayTransitionEnd();
         }
     });
+    
+    var timeline_new = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        easing: 'linear',
+    });
+    
+    timeline_old.add({
+        duration: duration,
+        translateX: -translateX,
+        translateY: -translateY,
+        opacity: transitionType == 'Pan' ? 0 : 1,
+    });
+    
+    timeline_new.add({
+        duration: duration,
+        translateX: 0,
+        translateY: 0,
+        opacity: 1,
+    });
+    
+    timeline_old.play();
+    timeline_new.play();
 }
 
 function Pull(slideId, prevSlideId) {    
@@ -232,27 +242,26 @@ function Pull(slideId, prevSlideId) {
     $(slideId).show();
     StackSlides(prevSlideId, slideId);
     
-    anime({
-        targets: prevSlideId,  
-        translateX: translateX,
-        translateY: translateY,
-        duration: duration,
+    var timeline_old = anime.timeline({
+        targets: prevSlideId,
+        autoplay: false,
         easing: 'linear',
-        complete: function() {
+        complete: function(anim) {
             
-            anime({
-                targets: prevSlideId,
-                duration: 10,
-                translateX: 0,
-                translateY: 0,
-                easing: 'linear'
-            });
-        
+            $(prevSlideId).css('transform', '');
             StackSlides(slideId, prevSlideId);
             $(prevSlideId).hide();
             PlayTransitionEnd();
-        } 
+        }
     });
+    
+    timeline_old.add({
+        duration: duration,
+        translateX: translateX,
+        translateY: translateY,
+    });
+    
+    timeline_old.play();
 }
 
 function Cover(slideId, prevSlideId) {    
@@ -297,39 +306,32 @@ function Cover(slideId, prevSlideId) {
             break;
     }
     
-    $(slideId).show();
     StackSlides(prevSlideId, slideId);
+    $(slideId).show();
+    $(slideId).css('transform', 'translateX(' + translateX + 'px) translateY(' + translateY + 'px)');
+    StackSlides(slideId, prevSlideId);
     
-    anime({
+    var timeline_new = anime.timeline({
         targets: slideId,
-        duration: 10,
-        translateX: translateX,
-        translateY: translateY,
+        autoplay: false,
         easing: 'linear',
-        complete: function() {
+        complete: function(anim) {
             
+            $(slideId).css('transform', '');
             StackSlides(slideId, prevSlideId);
-            
-            anime({
-                targets: slideId,  
-                translateX: 0,
-                translateY: 0,
-                duration: duration,
-                easing: 'linear',
-                complete: function() {
-                      
-                    $(prevSlideId).hide();
-                    PlayTransitionEnd();
-                } 
-            });
+            $(prevSlideId).hide();
+            PlayTransitionEnd();
         }
     });
+    
+    timeline_new.add({
+        duration: duration,
+        translateX: 0,
+        translateY: 0,
+    });
+    
+    timeline_new.play();
 }
-
-function Wipe(slideId, prevSlideId) {
-
-}
-
 
 function RandomBar(slideId, prevSlideId) {
 
@@ -479,13 +481,15 @@ function Flash(slideId, prevSlideId) {
     timeline.play();
 }
 
-function CubeBox(slideId, prevSlideId, transitionType) {
+function CubeBoxRotateOrbit(slideId, prevSlideId, transitionType) {
     
     var duration = GetDuration(slideId);
     var direction = $(slideId).data("transitionDirection");
     
-    $('#blackboard').show();
-    StackSlides(prevSlideId, '#blackboard');
+    if (transitionType == 'Cube' || transitionType == 'Box') {
+        $('#blackboard').show();
+        StackSlides(prevSlideId, '#blackboard');
+    }
     StackSlides(prevSlideId, slideId);
     $(slideId).show();
     
@@ -520,30 +524,31 @@ function CubeBox(slideId, prevSlideId, transitionType) {
     var rotateXVal = 0;
     var oppositeDir = (direction == 'Right' || direction == 'Down') ? -1 : 1;
     
-    if (transitionType == 'Cube') {
+    if (transitionType == 'Cube' || transitionType == 'Rotate') {
         if (direction == 'Left' || direction == 'Right') {
             translateXVal = oppositeDir * (frameWidth / 2 + 1000);
-            translateXValNew = translateXVal - oppositeDir * 240; // fix for better sides collation...
+            translateXValNew = translateXVal - oppositeDir * 250;
             rotateYVal = oppositeDir * 82;
         }
         else {
             translateYVal = oppositeDir * (frameHeight / 2 + 1000);
-            translateYValNew = translateYVal - oppositeDir * 550; // fix for better sides collation...
+            translateYValNew = translateYVal - oppositeDir * 550;
             rotateXVal = oppositeDir * (-85);
         }
     }
     else {
         perspectiveVal = 3000;
-        translateZVal = -1500;
+        translateZVal = -2050;
         
         if (direction == 'Left' || direction == 'Right') {
             translateXVal = oppositeDir * (frameWidth / 2 - 1500);
-            translateXValNew = translateXVal + oppositeDir * 240; // fix for better sides collation...
+            translateXValNew = translateXVal + oppositeDir * 250;
             rotateYVal = oppositeDir * (-98);
         }
         else {
+            translateZVal = -1900;
             translateYVal = oppositeDir * (frameHeight / 2 - 1500);
-            translateYValNew = translateYVal + oppositeDir * 550; // fix for better sides collation...
+            translateYValNew = translateYVal + oppositeDir * 550;
             rotateXVal = oppositeDir * (95);
         }
     }
@@ -573,13 +578,15 @@ function CubeBox(slideId, prevSlideId, transitionType) {
     timeline_new.play();
 }
 
-function Gallery(slideId, prevSlideId,) {
+function GalleryConveyor(slideId, prevSlideId, transitionType) {
     
     var duration = GetDuration(slideId);
     var direction = $(slideId).data("transitionDirection");
     
-    $('#blackboard').show();
-    StackSlides(prevSlideId, '#blackboard');
+    if (transitionType == 'Gallery') {
+        $('#blackboard').show();
+        StackSlides(prevSlideId, '#blackboard');
+    }
     StackSlides(prevSlideId, slideId);
     $(slideId).show();
     
@@ -772,6 +779,284 @@ function Dissolve(slideId, prevSlideId) {
     timeline.play();
 }
 
+function FlythroughWarp(slideId, prevSlideId, transitionType) {
+    
+    var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    var hasBounce = $(slideId).data("transitionExtra") == 'HasBounce';
+    var animeDirection = direction == 'In' ? 'normal' : 'reverse';
+    
+    if (transitionType == 'Warp' && direction == 'In') {
+        $('#blackboard').show();
+        StackSlides(prevSlideId, '#blackboard');
+    }
+    if (direction == 'In')
+        StackSlides(prevSlideId, slideId);
+    else
+        StackSlides(slideId, prevSlideId);
+    
+    $(slideId).show();
+    
+    var timeline_outside = anime.timeline({
+        targets: direction == 'In' ? prevSlideId : slideId,
+        autoplay: false,
+        easing: (direction == 'Out' && hasBounce) ? 'easeInBounce' : 'easeInOutExpo',
+        direction: animeDirection,
+        complete: function(anim) {
+            
+            $(slideId).css('transform', '');
+            $(slideId).css('opacity', '1');
+            $(prevSlideId).css('transform', '');
+            $(prevSlideId).css('opacity', '1');
+            $(prevSlideId).hide();
+            $('#blackboard').hide();
+            PlayTransitionEnd();
+        }
+    });
+    
+    var timeline_inside = anime.timeline({
+        targets: direction == 'In' ? slideId: prevSlideId,
+        autoplay: false,
+        direction: animeDirection,
+        easing: (direction == 'In' && hasBounce) ? 'easeOutBounce' : 'easeInOutExpo',
+    });
+    
+    timeline_outside.add({
+        duration: duration,
+        scale: [1, 4],
+        opacity: [1, 0],
+    });    
+        
+    timeline_inside.add({
+        duration: duration,
+        scale: [0.5, 1],
+    });
+    
+    timeline_outside.play();
+    timeline_inside.play();
+}
+
+function Switch(slideId, prevSlideId) {
+    
+    var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    
+    $('#blackboard').show();
+    StackSlides(prevSlideId, '#blackboard');
+    StackSlides(prevSlideId, slideId);
+    
+    var timeline_old = anime.timeline({
+        targets: prevSlideId,
+        autoplay: false,
+        easing: 'linear',
+        complete: function(anim) {
+            
+            $(slideId).css('transform', '');
+            $(prevSlideId).css('transform', '');
+            $(prevSlideId).hide();
+            $('#blackboard').hide();
+            PlayTransitionEnd();
+        }
+    });
+    
+    var timeline_new = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        easing: 'linear',
+    });
+    
+    
+    var perspectiveVal = 3000;
+    var translateZVal = -800;
+    
+    var oppositeDir = (direction == 'Right') ? -1 : 1;
+    
+    var translateXVal = oppositeDir * 100;
+    var translateXValNew = translateXVal + oppositeDir * (-frameWidth / 2);
+    var rotateYVal = oppositeDir * 40;
+    
+    $(prevSlideId).css('transform', 'perspective(' + perspectiveVal + 'px)');
+    $(slideId).css('transform', 'perspective(' + perspectiveVal + 'px) translateX(' + (-translateXValNew / 2) + 'px) translateZ(' + (translateZVal / 2) + 'px) rotateY(' + (-rotateYVal / 2) + 'deg)');
+    $(slideId).show();
+    
+    timeline_old.add({
+        duration: duration / 2,
+        translateX: [0, translateXVal],
+        rotateY: [0, rotateYVal],
+        translateZ: [0, translateZVal],
+        complete: function(anim) {
+            
+            StackSlides(slideId, prevSlideId);
+        }
+    });
+    
+    timeline_old.add({
+        duration: duration / 2,
+        translateX: [translateXVal, translateXVal / 2],
+        rotateY: [rotateYVal, rotateYVal / 2],
+        translateZ: [translateZVal, translateZVal / 2],
+    });
+    
+    
+    timeline_new.add({
+        duration: duration / 2,
+        translateX: [-translateXValNew / 2, -translateXValNew],
+        rotateY: [-rotateYVal / 2, -rotateYVal],
+        translateZ: [translateZVal / 2, translateZVal],
+    });
+    
+    
+    timeline_new.add({
+        duration: duration / 2,
+        translateX: [-translateXValNew, 0],
+        rotateY: [-rotateYVal, 0],
+        translateZ: [translateZVal, 0]
+    });
+    
+    timeline_old.play();
+    timeline_new.play();
+}
+
+function Reveal(slideId, prevSlideId) {
+    
+    var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    var throughBlack = $(slideId).data("transitionExtra") == 'ThroughBlack';
+    
+    if (throughBlack) {
+        $('#blackboard').show();
+        StackSlides(prevSlideId, '#blackboard');
+    }
+    StackSlides(prevSlideId, slideId);
+    
+    var timeline_old = anime.timeline({
+        targets: prevSlideId,
+        autoplay: false,
+        easing: 'linear',
+    });
+    
+    var timeline_new = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        easing: 'linear',
+        complete: function(anim) {
+            $(slideId).css('transform', '');
+            $(prevSlideId).css('opacity', '1');
+            $(prevSlideId).css('transform', '');
+            $(prevSlideId).hide();
+            $('#blackboard').hide();
+            PlayTransitionEnd();
+        }
+    });
+    
+    
+    var perspectiveVal = 3000;
+    var translateZVal = 100;
+    var oppositeDir = (direction == 'Right') ? -1 : 1;
+    
+    var translateXVal = oppositeDir * -40;
+    var translateXValNew = 10;
+    
+    
+    $(prevSlideId).css('transform', 'perspective(' + perspectiveVal + 'px)');
+    $(slideId).css('transform', 'perspective(' + perspectiveVal + 'px) translateX(' + translateXValNew + 'px) translateZ(' + translateZVal + 'px)');
+    $(slideId).css('opacity', '0');
+    $(slideId).show();
+    
+    
+    timeline_old.add({
+        duration: duration / 2,
+        translateX: [0, translateXVal],
+        translateZ: [0, translateZVal * 2],
+        opacity: [1, 0],
+        complete: function(anim) {
+            timeline_new.play();
+        }
+    });
+    
+    
+    timeline_new.add({
+        duration: duration / 2,
+        opacity: [0, 1],
+        translateX: [translateXValNew, 0],
+        translateZ: [translateZVal, 0],
+    });
+    
+    timeline_old.play();
+}
+
+function Ferris(slideId, prevSlideId) {
+    
+    var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+
+    StackSlides(prevSlideId, slideId);
+    
+    var timeline_old = anime.timeline({
+        targets: prevSlideId,
+        autoplay: false,
+        easing: 'linear',
+    });
+    
+    var timeline_new = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        easing: 'linear',
+        complete: function(anim) {
+            $(slideId).css('transform', '');
+            $(prevSlideId).css('opacity', '1');
+            $(prevSlideId).css('transform', '');
+            $(prevSlideId).hide();
+            $('#blackboard').hide();
+            PlayTransitionEnd();
+        }
+    });
+    
+    
+    var perspectiveVal = 3000;
+    var translateZVal = -500;
+    var oppositeDir = (direction == 'Right') ? -1 : 1;
+    
+    var translateXVal = oppositeDir * -150;
+    var translateXValNew = 10;
+    var translateYVal = 600;
+    var rotateYVal = oppositeDir * 20;
+    var rotateZVal = oppositeDir * 10;
+    
+    
+    $(prevSlideId).css('transform', 'perspective(' + perspectiveVal + 'px)');
+    $(slideId).css('transform', 'perspective(' + perspectiveVal + 'px) translateX(' + translateXVal + 'px) translateY(' + (-translateYVal) + 'px) translateZ(' + translateZVal + 'px) rotateY(' + (-rotateYVal) + 'deg) rotateZ(' + (-rotateZVal) + 'deg)');
+    $(slideId).css('opacity', '0');
+    $(slideId).show();
+    
+    
+    timeline_old.add({
+        duration: duration / 2,
+        translateX: [0, translateXVal],
+        translateY: [0, translateYVal],
+        translateZ: [0, translateZVal],
+        rotateY: [0, rotateYVal],
+        rotateZ: [0, rotateZVal],
+        opacity: [1, 0],
+        complete: function(anim) {
+            timeline_new.play();
+        }
+    });
+    
+    
+    timeline_new.add({
+        duration: duration / 2,
+        translateX: [translateXVal, 0],
+        translateY: [-translateYVal, 0],
+        translateZ: [translateZVal, 0],
+        rotateY: [-rotateYVal, 0],
+        rotateZ: [-rotateZVal, 0],
+        opacity: [0, 1],
+    });
+    
+    timeline_old.play();
+}
+
 function Wheel(slideId, prevSlideId, wheelType) {
     
     var stepsCount = 150;
@@ -789,6 +1074,31 @@ function Shape(slideId, prevSlideId, shapeType) {
         polys = GenerateCircles(stepsCount);
     else
         polys = GenerateShapePolygons(stepsCount, shapeType);
+    
+    AnimatePolygons(slideId, prevSlideId, polys);
+}
+
+function Split(slideId, prevSlideId) {
+    
+    var stepsCount = 150;
+    
+    var out = $(slideId).data("transitionDirection") == 'Out';
+    var horizontal = $(slideId).data("transitionExtra") == 'Horizontal';
+    
+    var polys = [];
+    polys = GenerateSplitPolygons(stepsCount, horizontal, out);
+    
+    AnimatePolygons(slideId, prevSlideId, polys);
+}
+
+function Wipe(slideId, prevSlideId) {
+
+    var stepsCount = 150;
+    
+    var direction = $(slideId).data("transitionDirection");
+    
+    var polys = [];
+    polys = GenerateWipePolygons(stepsCount, direction);
     
     AnimatePolygons(slideId, prevSlideId, polys);
 }
@@ -969,6 +1279,81 @@ function GenerateShapePolygons(stepsCount, shapeType) {
         }
     
         polygonsCache[shapeType] = result;
+    }
+    
+    return result;
+}
+
+function GenerateSplitPolygons(stepsCount, horizontal, out) {
+    
+    var cacheKey = 'split' + (horizontal ? 'Hor' : 'Vert') + (out ? 'Out' : 'In');
+    var result = polygonsCache[cacheKey];
+    if (!result) {
+        
+        result = [];
+        var centerX = frameWidth / 2;
+        var centerY = frameHeight / 2;
+        
+        var xStep = frameWidth / stepsCount / 2;
+        var yStep = frameHeight / stepsCount / 2;
+        
+        var x, y;
+        
+        for(var i = 0; i < stepsCount; i++) {
+            
+            x = xStep * i;
+            y = yStep * i;
+            
+            if (horizontal) {
+                if (out)
+                    result.push(`<polygon points="${0},${centerY - y} ${frameWidth},${centerY - y} ${frameWidth},${centerY + y} ${0},${centerY + y}"/>`);
+                else
+                    result.push(`<polygon points="${0},${0} ${frameWidth},${0} ${frameWidth},${y} ${0},${y} ${0},${frameHeight - y} ${frameWidth},${frameHeight - y} ${frameWidth},${y} ${frameWidth},${y} ${frameWidth},${frameHeight} ${0},${frameHeight}"/>`);
+            }
+            else {
+                if (out)
+                    result.push(`<polygon points="${centerX - x},${0} ${centerX + x},${0} ${centerX + x},${frameHeight} ${centerX - x},${frameHeight}"/>`);
+                else
+                    result.push(`<polygon points="${0},${0} ${0},${frameHeight} ${x},${frameHeight} ${x},${0} ${frameWidth - x},${0} ${frameWidth - x},${frameHeight} ${frameWidth},${frameHeight} ${frameWidth},${0} ${frameWidth - x},${0} ${0},${0}"/>`);
+            }
+        }
+    
+        polygonsCache[cacheKey] = result;
+    }
+    
+    return result;
+}
+
+function GenerateWipePolygons(stepsCount, direction) {
+    
+    var cacheKey = 'wipe' + direction;
+    var result = polygonsCache[cacheKey];
+    var horizontal = direction == 'Up' || direction == 'Down';
+    
+    if (!result) {
+        
+        result = [];
+        
+        var xStep = frameWidth / stepsCount;
+        var yStep = frameHeight / stepsCount;
+        var oppositeDir = (direction == 'Left' || direction == 'Up') ? -1 : 1;
+        
+        var x = direction == 'Left' ? frameWidth : -xStep;
+        var y = direction == 'Up' ? frameHeight : -yStep;
+        var eps = 0.8;
+        
+        for(var i = 0; i < stepsCount; i++) {
+            
+            x += oppositeDir * xStep;
+            y += oppositeDir * yStep;
+            
+            if (horizontal)
+                result.push(`<polygon points="${0},${y} ${frameWidth},${y} ${frameWidth},${y + yStep + eps} ${0},${y + yStep + eps}"/>`);
+            else
+                result.push(`<polygon points="${x},${0} ${x + xStep + eps},${0} ${x + xStep + eps},${frameHeight} ${x},${frameHeight}"/>`);
+        }
+    
+        polygonsCache[cacheKey] = result;
     }
     
     return result;

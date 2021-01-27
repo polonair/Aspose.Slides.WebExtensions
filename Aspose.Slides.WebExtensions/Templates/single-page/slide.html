@@ -54,6 +54,7 @@
      data-transition-type="@contextObject.SlideShowTransition.Type"
      data-transition-speed="@contextObject.SlideShowTransition.Speed"
      data-transition-direction="@SlideHelper.GetSlideTransitionDirection(contextObject)"
+     data-transition-extra="@SlideHelper.GetSlideTransitionExtraData(contextObject)"
      style="display: @(animateTransitions ? "none" : "block");">
     
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)

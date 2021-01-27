@@ -134,7 +134,7 @@ namespace Aspose.Slides.WebExtensions
 
             document.Input.AddTemplate<Presentation>("styles-pres", Path.Combine(templatesPath, @"styles\pres.css"));
             document.Input.AddTemplate<MasterSlide>("styles-master", Path.Combine(templatesPath, @"styles\master.css"));
-            document.Input.AddTemplate<Presentation>("scripts-main", Path.Combine(templatesPath, @"scripts\main.js"));
+            document.Input.AddTemplate<Presentation>("scripts-animation", Path.Combine(templatesPath, @"scripts\animation.js"));
 
             document.Input.AddTemplate<Presentation>("index", Path.Combine(templatesPath, "index.html"));
             document.Input.AddTemplate<Slide>("slide", Path.Combine(templatesPath, "slide.html"));
@@ -153,7 +153,7 @@ namespace Aspose.Slides.WebExtensions
             document.Output.Add(Path.Combine(outputPath, "index.html"), "index", pres);
             document.Output.Add(Path.Combine(stylesPath, "pres.css"), "styles-pres", pres);
             document.Output.Add(Path.Combine(stylesPath, "master.css"), "styles-master", (MasterSlide)pres.Masters[0]);
-            document.Output.Add(Path.Combine(scriptsPath, "main.js"), "scripts-main", pres);
+            document.Output.Add(Path.Combine(scriptsPath, "animation.js"), "scripts-animation", pres);
 
             document.AddEmbeddedFontsOutput(document.Global.Get<string>("fontsPath"), pres);
             document.AddVideoOutput(document.Global.Get<string>("mediaPath"), pres);
