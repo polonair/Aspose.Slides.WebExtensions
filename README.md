@@ -1,5 +1,11 @@
 # Aspose.Slides.WebExtensions – new Aspose.Slides HTML Export System
 
+* [Introduction](#introduction)
+* [Main Components](#main-components)
+* [PresentationExtensions Methods](#presentationextensions-methods)
+* [Basic usage example](#basic-usage-example)
+* [JavaScript/CSS Animated Slide PowerPoint Transitions Support](#javascriptcss-animated-slide-powerpoint-transitions-support)
+
 ## Introduction
 
 Since the beginning of Aspose.Slides development, HTML export was one of the features provided by the API. Implementation of this feature was hide inside the library though. Export output was primarily in vector (SVG). Since there was no HTML markup and DOM, it is not possible to apply custom CSS styles and manipulate a document elements (e.g. via JavaScript). Also, that created a lag between HTML output adjustment/fix request and its releasing as well as certain issues caused by different browsers and HTML variability and changeable nature. And with growing amount of Aspose.Slides users those problems grew too.
@@ -320,3 +326,42 @@ Required ImageHelper changes contain adding new method AddWatermark and adjustin
 ### Case 3. Support of old IE versions or new features of HTML5.
 
 This case requires specific changes to templates and helpers, and go beyond the scope of this introduction. But the main benefit worth mentioning once again that developers can implement these changes by themselves, faster and more complete using new Aspose.Slides.Webextensions project rather than old presentation saving-to-HTML way.
+
+## JavaScript/CSS Animated Slide PowerPoint Transitions Support
+
+* Subtle
+  * Fade
+  * Push
+  * Wipe
+  * Split
+  * Reveal  
+  * Random Bars
+  * Cover
+  * Flash
+
+* Exciting
+  * Dissolve
+  * Switch
+  * Flip
+  * Gallery
+  * Box
+  * Zoom
+  
+* Dynamic Content
+  * Pan
+  * Ferris Wheel
+  * Conveyor
+  * Rotate
+  * Orbit
+  * Fly Through
+  
+* Other
+  * Pull
+  * Wheel
+  * WheelReverse
+  * Wedge
+  * Circle
+  * Diamond
+  * Plus
+  * Cube
+  * Warp
