@@ -1,0 +1,5 @@
+﻿.custom-table {
+    border: 1px solid black;
+}
+.custom-table tr:nth-child(even) {background: #CCC}
+.custom-table tr:nth-child(odd) {background: #ffb380}

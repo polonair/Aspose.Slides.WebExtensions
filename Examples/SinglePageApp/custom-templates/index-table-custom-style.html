@@ -1,0 +1,53 @@
+﻿@model TemplateContext<Presentation>    
+        
+@{    
+    Presentation contextObject = Model.Object;    
+}    
+    
+<!DOCTYPE html>    
+    
+<html     
+    xmlns="http://www.w3.org/1999/xhtml"    
+    xmlns:svg="http://www.w3.org/2000/svg"    
+    xmlns:xlink="http://www.w3.org/1999/xlink">    
+<head>    
+    <meta charset="utf-8" />    
+    <title>@contextObject.DocumentProperties.Title</title>    
+    <link rel="stylesheet" type="text/css" href="pres.css" />    
+    <link rel="stylesheet" type="text/css" href="master.css" />
+    <link rel="stylesheet" type="text/css" href="table-custom-style.css" />
+    <script src="jquery.js"></script>    
+    <script src="anime.js"></script>    
+    <script src="animation.js"></script>    
+</head>    
+<body>    
+    <div class="bg">
+        <div id="flash" class="slide" style="background-color: #FFFFFF; outline: 0; display: none;">
+        </div>
+        <div id="blackboard" class="slide" style="background-color: #000000; outline: 0; display: none;">
+        </div>
+        
+        @foreach (Slide slide in contextObject.Slides)    
+        {    
+            if (slide.Hidden)    
+            {    
+                continue;    
+            }    
+                
+            @Include("slide", Model.SubModel(slide))    
+        }
+    </div>    
+        
+    <button class="navigation" id="PrevSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 - 100 - 5)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Prev Slide</button>    
+    <button class="navigation" id="NextSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 + 5)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Next Slide</button>    
+        
+    <div id="svgdiv">
+        <svg width="0" height="0" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+            <defs>
+                <clipPath id="effectsclip" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height">
+                </clipPath>
+            </defs>
+        </svg>
+    </div>
+</body>
+</html>
