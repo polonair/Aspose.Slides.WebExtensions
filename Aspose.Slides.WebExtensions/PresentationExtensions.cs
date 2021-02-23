@@ -127,7 +127,7 @@ namespace Aspose.Slides.WebExtensions
                 options.OutputSaver = new FileOutputSaver();
         }
 
-        private static void AddCommonInputOutput(this WebDocument document, WebDocumentOptions options, string templatesPath, string outputPath, Presentation pres)
+        public static void AddCommonInputOutput(this WebDocument document, WebDocumentOptions options, string templatesPath, string outputPath, Presentation pres)
         {
             string stylesPath = document.Global.Get<string>("stylesPath");
             string scriptsPath = document.Global.Get<string>("scriptsPath");
@@ -172,7 +172,7 @@ namespace Aspose.Slides.WebExtensions
             }
         }
 
-        private static void AddMultiPageInputTemplates(this WebDocument document, string templatesPath)
+        public static void AddMultiPageInputTemplates(this WebDocument document, string templatesPath)
         {
             document.Input.AddTemplate<Presentation>("menu", Path.Combine(templatesPath, "menu.html"));
         }
@@ -210,7 +210,7 @@ namespace Aspose.Slides.WebExtensions
             }
         }
 
-        private static void AddThumbnailsOutput(this WebDocument document, string outputPath, Presentation pres)
+        public static void AddThumbnailsOutput(this WebDocument document, string outputPath, Presentation pres)
         {
             for (int index = 1; index <= pres.Slides.Count; index++)
             {
@@ -271,7 +271,7 @@ namespace Aspose.Slides.WebExtensions
             }
         }
 
-        private static void AddEmbeddedFontsOutput(this WebDocument document, string outFontsFolder, Presentation pres)
+        public static void AddEmbeddedFontsOutput(this WebDocument document, string outFontsFolder, Presentation pres)
         {
             IFontData[] embeddedFonts = pres.FontsManager.GetEmbeddedFonts();
 
@@ -288,7 +288,7 @@ namespace Aspose.Slides.WebExtensions
             }
         }
 
-        private static void AddVideoOutput(this WebDocument document, string outputPath, Presentation pres)
+        public static void AddVideoOutput(this WebDocument document, string outputPath, Presentation pres)
         {
             List<VideoFrame> videoFrames = ShapeHelper.GetListOfShapes<VideoFrame>(pres);
 
@@ -303,7 +303,7 @@ namespace Aspose.Slides.WebExtensions
             }
         }
 
-        private static void AddScriptsOutput(this WebDocument document, string outputPath, string inputFile, string scriptName)
+        public static void AddScriptsOutput(this WebDocument document, string outputPath, string inputFile, string scriptName)
         {
             string scriptContent;
             using (var fs = File.Open(inputFile, FileMode.Open))

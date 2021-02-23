@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" type="text/css" href="hello-world.css" />
+</head>
+<body>
+    @foreach (Slide slide in Model.Object.Slides)    
+    {
+        foreach (Shape shape in slide.Shapes)
+        {
+            if(shape is AutoShape)
+            {
+                ITextFrame textFrame = ((AutoShape)shape).TextFrame;
+                <div class="text">@textFrame.Text</div>
+            }
+        }
+    }
+</body>
+</html>
