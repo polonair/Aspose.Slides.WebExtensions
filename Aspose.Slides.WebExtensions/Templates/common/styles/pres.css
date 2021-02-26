@@ -12,9 +12,13 @@
         </text>
     }
       
-      var animateTransitions = Model.Global.Get<bool>("animateTransitions");	  
-	  var margin = Model.Global.Get<int>("slideMargin");
+      var fixSlides = Model.Global.Get<bool>("animateTransitions") || Model.Global.Get<bool>("navigationEnabled");      
+      var margin = Model.Global.Get<int>("slideMargin");
 }
+
+    body, html {
+        height: 100%;
+    }
 
     body {
         margin: 0 !important;
@@ -23,10 +27,10 @@
     }
 
     .bg {
-            @(animateTransitions ? "width: " + (Model.Object.SlideSize.Size.Width + margin * 2) + "px;" : "")
-            @(animateTransitions ? "height: " + (Model.Object.SlideSize.Size.Height + margin * 2) + "px;" : "")
-            @(animateTransitions ? "overflow: hidden;" : "")
-            @(animateTransitions ? "position: fixed;" : "")
+            @(fixSlides ? "width: " + (Model.Object.SlideSize.Size.Width + margin * 2) + "px;" : "")
+            @(fixSlides ? "height: " + (Model.Object.SlideSize.Size.Height + margin * 2) + "px;" : "")
+            @(fixSlides ? "overflow: hidden;" : "")
+            @(fixSlides ? "position: fixed;" : "")
     }
     
     .slide {
@@ -35,7 +39,22 @@
         outline: 1px solid #c6c6c6;
         overflow: hidden;
         margin: @(margin + "px");
-        @(animateTransitions ? "position: absolute;" : "")
+        @(fixSlides ? "position: absolute;" : "")
+    }
+    
+    .navigationArea {
+        float: left; 
+        width: 240px; 
+        height: 100%; 
+        overflow-y: auto;
+    }
+    
+    .slideThumb {
+        margin: 10px; 
+        margin-bottom: 5px;
+        padding: 5px;
+        padding-bottom: 1px;
+        cursor: pointer;
     }
 
     .slide-content {
@@ -64,7 +83,7 @@
         margin-top: @(Model.Global.Get<int>("slideMargin") + "px");
     }
       
-    .navigation {
+    .navigationButton {
             position: absolute;
             width: 100px;
             height: 50px;

@@ -52,6 +52,7 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("slideMargin", 10);
             document.Global.Put("embedImages", options.EmbedImages);
             document.Global.Put("animateTransitions", options.AnimateTransitions);
+            document.Global.Put("navigationEnabled", false);
             document.Global.Put("imagesPath", imagesPath);
             document.Global.Put("fontsPath", fontsPath);
             document.Global.Put("mediaPath", mediaPath);
@@ -73,6 +74,10 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("scriptsPath", outputPath);
 
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
+            
+            if (!options.EmbedImages)
+                document.AddThumbnailsOutput(document.Global.Get<string>("imagesPath"), pres);
+
             return document;
         }
 
@@ -88,8 +93,6 @@ namespace Aspose.Slides.WebExtensions
 
             SetGlobals(document, options, outputPath);
 
-            document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
-
             string slidesPath = Path.Combine(outputPath, "slides");
             string stylesPath = Path.Combine(outputPath, "styles");
             string scriptsPath = Path.Combine(outputPath, "scripts");
@@ -97,14 +100,14 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("slidesPath", slidesPath);
             document.Global.Put("stylesPath", stylesPath);
             document.Global.Put("scriptsPath", scriptsPath);
+            
+            document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
 
             document.AddMultiPageInputTemplates(templatesPath);
             document.AddMultiPageOutputFiles(slidesPath, pres);
 
             if (!options.EmbedImages)
-            {
                 document.AddThumbnailsOutput(document.Global.Get<string>("imagesPath"), pres);
-            }
 
             return document;
         }
@@ -135,6 +138,7 @@ namespace Aspose.Slides.WebExtensions
             document.Input.AddTemplate<Presentation>("styles-pres", Path.Combine(templatesPath, @"styles\pres.css"));
             document.Input.AddTemplate<MasterSlide>("styles-master", Path.Combine(templatesPath, @"styles\master.css"));
             document.Input.AddTemplate<Presentation>("scripts-animation", Path.Combine(templatesPath, @"scripts\animation.js"));
+            document.Input.AddTemplate<Presentation>("scripts-navigation", Path.Combine(templatesPath, @"scripts\navigation.js"));
 
             document.Input.AddTemplate<Presentation>("index", Path.Combine(templatesPath, "index.html"));
             document.Input.AddTemplate<Slide>("slide", Path.Combine(templatesPath, "slide.html"));
@@ -154,6 +158,7 @@ namespace Aspose.Slides.WebExtensions
             document.Output.Add(Path.Combine(stylesPath, "pres.css"), "styles-pres", pres);
             document.Output.Add(Path.Combine(stylesPath, "master.css"), "styles-master", (MasterSlide)pres.Masters[0]);
             document.Output.Add(Path.Combine(scriptsPath, "animation.js"), "scripts-animation", pres);
+            document.Output.Add(Path.Combine(scriptsPath, "navigation.js"), "scripts-navigation", pres);
 
             document.AddEmbeddedFontsOutput(document.Global.Get<string>("fontsPath"), pres);
             document.AddVideoOutput(document.Global.Get<string>("mediaPath"), pres);

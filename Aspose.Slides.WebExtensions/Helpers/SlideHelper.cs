@@ -58,6 +58,9 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 case TransitionType.Ferris:
                     result = ((ILeftRightDirectionTransition)slide.SlideShowTransition.Value).Direction.ToString();
                     break;
+                case TransitionType.Comb:
+                    result = ((IOrientationTransition)slide.SlideShowTransition.Value).Direction.ToString();
+                    break;
             }
 
             return result;

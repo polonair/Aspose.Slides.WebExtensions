@@ -4,7 +4,6 @@
     Presentation contextObject = Model.Object;
     var animateTransitions = Model.Global.Get<bool>("animateTransitions").ToString().ToLower();
     var pagesCount = contextObject.Slides.Count;
-    var imagesPath = Model.Global.Get<string>("imagesPath");
     var slideWidth = contextObject.SlideSize.Size.Width;
     var slideHeight = contextObject.SlideSize.Size.Height;
 }
@@ -84,6 +83,10 @@ function PlayTransition(slideId, prevSlideId) {
         Reveal(slideId, prevSlideId);
     } else if(transitionType === 'Ferris') {
         Ferris(slideId, prevSlideId);
+    } else if(transitionType === 'Honeycomb') {
+        Honeycomb(slideId, prevSlideId);
+    } else if(transitionType === 'Comb') {
+        Comb(slideId, prevSlideId);
     } else {
         $(prevSlideId).hide();
         $(slideId).show();
@@ -93,7 +96,9 @@ function PlayTransition(slideId, prevSlideId) {
 
 function PlayTransitionBegin() {
     $("#PrevSlide").prop('disabled',true);
-    $("#NextSlide").prop('disabled',true);    
+    $("#NextSlide").prop('disabled',true);
+    
+    ChangeThumbSelection(currentVisiblePage);
 }
 
 function PlayTransitionEnd() {
@@ -103,7 +108,7 @@ function PlayTransitionEnd() {
     
     if(currentVisiblePage != maxVisiblePage) {
         $("#NextSlide").prop('disabled',false);
-    } 
+    }
 }
 
 function ResetAnimationProperties() {
@@ -344,9 +349,6 @@ function RandomBar(slideId, prevSlideId) {
 
     $(slideId).css('opacity', '0.0');
     $(slideId).show();
-
-    $('#effectsclip').empty();
-    $('#svgdiv').html($('#svgdiv').html());
 
     StackSlides(slideId, prevSlideId);
     
@@ -730,9 +732,6 @@ function Dissolve(slideId, prevSlideId) {
     $(slideId).css('opacity', '0.0');
     $(slideId).show();
 
-    $('#effectsclip').empty();
-    $('#svgdiv').html($('#svgdiv').html());
-
     StackSlides(slideId, prevSlideId);
     
     $(slideId).css('clip-path', 'url(#effectsclip)');
@@ -1057,6 +1056,271 @@ function Ferris(slideId, prevSlideId) {
     timeline_old.play();
 }
 
+function Honeycomb(slideId, prevSlideId) {
+    
+    var duration = GetDuration(slideId) * 2;
+    
+    var blackboardClone = null;
+    if (prevSlideId == null)
+    {
+        blackboardClone = $('#blackboard').clone();
+        blackboardClone.attr('id', 'blackboardClone');
+        blackboardClone.insertBefore('#svgdiv');
+        prevSlideId = '#blackboardClone';
+    }
+
+    StackSlides(prevSlideId, '#blackboard');
+    $('#blackboard').show();
+    
+    var polys_old = GenerateHoneycombPolygons(true);
+    var polys_new = GenerateHoneycombPolygons(false);
+    $('#effectsclip').append(polys_old);
+    $('#svgdiv').html($('#svgdiv').html());
+    $(prevSlideId).css('clip-path', 'url(#effectsclip)');
+    
+    var oldScaleVal = 10;
+    var oldTranslateXVal = -10;
+    var oldTranslateYVal = -40;
+    var oldRotateZVal = -60;
+    
+    var newScaleVal = 0.3;
+    var newRotateZVal = 70;
+    
+    var timeline_old = anime.timeline({
+        targets: prevSlideId,
+        autoplay: false,
+        easing: 'easeInQuad',
+        complete: function(anim) {
+            $('#effectsclip').empty();
+            $('#svgdiv').html($('#svgdiv').html());
+            $(prevSlideId).css('clip-path', '');
+            $(prevSlideId).css('transform', '');
+            $(prevSlideId).hide();
+            if (blackboardClone != null)
+                blackboardClone.remove();
+        }
+    });
+    
+    var timeline_new = anime.timeline({
+        targets: slideId,
+        autoplay: false,
+        easing: 'easeOutSine',
+        complete: function(anim) {
+            $('#effectsclip1').empty();
+            $('#svgdiv').html($('#svgdiv').html());
+            $(slideId).css('clip-path', '');
+            PlayTransitionEnd();
+        }
+    });
+    
+    
+    timeline_old.add({
+        duration: duration,
+        scaleX: oldScaleVal,
+        scaleY: oldScaleVal,
+        translateX: oldTranslateXVal,
+        translateY: oldTranslateYVal,
+        rotateZ: oldRotateZVal
+    });
+    
+    timeline_new.add({
+        duration: duration / 1.5,
+        scaleX: [newScaleVal, 1],
+        scaleY: [newScaleVal, 1],
+        rotateZ: [newRotateZVal, 0]
+    });
+    
+    
+    var timeline_remove = anime.timeline({
+        autoplay: false,
+    });
+    
+    for (var i = 0; i < polys_old.length; i++) {
+        timeline_remove.add({
+            duration: duration / 1.5 / polys_old.length,
+            complete: function(anim) {
+                $('#effectsclip').find('polygon:first').remove();
+                $('#svgdiv').html($('#svgdiv').html());
+            }
+        });
+    }
+    
+    
+    var timeline_add = anime.timeline({
+        autoplay: false,
+    });
+    
+    var indexBase = timeline_add.id;
+    
+    for (var i = 0; i < polys_new.length; i++) {
+        timeline_add.add({
+            duration: duration / 1.5 / polys_new.length,
+            complete: function(anim) {
+                var j = anim.id - indexBase - 1;
+                $('#effectsclip1').append(polys_new[j]);
+                $('#svgdiv').html($('#svgdiv').html());
+            }
+        });
+    }
+    
+    var timeline_delay = anime.timeline({
+        autoplay: false,
+    });
+    
+    timeline_delay.add({
+        duration: duration / 3,
+        complete: function(anim) {
+            
+            $('#blackboard').css("z-index", 1);
+            $(slideId).css("z-index", 2);
+            $(prevSlideId).css("z-index", 3);
+    
+            $(slideId).css('transform', 'scaleX(' + (newScaleVal) + ') scaleY(' + (newScaleVal) + ') rotateZ(' + (newRotateZVal) + 'deg)');
+            $(slideId).css('clip-path', 'url(#effectsclip1)');
+            $(slideId).show();
+            timeline_new.play();
+            timeline_add.play();
+        }
+    });
+    
+    
+    timeline_old.play();
+    timeline_delay.play();
+    timeline_remove.play();
+}
+
+function Comb(slideId, prevSlideId) {
+    
+    var duration = GetDuration(slideId);
+    var direction = $(slideId).data("transitionDirection");
+    var horizontal = direction == 'Horizontal';
+    
+    if (prevSlideId == null) 
+        prevSlideId = '#blackboard';
+
+    StackSlides(prevSlideId, slideId);
+    $(slideId).show();
+    
+    var timeline1 = CreateCloneAndTimeline(prevSlideId, 1);
+    var timeline2 = CreateCloneAndTimeline(prevSlideId, 2);
+    var timeline3 = CreateCloneAndTimeline(prevSlideId, 3);
+    var timeline4 = CreateCloneAndTimeline(prevSlideId, 4);
+    var timeline5 = CreateCloneAndTimeline(prevSlideId, 5);
+    var timeline6 = CreateCloneAndTimeline(prevSlideId, 6);
+    var timeline7 = CreateCloneAndTimeline(prevSlideId, 7);
+    var timeline8 = CreateCloneAndTimeline(prevSlideId, 8);
+    
+    $(prevSlideId).hide();
+    
+    var polys = GenerateCombPolygons(direction);
+    $('#effectsclip1').append(polys[0]);
+    $('#effectsclip2').append(polys[1]);
+    $('#effectsclip3').append(polys[2]);
+    $('#effectsclip4').append(polys[3]);
+    $('#effectsclip5').append(polys[4]);
+    $('#effectsclip6').append(polys[5]);
+    $('#effectsclip7').append(polys[6]);
+    $('#effectsclip8').append(polys[7]);
+    
+    $('#svgdiv').html($('#svgdiv').html());
+    
+    var translateXVal = horizontal ? frameWidth + 10 : 0;
+    var translateYVal = horizontal ? 0 : frameHeight + 10;
+    var delayVal = horizontal ? 150 : 0;
+    
+    timeline1.add({
+        duration: duration,
+        translateX: translateXVal,
+        translateY: translateYVal
+    });
+    
+    timeline2.add({
+        duration: duration,
+        translateX: -translateXVal,
+        translateY: -translateYVal
+    });
+    
+    timeline3.add({
+        duration: duration,
+        delay: delayVal,
+        translateX: translateXVal,
+        translateY: translateYVal
+    });
+    
+    timeline4.add({
+        duration: duration,
+        delay: delayVal,
+        translateX: -translateXVal,
+        translateY: -translateYVal
+    });
+    
+    timeline5.add({
+        duration: duration,
+        delay: delayVal * 2,
+        translateX: translateXVal,
+        translateY: translateYVal
+    });
+    
+    timeline6.add({
+        duration: duration,
+        delay: delayVal * 2,
+        translateX: -translateXVal,
+        translateY: -translateYVal
+    });
+    
+    timeline7.add({
+        duration: duration,
+        delay: delayVal * 3,
+        translateX: translateXVal,
+        translateY: translateYVal
+    });
+    
+    timeline8.add({
+        duration: duration,
+        delay: delayVal * 3,
+        translateX: -translateXVal,
+        translateY: -translateYVal,
+        complete: function(anim) {
+            $('#svgdiv').html($('#svgdiv').html());
+            PlayTransitionEnd();
+        }
+    });
+    
+    timeline1.play();
+    timeline2.play();
+    timeline3.play();
+    timeline4.play();
+    timeline5.play();
+    timeline6.play();
+    timeline7.play();
+    timeline8.play();
+}
+
+function CreateCloneAndTimeline(slideId, cloneNumber) {
+    
+    var cloneId = '#slideclone' + cloneNumber;
+    var effectsId = '#effectsclip' + cloneNumber;
+    var clone = $(slideId).clone();
+    clone.attr('id', 'slideclone' + cloneNumber);
+    clone.css('clip-path', 'url(' + effectsId + ')');
+    clone.insertBefore('#svgdiv');
+    clone.show();
+    
+    var timeline_clone = anime.timeline({
+        targets: cloneId,
+        autoplay: false,
+        easing: 'easeInCubic',
+        complete: function(anim) {
+            
+            $(effectsId).empty();
+            $(cloneId).remove();
+        }
+    });
+    
+    return timeline_clone;
+}
+
+
 function Wheel(slideId, prevSlideId, wheelType) {
     
     var stepsCount = 150;
@@ -1111,9 +1375,6 @@ function AnimatePolygons(slideId, prevSlideId, polys) {
     
     $(slideId).css('opacity', curOpacity);
     $(slideId).show();
-
-    $('#effectsclip').empty();
-    $('#svgdiv').html($('#svgdiv').html());
 
     StackSlides(slideId, prevSlideId);
     
@@ -1359,6 +1620,90 @@ function GenerateWipePolygons(stepsCount, direction) {
     return result;
 }
 
+function GenerateHoneycombPolygons(fullTile) {
+    
+    var cacheKey = 'honeycomb' + fullTile;
+    var result = polygonsCache[cacheKey];
+    
+    if (!result) {
+        
+        result = [];
+        
+        var sideLength = 50;
+        var gapLength = 10;
+        var angle = 75;
+        
+        var sinCoef = Math.sin(DegreesToRadians(angle));
+        var cosCoef = Math.cos(DegreesToRadians(angle));
+        var even = true;
+        var yShift = 0;
+        
+        var startX = fullTile ? -sideLength : sideLength;
+        var startY = fullTile ? -sideLength : sideLength * cosCoef + sideLength + gapLength * cosCoef * 3 + 10;
+        var maxX = fullTile ? frameWidth + sideLength : frameWidth - sideLength;
+        var maxY = fullTile ? frameHeight : frameHeight - sideLength * 2;
+        
+        for (var x = startX; x < maxX; x += sideLength * sinCoef + gapLength * sinCoef / 2)
+        {
+            for (var y = startY - yShift; y < maxY; y += 2 * (sideLength + sideLength * cosCoef + gapLength * cosCoef * 3)) 
+            {
+                var x1 = x;
+                var y1 = y;
+                var x2 = x + sideLength * sinCoef;
+                var y2 = y + sideLength * cosCoef;
+                var x3 = x2;
+                var y3 = y2 + sideLength;
+                var x4 = x;
+                var y4 = y3 + sideLength * cosCoef;
+                var x5 = x - sideLength * sinCoef;
+                var y5 = y3;
+                var x6 = x5;
+                var y6 = y2;
+                
+                result.push(`<polygon points="${x1},${y1} ${x2},${y2} ${x3},${y3} ${x4},${y4} ${x5},${y5} ${x6},${y6}"/>`);
+            }
+            
+            even = !even;
+            yShift = even ? 0 : sideLength * cosCoef + sideLength + gapLength * cosCoef * 3;
+        }
+        
+        ShuffleArray(result);
+        
+        polygonsCache[cacheKey] = result;
+    }
+    
+    return result;
+}
+
+function GenerateCombPolygons(direction) {
+    
+    var cacheKey = 'comb' + direction;
+    var result = polygonsCache[cacheKey];
+    var horizontal = direction == 'Horizontal';
+    
+    if (!result) {
+        
+        result = [];
+        var eps = 1;
+        
+        if (horizontal) {
+            var heightStep = frameHeight / 8 + eps;
+            for(var i = 0; i < 8; i++)
+                result.push(`<polygon points="${0},${heightStep * i - eps} ${frameWidth + 5},${heightStep * i - eps} ${frameWidth + 5},${heightStep * (i + 1) + eps} ${0},${heightStep * (i + 1) + eps}"/>`);
+            result = result.reverse();
+        }
+        else {
+            var widthStep = frameWidth / 8;
+            for(var i = 0; i < 8; i++)
+                result.push(`<polygon points="${widthStep * i - eps},${0} ${widthStep * i - eps},${frameHeight} ${widthStep * (i + 1) + eps},${frameHeight} ${widthStep * (i + 1) + eps},${0}"/>`);
+        }
+        
+        polygonsCache[cacheKey] = result;
+    }
+    
+    return result;
+}
+
 function GenerateWheelSectors(wheelType, stepsCount) {
         
     var result = polygonsCache[wheelType];
@@ -1476,6 +1821,10 @@ function PolarToCartesian(centerX, centerY, radius, angleInDegrees) {
         x: centerX + (radius * Math.cos(angleInRadians)),
         y: centerY + (radius * Math.sin(angleInRadians))
     };
+}
+
+function DegreesToRadians (angle) {
+  return angle * (Math.PI / 180);
 }
 
 function ShuffleArray(array) {

@@ -1,8 +1,9 @@
 ﻿@model TemplateContext<Presentation>    
         
 @{    
-    Presentation contextObject = Model.Object;    
-}
+    Presentation contextObject = Model.Object;
+    Model.Global.Put("navigationEnabled", true);
+}    
     
 <!DOCTYPE html>    
     
@@ -17,11 +18,37 @@
     <link rel="stylesheet" type="text/css" href="master.css" />    
     <script src="jquery.js"></script>    
     <script src="anime.js"></script>    
-    <script src="animation.js"></script>    
+    <script src="animation.js"></script>
     <script src="navigation.js"></script>
 </head>    
-<body>    
-    <div class="bg">
+<body>
+    <div class="navigationArea">        
+        @for(int i = 0; i<contextObject.Slides.Count; i++)
+        {
+            var slide = contextObject.Slides[i];
+            if (slide.Hidden)
+            {
+                continue;
+            }
+            
+            var slideNumber = slide.SlideNumber;
+            var thumbnailSource = "images\\thumbnail" + slideNumber + ".png";
+            
+            if (Model.Global.Get<bool>("embedImages"))
+            {
+                using (var ms = new System.IO.MemoryStream())
+                {
+                    var slideThumbnail = slide.GetThumbnail();
+                    slideThumbnail.Save(ms, ImageFormat.Png);
+                    thumbnailSource = "data:image/png;base64, " + Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            
+            <div id="slideThumb-@slideNumber" data-number="@slideNumber" class="slideThumb"><img src="@thumbnailSource"/></div>
+        }
+    </div>
+    
+    <div class="bg" style="position: relative; float: left;">
         <div id="flash" class="slide" style="background-color: #FFFFFF; outline: 0; display: none;">
         </div>
         <div id="blackboard" class="slide" style="background-color: #000000; outline: 0; display: none;">
@@ -52,9 +79,10 @@
                 </defs>
             </svg>
         </div>
-    </div>
-        
-    <button class="navigationButton" id="PrevSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 - 100 - 5)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Prev Slide</button>    
-    <button class="navigationButton" id="NextSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 + 5)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Next Slide</button>
+    </div>    
+    
+    <button class="navigationButton" id="PrevSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 - 100 - 5 + 240)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Prev Slide</button>    
+    <button class="navigationButton" id="NextSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 + 5 + 240)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Next Slide</button>    
+      
 </body>
 </html>
