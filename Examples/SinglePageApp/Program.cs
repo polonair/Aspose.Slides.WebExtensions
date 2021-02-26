@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using Aspose.Slides;
+using Aspose.Slides.Charts;
 using Aspose.Slides.Export.Web;
+using Aspose.Slides.SmartArt;
 using Aspose.Slides.WebExtensions;
 
 namespace SinglePageApp
@@ -10,7 +12,10 @@ namespace SinglePageApp
     {
         static void Main(string[] args)
         {
-            ExportDefault();
+            //ExportDefault();
+            
+            new License().SetLicense(@"c:\bin\aspose\git\slides-net\src\test\bin\Debug\Aspose.Total.Product.Family.lic");
+            ExportHelloWorldWithInlineCss();
 
             Console.WriteLine("HTML export is complete...");
         }
@@ -90,6 +95,32 @@ namespace SinglePageApp
             }
         }
 
+        static void ExportHelloWorldWithInlineCss()
+        {
+            using (Presentation pres = new Presentation("demo.pptx"))
+            {
+                WebDocumentOptions options = new WebDocumentOptions { TemplateEngine = new RazorTemplateEngine(), OutputSaver = new FileOutputSaver() };
+                WebDocument document = new WebDocument(options);
+                
+                const string templatesPath = "templates\\single-page";
+                const string outputPath = "inline-css";
+
+                // setup global document values
+                SetupGlobals(document, options, outputPath);
+
+                document.Input.AddTemplate<Presentation>("index", @"custom-templates\index-inline-css.html");
+
+                AddCommonStylesTemplates(document, templatesPath);
+                AddCommonShapeTemplates(document, templatesPath);
+                
+                AddSinglePageCommonOutput(pres, document, outputPath);
+                AddResourcesOutput(pres, document, options.EmbedImages);
+                AddScriptsOutput(document, templatesPath);
+                
+                document.Save();
+            }
+        }
+
         static void ExportCustomTableStyles()
         {
             using (Presentation pres = new Presentation("table.pptx"))
@@ -106,17 +137,10 @@ namespace SinglePageApp
 
                 // setup global document values
                 WebDocument document = new WebDocument(options);
-                PresentationExtensions.SetGlobals(document, options, outputPath);
-                string slidesPath = Path.Combine(outputPath, "slides");
-                string stylesPath = Path.Combine(outputPath, "styles");
-                string scriptsPath = Path.Combine(outputPath, "scripts");
-
-                document.Global.Put("slidesPath", slidesPath);
-                document.Global.Put("stylesPath", stylesPath);
-                document.Global.Put("scriptsPath", scriptsPath);
+                SetupGlobals(document, options, outputPath);
 
                 // add common structure (except table template)
-                ExportCustomTableStyles_AddCommonStructure(pres, document, templatesPath, outputPath);
+                ExportCustomTableStyles_AddCommonStructure(pres, document, templatesPath, outputPath, options.EmbedImages);
                 
                 // add custom table template
                 document.Input.AddTemplate<Table>("table", @"custom-templates\table-custom-style.html");
@@ -132,38 +156,97 @@ namespace SinglePageApp
             }
         }
 
-        private static void ExportCustomTableStyles_AddCommonStructure(Presentation pres, WebDocument document,
-            string templatesPath, string outputPath)
+        private static void ExportCustomTableStyles_AddCommonStructure(
+            Presentation pres, 
+            WebDocument document,
+            string templatesPath, 
+            string outputPath, 
+            bool embedImages)
         {
-            string stylesPath = document.Global.Get<string>("stylesPath");
-            string scriptsPath = document.Global.Get<string>("scriptsPath");
+            AddCommonStylesTemplates(document, templatesPath);
             
-            document.Input.AddTemplate<Presentation>("styles-pres", Path.Combine(templatesPath, @"styles\pres.css"));
-            document.Input.AddTemplate<MasterSlide>("styles-master", Path.Combine(templatesPath, @"styles\master.css"));
-            document.Input.AddTemplate<Presentation>("scripts-animation",
-                Path.Combine(templatesPath, @"scripts\animation.js"));
-
             document.Input.AddTemplate<Slide>("slide", Path.Combine(templatesPath, "slide.html"));
             document.Input.AddTemplate<AutoShape>("autoshape", Path.Combine(templatesPath, "autoshape.html"));
             document.Input.AddTemplate<TextFrame>("textframe", Path.Combine(templatesPath, "textframe.html"));
             document.Input.AddTemplate<Paragraph>("paragraph", Path.Combine(templatesPath, "paragraph.html"));
             document.Input.AddTemplate<Paragraph>("bullet", Path.Combine(templatesPath, "bullet.html"));
             document.Input.AddTemplate<Portion>("portion", Path.Combine(templatesPath, "portion.html"));
-
             document.Input.AddTemplate<VideoFrame>("videoframe", Path.Combine(templatesPath, "videoframe.html"));
-
             document.Input.AddTemplate<PictureFrame>("pictureframe", Path.Combine(templatesPath, "pictureframe.html")); ;
             document.Input.AddTemplate<Shape>("shape", Path.Combine(templatesPath, "shape.html"));
 
+            AddSinglePageCommonOutput(pres, document, outputPath);
+            
+            AddResourcesOutput(pres, document, embedImages);
+            
+            AddScriptsOutput(document, templatesPath);
+        }
+        
+        static void SetupGlobals(WebDocument document, WebDocumentOptions options, string outputPath)
+        {
+            PresentationExtensions.SetGlobals(document, options, outputPath);
+
+            document.Global.Put("slidesPath", outputPath);
+            document.Global.Put("stylesPath", outputPath);
+            document.Global.Put("scriptsPath", outputPath);
+        }
+        
+        private static void AddCommonStylesTemplates(WebDocument document, string templatesPath)
+        {
+            document.Input.AddTemplate<Presentation>("styles-pres", Path.Combine(templatesPath, @"styles\pres.css"));
+            document.Input.AddTemplate<MasterSlide>("styles-master", Path.Combine(templatesPath, @"styles\master.css"));
+            document.Input.AddTemplate<Presentation>("scripts-animation",
+                Path.Combine(templatesPath, @"scripts\animation.js"));
+        }
+
+        private static void AddCommonShapeTemplates(WebDocument document, string templatesPath)
+        {
+            document.Input.AddTemplate<Slide>("slide", Path.Combine(templatesPath, "slide.html"));
+            document.Input.AddTemplate<AutoShape>("autoshape", Path.Combine(templatesPath, "autoshape.html"));
+            document.Input.AddTemplate<TextFrame>("textframe", Path.Combine(templatesPath, "textframe.html"));
+            document.Input.AddTemplate<Paragraph>("paragraph", Path.Combine(templatesPath, "paragraph.html"));
+            document.Input.AddTemplate<Paragraph>("bullet", Path.Combine(templatesPath, "bullet.html"));
+            document.Input.AddTemplate<Portion>("portion", Path.Combine(templatesPath, "portion.html"));
+            document.Input.AddTemplate<VideoFrame>("videoframe", Path.Combine(templatesPath, "videoframe.html"));
+            document.Input.AddTemplate<PictureFrame>("pictureframe", Path.Combine(templatesPath, "pictureframe.html"));
+            document.Input.AddTemplate<Table>("table", Path.Combine(templatesPath, "table.html"));
+            document.Input.AddTemplate<Shape>("shape", Path.Combine(templatesPath, "shape.html"));
+        }
+
+        private static void AddSinglePageCommonOutput(Presentation pres, WebDocument document, string outputPath)
+        {
+            string stylesPath = document.Global.Get<string>("stylesPath");
+            string scriptsPath = document.Global.Get<string>("scriptsPath");
+            
             document.Output.Add(Path.Combine(outputPath, "index.html"), "index", pres);
             document.Output.Add(Path.Combine(stylesPath, "pres.css"), "styles-pres", pres);
-            document.Output.Add(Path.Combine(stylesPath, "master.css"), "styles-master", (MasterSlide) pres.Masters[0]);
+            document.Output.Add(Path.Combine(stylesPath, "master.css"), "styles-master", (MasterSlide)pres.Masters[0]);
             document.Output.Add(Path.Combine(scriptsPath, "animation.js"), "scripts-animation", pres);
+        }
 
-            document.AddEmbeddedFontsOutput(document.Global.Get<string>("fontsPath"), pres);
-            document.AddVideoOutput(document.Global.Get<string>("mediaPath"), pres);
+        private static void AddScriptsOutput(WebDocument document, string templatesPath)
+        {
+            string scriptsPath = document.Global.Get<string>("scriptsPath");
+
             document.AddScriptsOutput(scriptsPath, Path.Combine(templatesPath, @"scripts\jquery-3.5.1.min.js"), "jquery.js");
             document.AddScriptsOutput(scriptsPath, Path.Combine(templatesPath, @"scripts\anime.min.js"), "anime.js");
+        }
+
+        private static void AddResourcesOutput(Presentation pres, WebDocument document, bool embedImages)
+        {
+            document.AddEmbeddedFontsOutput(document.Global.Get<string>("fontsPath"), pres);
+            document.AddVideoOutput(document.Global.Get<string>("mediaPath"), pres);
+            
+            if (!embedImages)
+            {
+                string imagesPath = document.Global.Get<string>("imagesPath");
+                document.AddImagesOutput(imagesPath, pres);
+                document.AddShapeAsImagesOutput<Chart>(imagesPath, pres);
+                document.AddShapeAsImagesOutput<SmartArt>(imagesPath, pres);
+                document.AddShapeAsImagesOutput<AutoShape>(imagesPath, pres);
+                document.AddShapeAsImagesOutput<Connector>(imagesPath, pres);
+                document.AddShapeAsImagesOutput<GroupShape>(imagesPath, pres);
+            }
         }
     }
 }
