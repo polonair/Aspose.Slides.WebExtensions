@@ -12,10 +12,7 @@ namespace SinglePageApp
     {
         static void Main(string[] args)
         {
-            //ExportDefault();
-            
-            new License().SetLicense(@"c:\bin\aspose\git\slides-net\src\test\bin\Debug\Aspose.Total.Product.Family.lic");
-            ExportHelloWorldWithInlineCss();
+            ExportDefault();
 
             Console.WriteLine("HTML export is complete...");
         }
