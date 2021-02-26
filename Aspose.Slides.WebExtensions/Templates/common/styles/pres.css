@@ -49,6 +49,14 @@
         overflow-y: auto;
     }
     
+    .navigationAreaBorder {
+        border-right: solid #777777 1px;
+    }
+    
+    .navigationSelected {
+        background: #d24726;
+    }
+    
     .slideThumb {
         margin: 10px; 
         margin-bottom: 5px;
