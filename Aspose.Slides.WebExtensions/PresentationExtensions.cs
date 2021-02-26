@@ -195,7 +195,7 @@ namespace Aspose.Slides.WebExtensions
             }
         }
 
-        private static void AddImagesOutput(this WebDocument document, string outputPath, Presentation pres)
+        public static void AddImagesOutput(this WebDocument document, string outputPath, Presentation pres)
         {
             for (int index = 0; index < pres.Images.Count; index++)
             {
@@ -230,7 +230,7 @@ namespace Aspose.Slides.WebExtensions
         }
 
 
-        private static void AddShapeAsImagesOutput<T>(this WebDocument document, string outputPath, Presentation pres)
+        public static void AddShapeAsImagesOutput<T>(this WebDocument document, string outputPath, Presentation pres)
         {
             List<T> shapes = ShapeHelper.GetListOfShapes<T>(pres);
 
