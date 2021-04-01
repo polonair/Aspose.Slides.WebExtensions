@@ -14,9 +14,18 @@ namespace MultiPageApp
     {
         static void Main(string[] args)
         {
-            ExportBySections();
+            ExportDefault();
 
             Console.WriteLine("HTML export is complete...");
+        }
+
+        static void ExportDefault()
+        {
+            using (Presentation pres = new Presentation("demo.pptx"))
+            {
+                WebDocument document = pres.ToMultiPageWebDocument("templates\\multi-page", @"mutil-page-output");
+                document.Save();
+            }
         }
 
         static void ExportBySections()
@@ -36,7 +45,9 @@ namespace MultiPageApp
                 // setup global document values
                 WebDocument document = new WebDocument(options);
                 PresentationExtensions.SetGlobals(document, options, outputPath);
-                string slidesPath = Path.Combine(outputPath, "slides");
+
+                const string localSlidesPath = "slides";
+                string slidesPath = Path.Combine(outputPath, localSlidesPath);
                 string stylesPath = Path.Combine(outputPath, "styles");
                 string scriptsPath = Path.Combine(outputPath, "scripts");
 
@@ -52,9 +63,11 @@ namespace MultiPageApp
                         if (slide.Hidden)
                             continue;
 
-                        string path = Path.Combine(
-                            outputPath, section.Name,
-                            string.Format("slide{0}.html", slide.SlideNumber));
+                        string subPath = Path.Combine(section.Name, string.Format("slide{0}.html", slide.SlideNumber));
+                        string path = Path.Combine(outputPath, subPath);
+
+                        string key = string.Format("slide{0}path", slide.SlideNumber);
+                        document.Global.Put(key, subPath);
 
                         document.Output.Add(path, "slide", slide);
                     }

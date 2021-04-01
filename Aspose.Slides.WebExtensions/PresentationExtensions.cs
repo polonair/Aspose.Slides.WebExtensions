@@ -93,7 +93,9 @@ namespace Aspose.Slides.WebExtensions
 
             SetGlobals(document, options, outputPath);
 
-            string slidesPath = Path.Combine(outputPath, "slides");
+            const string localSlidesPath = "slides";
+
+            string slidesPath = Path.Combine(outputPath, localSlidesPath);
             string stylesPath = Path.Combine(outputPath, "styles");
             string scriptsPath = Path.Combine(outputPath, "scripts");
 
@@ -104,7 +106,7 @@ namespace Aspose.Slides.WebExtensions
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
 
             document.AddMultiPageInputTemplates(templatesPath);
-            document.AddMultiPageOutputFiles(slidesPath, pres);
+            document.AddMultiPageOutputFiles(outputPath, slidesPath, localSlidesPath, pres);
 
             if (!options.EmbedImages)
                 document.AddThumbnailsOutput(document.Global.Get<string>("imagesPath"), pres);
@@ -182,7 +184,7 @@ namespace Aspose.Slides.WebExtensions
             document.Input.AddTemplate<Presentation>("menu", Path.Combine(templatesPath, "menu.html"));
         }
 
-        private static void AddMultiPageOutputFiles(this WebDocument document, string outputPath, Presentation pres)
+        private static void AddMultiPageOutputFiles(this WebDocument document, string outputPath, string slidesPath, string localSlidesPath, Presentation pres)
         {
             document.Output.Add(Path.Combine(outputPath, "menu.html"), "menu", pres);
 
@@ -191,7 +193,13 @@ namespace Aspose.Slides.WebExtensions
                 if (slide.Hidden)
                     continue;
 
-                document.Output.Add(Path.Combine(outputPath, string.Format("slide{0}.html", slide.SlideNumber)), "slide", slide);
+                string subPath = Path.Combine(string.Format("slide{0}.html", slide.SlideNumber));
+                string path = Path.Combine(slidesPath, subPath);
+                document.Output.Add(path, "slide", slide);
+
+                string key = string.Format("slide{0}path", slide.SlideNumber);
+                document.Global.Put(key, Path.Combine(localSlidesPath, subPath));
+
             }
         }
 

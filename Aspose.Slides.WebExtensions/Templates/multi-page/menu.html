@@ -1,4 +1,4 @@
-@model TemplateContext<Presentation>
+﻿@model TemplateContext<Presentation>
     
 @{
     Presentation contextObject = Model.Object;
@@ -9,8 +9,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta charset="utf-8" />
-        <link rel="stylesheet" type="text/css" href="..\styles\pres.css" />
-        <link rel="stylesheet" type="text/css" href="..\styles\master.css" />
+        <link rel="stylesheet" type="text/css" href="styles\pres.css" />
+        <link rel="stylesheet" type="text/css" href="styles\master.css" />
     </head>
    <body>
        <br />
@@ -22,8 +22,8 @@
                 continue;
             }
             
-            var slidePage = "slide" + slide.SlideNumber + ".html";
-            var thumbnailSource = "..\\images\\thumbnail" + slide.SlideNumber + ".png";
+            var slidePage =  Model.Global.Get<string>("slide" + slide.SlideNumber + "path");
+            var thumbnailSource = "images\\thumbnail" + slide.SlideNumber + ".png";
             
             if (Model.Global.Get<bool>("embedImages"))
             {
