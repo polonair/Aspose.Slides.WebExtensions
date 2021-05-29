@@ -3,6 +3,7 @@
 @{
     Presentation contextObject = Model.Object;
     var animateTransitions = Model.Global.Get<bool>("animateTransitions").ToString().ToLower();
+    var animateShapes = Model.Global.Get<bool>("animateShapes").ToString().ToLower();
     var pagesCount = contextObject.Slides.Count;
     var slideWidth = contextObject.SlideSize.Size.Width;
     var slideHeight = contextObject.SlideSize.Size.Height;
@@ -14,6 +15,16 @@ var maxVisiblePage = @pagesCount;
 var frameWidth = @slideWidth;
 var frameHeight = @slideHeight;
 var polygonsCache = {};
+var animationsCache = {};
+var animations = {};
+var prevAnimations = {};
+var shapeAnimationsIndices = {};
+var noAnimationSlideClick = false;
+var clipContentCache = {};
+
+var timelineBarsCache = {};
+var timelinePolysCache = {};
+var exitTimelineIterationCounter = {};
 
 $(document).ready(function(){
       
@@ -23,13 +34,19 @@ $(document).ready(function(){
 });
 
 function InitTransitions() {
-    PlayTransition('#slide-1', null);
+    PrepareAndPlayTransition('#slide-1', null);
     
     $('#PrevSlide').show();
     $('#NextSlide').show();
       
     $("#PrevSlide").click(function(){ ShowPrev(); });
     $("#NextSlide").click(function(){ ShowNext(); });
+}
+
+function PrepareAndPlayTransition(slideId, prevSlideId) {
+    
+    AnimateShapes(slideId);
+    setTimeout(function() { PlayTransition(slideId, prevSlideId);}, 10); // fix for starting slide animation (browser needs some time to cacth up after js performance demanging generating operations)
 }
 
 function PlayTransition(slideId, prevSlideId) {
@@ -94,11 +111,47 @@ function PlayTransition(slideId, prevSlideId) {
     }
 }
 
+function AnimateShapes(slideId) {
+    if (@animateShapes) {
+        // saving animations for previous slide (we need to restore them when this slide appears)
+        prevAnimations = animations;
+        animations = animationsCache[slideId];
+        
+        if (animations == null) {
+            // prepare animations for this slide
+            animations = {};
+            FillSlideShapeAnimations(slideId);
+            animationsCache[slideId] = animations;
+        }
+        
+        PrepareAllEffects(animations);
+        
+        shapeAnimationsIndices = {};
+        for (var targetShape in animations)
+            shapeAnimationsIndices[targetShape] = -1;
+        
+        noAnimationSlideClick = false;
+        
+        for (var targetShape in animations) {
+            if (targetShape != 'slide') {
+                $('#' + targetShape).unbind();
+                $('#' + targetShape).click(function(e){ PlayNextAnimationsForTarget(targetShape); e.stopPropagation(); });
+                $('#' + targetShape).css('cursor', 'pointer');
+            }
+        }
+        
+        $(slideId).unbind();
+        $(slideId).click(function(){ PlayNextAnimationsForTarget('slide'); });
+    }
+}
+
+
 function PlayTransitionBegin() {
     $("#PrevSlide").prop('disabled',true);
     $("#NextSlide").prop('disabled',true);
     
     ChangeThumbSelection(currentVisiblePage);
+    RemoveThumbnailClickHandler();
 }
 
 function PlayTransitionEnd() {
@@ -109,6 +162,13 @@ function PlayTransitionEnd() {
     if(currentVisiblePage != maxVisiblePage) {
         $("#NextSlide").prop('disabled',false);
     }
+    
+    if (@animateShapes) {
+        RestoreAllEffects(prevAnimations);
+        PlayNextAnimationsForTarget('slide');
+    }
+    
+    SetThumbnailClickHandler();
 }
 
 function ResetAnimationProperties() {
@@ -116,6 +176,151 @@ function ResetAnimationProperties() {
     $(".slide-content").css('transform', '');
     $(".slide-content").css('position', '');
     $(".slide-content").css('top', '');
+}
+
+function FillSlideShapeAnimations(slideId) {
+    
+    var slide = $(slideId);
+    
+    slide.children('[data-animation-type!=""]').each(function(){ 
+        var clickTarget = $(this).attr("data-animation-clickTarget");
+        if (clickTarget != null) {
+            if (animations[clickTarget] == null) {
+                animations[clickTarget] = [];
+                shapeAnimationsIndices[clickTarget] = -1;
+            }
+            
+            while (animations[clickTarget].length <= parseInt($(this).attr("data-animation-index")))
+                animations[clickTarget].push([]);
+            
+            animations[clickTarget][$(this).attr("data-animation-index")].push(GetAnimationEffect($(this).attr("data-animation-type"), $(this).attr("data-animation-subtype"), slideId + ' > #' + this.id, $(this).attr("data-animation-duration"), $(this).attr("data-animation-delay")));
+        }
+    });
+}
+
+function GetSlideAnimatedShapesId(slideId) {
+    var slide = $(slideId);
+    
+    var animatedShapesId = [];
+    slide.children('[data-animation-type!=""]').each(function(){ animatedShapesId.push('#' + this.id); });
+    return animatedShapesId;
+}
+
+function CreateAnimationEffects(animatedShapesId) {
+    
+    var result = [];
+    for    (var i = 0; i < animatedShapesId.length; i++) {
+        result.push(GetAnimationEffect($(animatedShapesId[i]).data("animation-type"), $(animatedShapesId[i]).data("animation-subtype"),animatedShapesId[i], $(animatedShapesId[i]).data("animation-duration"), $(animatedShapesId[i]).data("animation-delay")));
+    }
+    
+    return result;
+}
+
+function PauseAllEffects(animations) {
+    for (var targetShape in animations) {
+        for(var i = 0; i < animations[targetShape].length; i++) {
+            PauseEffectsTimeline(animations[targetShape][i]);
+        }
+    }
+}
+
+function RestoreAllEffects(animations) {
+    for (var targetShape in animations) {
+        for(var i = 0; i < animations[targetShape].length; i++) {
+            RestoreEffectsTimeline(animations[targetShape][i]);
+        }
+    }
+}
+
+function ResetAnimationIndicies() {
+    for (var targetShape in shapeAnimationsIndices)
+        shapeAnimationsIndices[targetShape] = -1;
+}
+
+function PrepareAllEffects(animations) {
+    for (var targetShape in animations) {
+        for(var i = 0; i < animations[targetShape].length; i++) {
+            PrepareEffectsTimeline(animations[targetShape][i]);
+        }
+    }
+}
+
+function PlayNextAnimationsForTarget(target) {
+    
+    if (animations[target] != null) {
+    
+        var index = shapeAnimationsIndices[target];
+        index++;
+        index = index % animations[target].length;
+        
+        
+        if (target == 'slide' && index == 0 && shapeAnimationsIndices[target] != -1) {
+            ShowNext();
+            return;
+        }
+            
+        if (shapeAnimationsIndices[target] != -1) {
+            if (index > 0) {
+                RestartEffectsTimeline(animations[target][index - 1]);
+                PauseEffectsTimeline(animations[target][index - 1]);
+                FinishEffectsTimeline(animations[target][index - 1]);
+            }
+            else {
+                RestartEffectsTimeline(animations[target][animations[target].length - 1]);
+                PauseEffectsTimeline(animations[target][animations[target].length - 1]);
+                FinishEffectsTimeline(animations[target][animations[target].length - 1]);
+            }
+        }
+        
+        shapeAnimationsIndices[target] = index;
+        
+        PlayEffectsTimeline(animations[target][index]);
+    }
+    else if (target == 'slide')
+    {
+        if (!noAnimationSlideClick)
+            noAnimationSlideClick = true;
+        else
+            ShowNext();
+    }
+}
+
+function PrepareEffectsTimeline(effectsCollection) {
+    if (effectsCollection != null)
+        for (var i = 0; i < effectsCollection.length; i++)
+            effectsCollection[i].Prepare();
+}
+
+function PauseEffectsTimeline(effectsCollection) {
+    if (effectsCollection != null)
+        for (var i = 0; i < effectsCollection.length; i++)
+            effectsCollection[i].Pause();
+}
+
+function RestartEffectsTimeline(effectsCollection) {
+    if (effectsCollection != null)
+        for (var i = 0; i < effectsCollection.length; i++)
+            effectsCollection[i].Restart();
+}
+
+function PlayEffectsTimeline(effectsCollection) {
+    if (effectsCollection != null)
+        for (var i = 0; i < effectsCollection.length; i++)
+            effectsCollection[i].Play();
+}
+
+function RestoreEffectsTimeline(effectsCollection) {
+    if (effectsCollection != null)
+        for (var i = 0; i < effectsCollection.length; i++) {
+            effectsCollection[i].Restore();
+        }
+}
+
+function FinishEffectsTimeline(effectsCollection) {
+    if (effectsCollection != null)
+        for (var i = 0; i < effectsCollection.length; i++) {
+            effectsCollection[i].Finish();
+        }
 }
 
 function Fade(slideId, prevSlideId) {
@@ -344,7 +549,7 @@ function RandomBar(slideId, prevSlideId) {
     var direction = $(slideId).data("transitionDirection");
     
     
-    var bars = GenerateBars(direction == 'Vertical', 5, 70, 1);
+    var bars = GenerateBars(direction == 'Vertical', frameWidth, frameHeight, 5, 70, 1);
     ShuffleArray(bars);
 
     $(slideId).css('opacity', '0.0');
@@ -726,7 +931,7 @@ function Dissolve(slideId, prevSlideId) {
     var duration = GetDuration(slideId);
     var stepsCount = 50;
     
-    var tiles = GenerateDissolvePolygons();
+    var tiles = GenerateDissolvePolygons(frameWidth, frameHeight, 54, 42);
     ShuffleArray(tiles);
     
     $(slideId).css('opacity', '0.0');
@@ -1323,8 +1528,8 @@ function CreateCloneAndTimeline(slideId, cloneNumber) {
 
 function Wheel(slideId, prevSlideId, wheelType) {
     
-    var stepsCount = 150;
-    var sectors = GenerateWheelSectors(wheelType, stepsCount);
+    var stepsCount = 160;
+    var sectors = GenerateWheelSectors(wheelType, stepsCount, frameWidth, frameHeight);
     
     AnimatePolygons(slideId, prevSlideId, sectors);
 }
@@ -1335,9 +1540,9 @@ function Shape(slideId, prevSlideId, shapeType) {
     
     var polys = [];
     if (shapeType == 'Circle')
-        polys = GenerateCircles(stepsCount);
+        polys = GenerateCircles(stepsCount, frameWidth, frameHeight);
     else
-        polys = GenerateShapePolygons(stepsCount, shapeType);
+        polys = GenerateShapePolygons(stepsCount, shapeType, frameWidth, frameHeight);
     
     AnimatePolygons(slideId, prevSlideId, polys);
 }
@@ -1350,7 +1555,7 @@ function Split(slideId, prevSlideId) {
     var horizontal = $(slideId).data("transitionExtra") == 'Horizontal';
     
     var polys = [];
-    polys = GenerateSplitPolygons(stepsCount, horizontal, out);
+    polys = GenerateSplitPolygons(stepsCount, frameWidth, frameHeight, horizontal, out);
     
     AnimatePolygons(slideId, prevSlideId, polys);
 }
@@ -1362,7 +1567,7 @@ function Wipe(slideId, prevSlideId) {
     var direction = $(slideId).data("transitionDirection");
     
     var polys = [];
-    polys = GenerateWipePolygons(stepsCount, direction);
+    polys = GenerateWipePolygons(stepsCount, direction, frameWidth, frameHeight);
     
     AnimatePolygons(slideId, prevSlideId, polys);
 }
@@ -1415,14 +1620,588 @@ function AnimatePolygons(slideId, prevSlideId, polys) {
     timeline.play();
 }
 
-function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
+function AnimatePolygonsForShape(shapeId, polys, duration, delay, slowerCenter) {
+
+    var stepsCount = polys.length;
     
-    var result = polygonsCache.Bars;
+    var clipId = shapeId.replace(' > #', '') + '-clip';
+    var width = parseInt($(shapeId).css('width').replace('px', ''));
+    var height = parseInt($(shapeId).css('height').replace('px', ''));
+    var curOpacity = 0.4;
+    
+    if ($(clipId).length == 0) {
+        $('#svgdiv > svg > defs').append('<clipPath id="' + clipId.replace('#', '') + '" viewbox="0 0 ' + width + ' ' + height + '"></clipPath>');
+        $('#svgdiv').html($('#svgdiv').html());
+    }
+    
+    var timeline = anime.timeline({
+        targets: shapeId,
+        autoplay: false,
+        begin: function(anim) {
+            $(shapeId).show();
+            $(shapeId).css('opacity', curOpacity)
+            $(shapeId).css('clip-path', 'url(' + clipId + ')');
+        },
+        complete: function(anim) {
+            $(clipId).empty();
+            $(shapeId).css('clip-path', '');
+            $('#svgdiv').html($('#svgdiv').html());
+        }
+    });
+
+    var indexBase = timeline.id;
+    var opacityStep = (1 - curOpacity) / stepsCount;
+    timelinePolysCache[indexBase] = polys;
+    
+    for (var i = 0; i < stepsCount; i++) {
+        
+        var slowingCoef = slowerCenter ? (Math.abs(stepsCount / 2 - i) / stepsCount + 0.75) : 1;
+        
+        timeline.add({
+            duration: duration / stepsCount * slowingCoef,
+            delay: (i == 0) ? delay : 0,
+            opacity: [curOpacity, curOpacity + opacityStep],
+            easing: 'linear',
+            complete: function(anim) {
+                
+                var j = anim.id - indexBase - 1;
+                clipContentCache[indexBase] += timelinePolysCache[indexBase][j];
+                $(clipId).html(clipContentCache[indexBase]);
+            }
+        });
+        
+        curOpacity += opacityStep;
+    }
+
+    return timeline;
+}
+
+function AnimatePolygonsForShapeExit(shapeId, polys, duration, delay, removeLast, slowerCenter) {
+
+    var stepsCount = polys.length;
+    
+    var clipId = shapeId.replace(' > #', '') + '-clip';
+    var width = parseInt($(shapeId).css('width').replace('px', ''));
+    var height = parseInt($(shapeId).css('height').replace('px', ''));
+    var curOpacity = 1.0;
+    
+    if ($(clipId).length == 0) {
+        $('#svgdiv > svg > defs').append('<clipPath id="' + clipId.replace('#', '') + '" viewbox="0 0 ' + width + ' ' + height + '"></clipPath>');
+        $('#svgdiv').html($('#svgdiv').html());
+    }
+    
+    var timeline = anime.timeline({
+        targets: shapeId,
+        autoplay: false,
+        begin: function(anim) {
+
+            $(clipId).empty();
+            for (var ii = 0; ii < stepsCount; ii++)
+                clipContentCache[anim.id] += timelinePolysCache[anim.id][ii] + '\n';
+                
+            $(clipId).html(clipContentCache[anim.id]);
+            $(shapeId).css('clip-path', 'url(' + clipId + ')');
+        },
+        complete: function(anim) {
+            $(shapeId).hide();
+            $(clipId).empty();
+            $(shapeId).css('clip-path', '');
+            $('#svgdiv').html($('#svgdiv').html());
+        }
+    });
+
+    var indexBase = timeline.id;
+    var opacityStep = curOpacity / stepsCount;
+    timelinePolysCache[indexBase] = polys;
+    
+    for (var i = 0; i < stepsCount; i++) {
+        
+        var slowingCoef = slowerCenter ? (Math.abs(stepsCount / 2 - i) / stepsCount + 0.75) : 1;
+        
+        timeline.add({
+            duration: duration / stepsCount * slowingCoef,
+            delay: (i == 0) ? delay : 0,
+            opacity: [curOpacity, curOpacity - opacityStep],
+            easing: 'linear',
+            complete: function(anim) {
+                if (removeLast)
+                    clipContentCache[indexBase] = RemoveLastString(clipContentCache[indexBase], 1);
+                else
+                    clipContentCache[indexBase] = RemoveFirstString(clipContentCache[indexBase], 1);
+                
+                $(clipId).html(clipContentCache[indexBase]);
+            }
+        });
+        
+        curOpacity -= opacityStep;
+    }
+
+    return timeline;
+}
+
+function AnimateRandomBarsForShapes(shapeId, bars, duration, delay) {
+
+    var clipId = shapeId.replace(' > #', '') + '-clip';
+    var width = parseInt($(shapeId).css('width').replace('px', ''));
+    var height = parseInt($(shapeId).css('height').replace('px', ''));
+    var curOpacity = 0.0;
+    
+    if ($(clipId).length == 0) {
+        $('#svgdiv > svg > defs').append('<clipPath id="' + clipId.replace('#', '') + '" viewbox="0 0 ' + width + ' ' + height + '"></clipPath>');
+        $('#svgdiv').html($('#svgdiv').html());
+    }
+    
+    var bigSteps = 1;
+    var curStepBegin = 0;
+    var eachStepLengh = Math.floor(bars.length / Math.max(bigSteps - 1, 1));
+    
+    var bigStepOpacityBase, curMinOpacity, curMaxOpacity;
+    var curStepLength, curStepBars, maxBarLength;
+    
+    var finalBars = [];
+    var maxBarLengths = [];
+    
+    for (var i = 0; i < bigSteps; i++) {
+                
+        curStepLength = (i < bigSteps - 1) ? eachStepLengh : bars.length - curStepBegin;
+        curStepBars = bars.slice(curStepBegin, curStepBegin + curStepLength);
+        maxBarLength = Math.max.apply(Math, $.map(curStepBars, function (el) { return el.length }));
+        maxBarLengths.push(maxBarLength);
+        
+        for (var j = 0; j < maxBarLength; j++) {
+            
+            var microStepBars = []
+            
+            for(var k = 0; k < curStepBars.length; k++) {
+                if (j < curStepBars[k].length)
+                    microStepBars.push(curStepBars[k][j]);
+            }
+            
+            finalBars.push(microStepBars);
+        }
+        
+        curStepBegin += eachStepLengh;
+    }
+    
+    var timeline = anime.timeline({
+        targets: shapeId,
+        autoplay: false,
+        begin: function(anim) {
+            $(shapeId).show();
+            $(shapeId).css('opacity', curOpacity)
+            $(shapeId).css('clip-path', 'url(' + clipId + ')');
+        },
+        complete: function(anim) {
+            $(clipId).empty();
+            $(shapeId).css('clip-path', '');
+            $('#svgdiv').html($('#svgdiv').html());
+        }
+    });
+    
+    var indexBase = timeline.id;
+    timelineBarsCache[indexBase] = finalBars;
+    
+    for (var i = 0; i < bigSteps; i++) {
+        
+        bigStepOpacityBase = (1 / bigSteps) * i;
+                
+        maxBarLength = maxBarLengths[i];
+        
+        for (var j = 0; j < maxBarLength; j++) {
+            
+            curMinOpacity = bigStepOpacityBase + (1 / bigSteps / maxBarLength) * j;
+            curMaxOpacity = bigStepOpacityBase + (1 / bigSteps / maxBarLength) * (j + 1);
+            
+            timeline.add({
+                duration: duration / bigSteps / maxBarLength,
+                opacity: [curMinOpacity, curMaxOpacity],
+                easing: 'linear',
+                complete: function(anim) {
+                    
+                    var ii = anim.id - indexBase - 1;
+                    for (var jj = 0; jj < timelineBarsCache[indexBase][ii].length; jj++)
+                        clipContentCache[indexBase] += timelineBarsCache[indexBase][ii][jj];
+                    
+                    $(clipId).html(clipContentCache[indexBase]);   
+                }
+            });
+        }
+        
+        curStepBegin += eachStepLengh;
+    }
+    
+    return timeline;
+}
+
+function AnimateRandomBarsForShapesExit(shapeId, bars, duration, delay, removeLast) {
+    
+    var clipId = shapeId.replace(' > #', '') + '-clip';
+    var width = parseInt($(shapeId).css('width').replace('px', ''));
+    var height = parseInt($(shapeId).css('height').replace('px', ''));
+    var curOpacity = 1.0;
+    
+    if ($(clipId).length == 0) {
+        $('#svgdiv > svg > defs').append('<clipPath id="' + clipId.replace('#', '') + '" viewbox="0 0 ' + width + ' ' + height + '"></clipPath>');
+        $('#svgdiv').html($('#svgdiv').html());
+    }
+    
+    var bigSteps = 1;
+    var curStepBegin = 0;
+    var eachStepLengh = Math.floor(bars.length / Math.max(bigSteps - 1, 1));
+    
+    var bigStepOpacityBase, curMinOpacity, curMaxOpacity;
+    var curStepLength, curStepBars, maxBarLength;
+    
+    var finalBars = [];
+    var maxBarLengths = [];
+    
+    for (var i = 0; i < bigSteps; i++) {
+        
+        curStepLength = (i < bigSteps - 1) ? eachStepLengh : bars.length - curStepBegin;
+        curStepBars = bars.slice(curStepBegin, curStepBegin + curStepLength);
+        maxBarLength = Math.max.apply(Math, $.map(curStepBars, function (el) { return el.length }));
+        maxBarLengths.push(maxBarLength);
+        
+        for (var j = 0; j < maxBarLength; j++) {
+            
+            var microStepBars = []
+            
+            for(var k = 0; k < curStepBars.length; k++) {
+                if (j < curStepBars[k].length)
+                    microStepBars.push(curStepBars[k][j]);
+            }
+            
+            finalBars.push(microStepBars);
+        }
+        
+        curStepBegin += eachStepLengh;
+    }
+    
+    var timeline = anime.timeline({
+        targets: shapeId,
+        autoplay: false,
+        begin: function(anim) {
+
+            $(clipId).empty();
+            for (var k = 0; k < timelineBarsCache[anim.id].length; k++)
+                for (var p = 0; p < timelineBarsCache[anim.id][k].length; p++)
+                    clipContentCache[anim.id] += timelineBarsCache[anim.id][k][p] + '\n';
+            
+            exitTimelineIterationCounter[anim.id] = 0;
+                
+            $(clipId).html(clipContentCache[anim.id]);
+            $(shapeId).css('clip-path', 'url(' + clipId + ')');
+        },
+        complete: function(anim) {
+            $(shapeId).hide();
+            $(clipId).empty();
+            $(shapeId).css('clip-path', '');
+            $('#svgdiv').html($('#svgdiv').html());
+        }
+    });
+    
+    var indexBase = timeline.id;
+    timelineBarsCache[indexBase] = finalBars;
+    
+    for (var i = 0; i < bigSteps; i++) {
+        
+        bigStepOpacityBase = (1 / bigSteps) * (1 - i);
+        maxBarLength = maxBarLengths[i];
+        
+        for (var j = 0; j < finalBars[i].length; j++) {
+            
+            curMinOpacity = bigStepOpacityBase - (1 / bigSteps / maxBarLength) * j;
+            curMaxOpacity = bigStepOpacityBase - (1 / bigSteps / maxBarLength) * (j + 1);
+            
+            timeline.add({
+                duration: duration / bigSteps / maxBarLength,
+                delay: (i == 0) ? delay : 0,
+                opacity: [curMinOpacity, curMaxOpacity],
+                easing: 'linear',
+                
+                complete: function(anim) {
+                    var curBarsIndex = exitTimelineIterationCounter[indexBase];
+                    if (removeLast)
+                        clipContentCache[indexBase] = RemoveLastString(clipContentCache[indexBase], timelineBarsCache[indexBase][curBarsIndex].length);
+                    else
+                        clipContentCache[indexBase] = RemoveFirstString(clipContentCache[indexBase], timelineBarsCache[indexBase][curBarsIndex].length);
+                    
+                    exitTimelineIterationCounter[indexBase]++;
+                    $(clipId).html(clipContentCache[indexBase]);
+                }
+            });
+        }
+    }
+    
+    return timeline;
+}
+
+function AnimateDissolveForShapes(stepsCount, shapeId, tiles, duration, delay) {
+    
+    var clipId = shapeId.replace(' > #', '') + '-clip';
+    var width = parseInt($(shapeId).css('width').replace('px', ''));
+    var height = parseInt($(shapeId).css('height').replace('px', ''));
+    var curOpacity = 0.0;
+    
+    if ($(clipId).length == 0) {
+        $('#svgdiv > svg > defs').append('<clipPath id="' + clipId.replace('#', '') + '" viewbox="0 0 ' + width + ' ' + height + '"></clipPath>');
+        $('#svgdiv').html($('#svgdiv').html());
+    }
+        
+    var timeline = anime.timeline({
+        targets: shapeId,
+        autoplay: false,
+        begin: function(anim) {
+            $(shapeId).show();
+            $(shapeId).css('opacity', curOpacity)
+            $(shapeId).css('clip-path', 'url(' + clipId + ')');
+        },
+        complete: function(anim) {
+            $(clipId).empty();
+            $(shapeId).css('clip-path', '');
+            $('#svgdiv').html($('#svgdiv').html());
+        }
+    });
+
+    var indexBase = timeline.id;
+    var opacityStep = (1 - curOpacity) / stepsCount;
+    var tilesCount = Math.ceil(tiles.length / stepsCount);
+    timelinePolysCache[indexBase] = tiles;
+    
+    for (var i = 0; i < stepsCount; i++) {
+        
+        timeline.add({
+            duration: duration / stepsCount,
+            opacity: [curOpacity, curOpacity + opacityStep],
+            easing: 'linear',
+            complete: function(anim) {
+                
+                var j = anim.id - indexBase - 1;
+                
+                for (var k = tilesCount * j; k < tilesCount * (j + 1) && k < timelinePolysCache[indexBase].length; k++)
+                    clipContentCache[indexBase] += timelinePolysCache[indexBase][k];
+                
+                $(clipId).html(clipContentCache[indexBase]);
+            }
+        });
+        
+        curOpacity += opacityStep;
+    }
+    
+    return timeline;
+}
+
+function AnimateDissolveForShapesExit(stepsCount, shapeId, tiles, duration, delay, removeLast) {
+    
+    var clipId = shapeId.replace(' > #', '') + '-clip';
+    var width = parseInt($(shapeId).css('width').replace('px', ''));
+    var height = parseInt($(shapeId).css('height').replace('px', ''));
+    var curOpacity = 1.0;
+    
+    if ($(clipId).length == 0) {
+        $('#svgdiv > svg > defs').append('<clipPath id="' + clipId.replace('#', '') + '" viewbox="0 0 ' + width + ' ' + height + '"></clipPath>');
+        $('#svgdiv').html($('#svgdiv').html());
+    }
+
+    var opacityStep = curOpacity / stepsCount;
+    var tilesStep = Math.ceil(tiles.length / stepsCount);
+        
+    var timeline = anime.timeline({
+        targets: shapeId,
+        autoplay: false,
+        begin: function(anim) {
+
+            $(clipId).empty();
+            for(var i = 0; i < timelinePolysCache[anim.id].length; i++)
+                clipContentCache[anim.id] += timelinePolysCache[anim.id][i] + '\n';
+                
+            $(clipId).html(clipContentCache[anim.id]);
+            $(shapeId).css('clip-path', 'url(' + clipId + ')');
+        },
+        complete: function(anim) {
+            $(shapeId).hide();
+            $(clipId).empty();
+            $(shapeId).css('clip-path', '');
+            $('#svgdiv').html($('#svgdiv').html());
+        }
+    });    
+    
+    var indexBase = timeline.id;
+    timelinePolysCache[indexBase] = tiles;
+    
+    for (var i = 0; i < stepsCount; i++) {
+         
+        curMinOpacity = 1 - curOpacity / stepsCount * i;
+        curMaxOpacity = 1 - curOpacity / stepsCount * (i + 1);
+            
+        timeline.add({
+            duration: duration / stepsCount,
+            delay: (i == 0) ? delay : 0,
+            opacity: [curMinOpacity, curMaxOpacity],
+            easing: 'linear',
+            complete: function(anim) {
+                if (removeLast)
+                    clipContentCache[indexBase] = RemoveLastString(clipContentCache[indexBase], tilesStep);
+                else
+                    clipContentCache[indexBase] = RemoveFirstString(clipContentCache[indexBase], tilesStep);
+                
+                $(clipId).html(clipContentCache[indexBase]);
+            }
+        });
+    }
+    
+    return timeline;
+}
+
+function AnimatePeekForShape(shapeId, polys, duration, delay, direction) {
+
+    var stepsCount = polys.length;
+    
+    var clipId = shapeId.replace(' > #', '') + '-clip';
+    var width = parseInt($(shapeId).css('width').replace('px', ''));
+    var height = parseInt($(shapeId).css('height').replace('px', ''));
+    var curOpacity = 0.0;
+    
+    if ($(clipId).length == 0) {
+        $('#svgdiv > svg > defs').append('<clipPath id="' + clipId.replace('#', '') + '" viewbox="0 0 ' + width + ' ' + height + '"></clipPath>');
+        $('#svgdiv').html($('#svgdiv').html());
+    }
+    
+    var vertical = direction == 'Bottom' || direction == 'Top';
+    var positiveMovement = direction == 'Top' || direction == 'Left';
+    var translateStep = vertical ? height / stepsCount : width / stepsCount;
+    if (positiveMovement)
+        translateStep *= -1;
+    
+    var timeline = anime.timeline({
+        targets: shapeId,
+        autoplay: false,
+        begin: function(anim) {            
+            $(shapeId).css('opacity', curOpacity)
+            $(shapeId).css('clip-path', 'url(' + clipId + ')');
+            $(shapeId).css('transform', vertical ? ('translateY(' + (positiveMovement ? height : -height) + 'px)') : ('translateX(' + (positiveMovement ? width : -width) + 'px)'));
+            $(shapeId).show();
+        },
+        complete: function(anim) {
+            $(clipId).empty();
+            $(shapeId).css('clip-path', '');
+            $(shapeId).css({'transform': ''});
+            $('#svgdiv').html($('#svgdiv').html());
+        }
+    });
+
+    var indexBase = timeline.id;
+    var opacityStep = (1 - curOpacity) / stepsCount;
+    
+    for (var i = 0; i < stepsCount; i++) {
+        
+        var curTranslate = (stepsCount - i) * translateStep;
+        var nextTranslate = (stepsCount - i - 1) * translateStep;
+        
+        timeline.add({
+            duration: duration / stepsCount,
+            delay: (i == 0) ? delay : 0,
+            opacity: [curOpacity, curOpacity + opacityStep],
+            translateX: vertical ? 0 : [curTranslate, nextTranslate],
+            translateY: vertical ? [curTranslate, nextTranslate] : 0,
+            easing: 'linear',
+            complete: function(anim) {
+                
+                var j = anim.id - indexBase - 1;
+                clipContentCache[indexBase] += polys[j];
+                $(clipId).html(clipContentCache[indexBase]);
+            }
+        });
+        
+        curOpacity += opacityStep;
+    }
+
+    return timeline;
+}
+
+function AnimatePeekForShapeExit(shapeId, polys, duration, delay, direction, removeLast) {
+
+    var stepsCount = polys.length;
+    
+    var clipId = shapeId.replace(' > #', '') + '-clip';
+    var width = parseInt($(shapeId).css('width').replace('px', ''));
+    var height = parseInt($(shapeId).css('height').replace('px', ''));
+    var curOpacity = 1.0;
+    
+    if ($(clipId).length == 0) {
+        $('#svgdiv > svg > defs').append('<clipPath id="' + clipId.replace('#', '') + '" viewbox="0 0 ' + width + ' ' + height + '"></clipPath>');
+        $('#svgdiv').html($('#svgdiv').html());
+    }
+    
+    var vertical = direction == 'Bottom' || direction == 'Top';
+    var positiveMovement = direction == 'Bottom' || direction == 'Right';
+    var translateStep = vertical ? height / stepsCount : width / stepsCount;
+    if (!positiveMovement)
+        translateStep *= -1;
+    
+    var timeline = anime.timeline({
+        targets: shapeId,
+        autoplay: false,
+        begin: function(anim) {
+
+            $(clipId).empty();
+            for (var i = 0; i < timelinePolysCache[anim.id].length; i++)
+                clipContentCache[indexBase] += timelinePolysCache[anim.id][i] + '\n';
+                
+            $(clipId).html(clipContentCache[anim.id]);
+            $(shapeId).css('clip-path', 'url(' + clipId + ')');
+        },
+        complete: function(anim) {
+            $(shapeId).hide();
+            $(clipId).empty();
+            $(shapeId).css('clip-path', '');
+            $('#svgdiv').html($('#svgdiv').html());
+        }
+    });
+
+    var indexBase = timeline.id;
+    var opacityStep = curOpacity / stepsCount;
+    timelinePolysCache[indexBase] = polys;
+    
+    for (var i = 0; i < stepsCount; i++) {
+        
+        var curTranslate = i * translateStep;
+        var nextTranslate = (i + 1) * translateStep;
+        
+        timeline.add({
+            duration: duration / stepsCount,
+            delay: (i == 0) ? delay : 0,
+            opacity: [curOpacity, curOpacity + opacityStep],
+            translateX: vertical ? 0 : [curTranslate, nextTranslate],
+            translateY: vertical ? [curTranslate, nextTranslate] : 0,
+            easing: 'linear',
+            complete: function(anim) {
+                
+                if (removeLast)
+                    clipContentCache[indexBase] = RemoveLastString(clipContentCache[indexBase], 1);
+                else
+                    clipContentCache[indexBase] = RemoveFirstString(clipContentCache[indexBase], 1);
+                
+                $(clipId).html(clipContentCache[indexBase]);
+            }
+        });
+        
+        curOpacity -= opacityStep;
+    }
+
+    return timeline;
+}
+
+function GenerateBars(vertical, width, height, minWidth, maxWidth, barSize) {
+    
+    var cacheKey = 'bars-' + width + 'x' + height + '-' + minWidth + 'x' + maxWidth + 'x' + barSize + '-' + (vertical ? 'Vert' : 'Hor');
+    
+    var result = polygonsCache[cacheKey];
     if (!result) {
         
         result = [];
         var curPosition = 0;
-        var limit = vertical ? frameWidth : frameHeight;
+        var limit = vertical ? width : height;
         var widths = [];
             
         while (curPosition < limit) {
@@ -1444,17 +2223,17 @@ function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
             var curBarPolygons = [];
             var center = Math.floor((widths[i] + prevStart * 2) / 2);
             
-            var left = center - gradationWidth;
+            var left = center - barSize;
             var right = center;
             while (left >= prevStart || right < prevStart + widths[i]) {
                 
                 if (left >= prevStart)
-                    curBarPolygons.push(GenerateBarPolygon(vertical, left, gradationWidth));
+                    curBarPolygons.push(GenerateBarPolygon(vertical, left, width, height, barSize));
                 if (right < prevStart + widths[i])
-                    curBarPolygons.push(GenerateBarPolygon(vertical, right, gradationWidth));
+                    curBarPolygons.push(GenerateBarPolygon(vertical, right, width, height, barSize));
                 
-                left -= gradationWidth;
-                right += gradationWidth;
+                left -= barSize;
+                right += barSize;
             }
             
             result.push(curBarPolygons);
@@ -1462,62 +2241,66 @@ function GenerateBars(vertical, minWidth, maxWidth, gradationWidth) {
             prevStart += widths[i];
         }
         
-        polygonsCache.Bars = result;
+        polygonsCache[cacheKey] = result;
     }
     
     return result;
 }
 
-function GenerateBarPolygon(vertical, start, width) { 
+function GenerateBarPolygon(vertical, start, width, height, barSize) { 
     if (vertical)
-        return `<polygon points="${start},${0} ${start + width},${0} ${start + width},${frameHeight} ${start},${frameHeight}"/>`;
+        return `<polygon points="${start},${0} ${start + barSize},${0} ${start + barSize},${height} ${start},${height}"/>`;
     else
-        return `<polygon points="${0},${start} ${frameWidth},${start} ${frameWidth},${start + width} ${0},${start + width}"/>`;
+        return `<polygon points="${0},${start} ${width},${start} ${width},${start + barSize} ${0},${start + barSize}"/>`;
 }
 
-function GenerateDissolvePolygons() {
+function GenerateDissolvePolygons(width, height, xFraction, yFraction) {
     
-    var result = polygonsCache.Dissolve;
+    var cacheKey = 'dissolve-' + width + 'x' + height + '-' + xFraction + '/' + yFraction;
+    
+    var result = polygonsCache[cacheKey];
     if (!result) {
         
         result = [];
-        var xStep = frameWidth / 54;
-        var yStep = frameHeight / 42;
+        var xStep = width / xFraction;
+        var yStep = height / yFraction;
         var eps = 0.5;
         
-        for(var i = 0; i < 54; i++) {
-            for(var j = 0; j < 42; j++) {
+        for(var i = 0; i < xFraction; i++) {
+            for(var j = 0; j < yFraction; j++) {
             
-                var x = frameWidth / 54 * i;
-                var y = frameHeight / 42 * j;
+                var x = xStep * i;
+                var y = yStep * j;
                 
                 result.push(`<polygon points="${x - eps},${y - eps} ${x + xStep + eps},${y - eps} ${x + xStep + eps},${y + yStep + eps} ${x - eps},${y + yStep + eps}"/>`);
             }
         }
         
-        polygonsCache.Dissolve = result;
+        polygonsCache[cacheKey] = result;
     }
         
     return result;
 }
 
-function GenerateShapePolygons(stepsCount, shapeType) {
+function GenerateShapePolygons(stepsCount, shapeType, width, height) {
     
-    var result = polygonsCache[shapeType];
+    var cacheKey = shapeType + '-' + width + 'x' + height;
+    var result = polygonsCache[cacheKey];
     if (!result) {
         
         result = [];
-        var centerX = frameWidth / 2;
-        var centerY = frameHeight / 2;
+        var centerX = width / 2;
+        var centerY = height / 2;
         
-        var xStep = frameWidth / stepsCount / 2;
-        var yStep = frameHeight / stepsCount / 2;
-        if (shapeType == 'Diamond') {
+        var xStep = width / stepsCount / 2;
+        var yStep = height / stepsCount / 2;
+        if (shapeType == 'Diamond' || shapeType == 'DiamondIn' || shapeType == 'DiamondOut') {
             xStep *= 2;
             yStep *= 2;
         }
         
         var x, y;
+        var eps = 1;
         
         for(var i = 0; i < stepsCount; i++) {
             
@@ -1529,15 +2312,18 @@ function GenerateShapePolygons(stepsCount, shapeType) {
                 y += yStep;
             }
             
-            if (shapeType == 'Plus')
-                result.push(`<polygon points="${0},${centerY - y} ${centerX - x},${centerY - y} ${centerX - x},${0} ${centerX + x},${0} ${centerX + x},${centerY - y} ${frameWidth},${centerY - y} ${frameWidth},${centerY + y} ${centerX + x},${centerY + y} ${centerX + x},${frameHeight} ${centerX - x},${frameHeight} ${centerX - x},${centerY + y} ${0},${centerY + y}"/>`);
-            else if (shapeType == 'Diamond')
-                result.push(`<polygon points="${centerX - x},${centerY} ${centerX},${centerY - y} ${centerX + x},${centerY} ${centerX},${centerY + y}"/>`);
+            if (shapeType == 'Plus' || shapeType == 'PlusIn' || shapeType == 'PlusOut')
+                result.push(`<polygon points="${-xStep},${centerY - y} ${centerX - x},${centerY - y} ${centerX - x},${-yStep} ${centerX + x},${-yStep} ${centerX + x},${centerY - y} ${width + xStep},${centerY - y} ${width + xStep},${centerY + y} ${centerX + x},${centerY + y} ${centerX + x},${height + yStep} ${centerX - x},${height + yStep} ${centerX - x},${centerY + y} ${-xStep},${centerY + y} ${0},${centerY + y - yStep - eps} ${centerX - x + xStep + eps},${centerY + y - yStep - eps} ${centerX - x + xStep + eps},${height} ${centerX + x - xStep - eps},${height} ${centerX + x - xStep - eps},${centerY + y - yStep - eps} ${width},${centerY + y - yStep - eps} ${width},${centerY - y + yStep + eps} ${centerX + x - xStep - eps},${centerY - y + yStep + eps} ${centerX + x - xStep - eps},${0} ${centerX - x + xStep + eps},${0} ${centerX - x + xStep + eps},${centerY - y + yStep + eps} ${0},${centerY - y + yStep + eps} ${0},${centerY + y - yStep - eps} ${-xStep},${centerY + y}"/>`);
+            else if (shapeType == 'Diamond' || shapeType == 'DiamondIn' || shapeType == 'DiamondOut')
+                result.push(`<polygon points="${centerX - x},${centerY} ${centerX},${centerY - y} ${centerX + x},${centerY} ${centerX},${centerY + y} ${centerX},${centerY + y - yStep} ${centerX + x - xStep},${centerY} ${centerX},${centerY - y + yStep} ${centerX - x + xStep},${centerY} ${centerX},${centerY + y - yStep} ${centerX},${centerY + y}"/>`);
             else if (shapeType == 'ZoomIn')
-                result.push(`<polygon points="${0},${0} ${frameWidth},${0} ${frameWidth},${y} ${x},${y} ${x},${frameHeight - y} ${frameWidth - x},${frameHeight - y} ${frameWidth - x},${y} ${frameWidth},${y} ${frameWidth},${frameHeight} ${0},${frameHeight}"/>`);
+                result.push(`<polygon points="${0},${0} ${width},${0} ${width},${y} ${x},${y} ${x},${height - y} ${width - x},${height - y} ${width - x},${y} ${width},${y} ${width},${height} ${0},${height}"/>`);
             else if (shapeType == 'ZoomOut')
                 result.push(`<polygon points="${centerX - x},${centerY - y} ${centerX + x},${centerY - y} ${centerX + x},${centerY + y} ${centerX - x},${centerY + y}"/>`);
         }
+        
+        if (shapeType == 'DiamondOut' || shapeType == 'PlusOut')
+            result = result.reverse();
     
         polygonsCache[shapeType] = result;
     }
@@ -1545,37 +2331,39 @@ function GenerateShapePolygons(stepsCount, shapeType) {
     return result;
 }
 
-function GenerateSplitPolygons(stepsCount, horizontal, out) {
+function GenerateSplitPolygons(stepsCount, width, height, horizontal, out) {
     
-    var cacheKey = 'split' + (horizontal ? 'Hor' : 'Vert') + (out ? 'Out' : 'In');
+    var cacheKey = 'split-' + width + 'x' + height + '-' + (horizontal ? 'Hor' : 'Vert') + (out ? 'Out' : 'In');
     var result = polygonsCache[cacheKey];
     if (!result) {
         
         result = [];
-        var centerX = frameWidth / 2;
-        var centerY = frameHeight / 2;
+        var centerX = width / 2;
+        var centerY = height / 2;
         
-        var xStep = frameWidth / stepsCount / 2;
-        var yStep = frameHeight / stepsCount / 2;
+        var xStep = width / stepsCount / 2;
+        var yStep = height / stepsCount / 2;
+         
+        var eps = horizontal ? yStep : xStep;
         
         var x, y;
         
-        for(var i = 0; i < stepsCount; i++) {
+        for(var i = 0; i <= stepsCount; i++) {
             
             x = xStep * i;
             y = yStep * i;
             
             if (horizontal) {
                 if (out)
-                    result.push(`<polygon points="${0},${centerY - y} ${frameWidth},${centerY - y} ${frameWidth},${centerY + y} ${0},${centerY + y}"/>`);
+                    result.push(`<polygon points="${0},${centerY - y} ${width},${centerY - y} ${width},${centerY + y} ${0},${centerY + y}"/>`);
                 else
-                    result.push(`<polygon points="${0},${0} ${frameWidth},${0} ${frameWidth},${y} ${0},${y} ${0},${frameHeight - y} ${frameWidth},${frameHeight - y} ${frameWidth},${y} ${frameWidth},${y} ${frameWidth},${frameHeight} ${0},${frameHeight}"/>`);
+                    result.push(`<polygon points="${0},${0} ${width},${0} ${width},${y + eps} ${0},${y + eps} ${0},${height - y - eps} ${width},${height - y - eps} ${width},${height} ${0},${height}"/>`);
             }
             else {
                 if (out)
-                    result.push(`<polygon points="${centerX - x},${0} ${centerX + x},${0} ${centerX + x},${frameHeight} ${centerX - x},${frameHeight}"/>`);
+                    result.push(`<polygon points="${centerX - x},${0} ${centerX + x},${0} ${centerX + x},${height} ${centerX - x},${height}"/>`);
                 else
-                    result.push(`<polygon points="${0},${0} ${0},${frameHeight} ${x},${frameHeight} ${x},${0} ${frameWidth - x},${0} ${frameWidth - x},${frameHeight} ${frameWidth},${frameHeight} ${frameWidth},${0} ${frameWidth - x},${0} ${0},${0}"/>`);
+                    result.push(`<polygon points="${0},${0} ${0},${height} ${x + eps},${height} ${x + eps},${0} ${width - x - eps},${0} ${width - x - eps},${height} ${width},${height} ${width},${0}"/>`);
             }
         }
     
@@ -1585,9 +2373,9 @@ function GenerateSplitPolygons(stepsCount, horizontal, out) {
     return result;
 }
 
-function GenerateWipePolygons(stepsCount, direction) {
+function GenerateWipePolygons(stepsCount, direction, width, height) {
     
-    var cacheKey = 'wipe' + direction;
+    var cacheKey = 'wipe-' + direction + '-' + width + 'x' + height;
     var result = polygonsCache[cacheKey];
     var horizontal = direction == 'Up' || direction == 'Down';
     
@@ -1595,23 +2383,23 @@ function GenerateWipePolygons(stepsCount, direction) {
         
         result = [];
         
-        var xStep = frameWidth / stepsCount;
-        var yStep = frameHeight / stepsCount;
+        var xStep = width / stepsCount;
+        var yStep = height / stepsCount;
         var oppositeDir = (direction == 'Left' || direction == 'Up') ? -1 : 1;
         
-        var x = direction == 'Left' ? frameWidth : -xStep;
-        var y = direction == 'Up' ? frameHeight : -yStep;
+        var x = direction == 'Left' ? width : -xStep;
+        var y = direction == 'Up' ? height : -yStep;
         var eps = 0.8;
         
-        for(var i = 0; i < stepsCount; i++) {
+        for(var i = 0; i <= stepsCount; i++) {
             
             x += oppositeDir * xStep;
             y += oppositeDir * yStep;
             
             if (horizontal)
-                result.push(`<polygon points="${0},${y} ${frameWidth},${y} ${frameWidth},${y + yStep + eps} ${0},${y + yStep + eps}"/>`);
+                result.push(`<polygon points="${0},${y} ${width},${y} ${width},${y + yStep + eps} ${0},${y + yStep + eps}"/>`);
             else
-                result.push(`<polygon points="${x},${0} ${x + xStep + eps},${0} ${x + xStep + eps},${frameHeight} ${x},${frameHeight}"/>`);
+                result.push(`<polygon points="${x},${0} ${x + xStep + eps},${0} ${x + xStep + eps},${height} ${x},${height}"/>`);
         }
     
         polygonsCache[cacheKey] = result;
@@ -1704,17 +2492,18 @@ function GenerateCombPolygons(direction) {
     return result;
 }
 
-function GenerateWheelSectors(wheelType, stepsCount) {
+function GenerateWheelSectors(wheelType, stepsCount, width, height) {
         
-    var result = polygonsCache[wheelType];
+    var cacheKey = wheelType + '-' + width + 'x' + height;
+    var result = polygonsCache[cacheKey];
     if (!result) {
         
         result = [];
         var angleStep = 360 / stepsCount;
         var currentAngle = 0;
-        var radius = Math.max(frameWidth, frameHeight) + 10;
-        var centerX = frameWidth / 2;
-        var centerY = frameHeight / 2;
+        var radius = Math.max(width, height) + 10;
+        var centerX = width / 2;
+        var centerY = height / 2;
         var angleFix = wheelType == 'WheelReverse' ? -2 : 2;
         
         var opts = {
@@ -1761,23 +2550,82 @@ function GenerateWheelSectors(wheelType, stepsCount) {
             result = resultRearranged;
         }
         
-        polygonsCache[wheelType] = result;    
+        if (wheelType == 'Wheel2') {
+            var resultRearranged = [];
+            for (var i = 0; i < stepsCount / 2; i++) {
+                resultRearranged.push(result[i]);
+                resultRearranged.push(result[stepsCount / 2 + i]);
+            }
+            result = resultRearranged;
+        }
+        
+        if (wheelType == 'Wheel3') {
+            var resultRearranged = [];
+            var third = Math.floor(stepsCount / 3);
+            var third2 = Math.floor(stepsCount / 3 * 2);
+            for (var i = 0; i < third; i++) {
+                resultRearranged.push(result[i]);
+                resultRearranged.push(result[third + i]);
+                resultRearranged.push(result[third2 + i]);
+            }
+            result = resultRearranged;
+        }
+        
+        if (wheelType == 'Wheel4') {
+            var resultRearranged = [];
+            var quater = Math.floor(stepsCount / 4);
+            var half = stepsCount / 2;
+            var quater3 = Math.floor(stepsCount / 4 * 3);
+            for (var i = 0; i < quater; i++) {
+                resultRearranged.push(result[i]);
+                resultRearranged.push(result[quater + i]);
+                resultRearranged.push(result[half + i]);
+                resultRearranged.push(result[quater3 + i]);
+            }
+            result = resultRearranged;
+        }
+        
+        if (wheelType == 'Wheel8') {
+            var resultRearranged = [];
+            var eight = Math.floor(stepsCount / 8);
+            var quater = Math.floor(stepsCount / 4);
+            var eight3 = Math.floor(stepsCount / 8 * 3);
+            var half = stepsCount / 2;
+            var eight5 = Math.floor(stepsCount / 8 * 5);
+            var quater3 = Math.floor(stepsCount / 4 * 3);
+            var eight7 = Math.floor(stepsCount / 8 * 7);
+            for (var i = 0; i < eight; i++) {
+                resultRearranged.push(result[i]);
+                resultRearranged.push(result[eight + i]);
+                resultRearranged.push(result[quater + i]);
+                resultRearranged.push(result[eight3 + i]);
+                resultRearranged.push(result[half + i]);
+                resultRearranged.push(result[eight5 + i]);
+                resultRearranged.push(result[quater3 + i]);
+                resultRearranged.push(result[eight7 + i]);
+            }
+            result = resultRearranged;
+        }
+        
+        polygonsCache[cacheKey] = result;    
     }
     
     return result;
 }
 
-function GenerateCircles(stepsCount) {
+function GenerateCircles(stepsCount, width, height) {
     
-    var result = polygonsCache.Circles;
+    var cacheKey = 'circles-' + width + 'x' + height;
+    
+    var result = polygonsCache[cacheKey];
     if (!result) {
     
         result = [];
-        var centerX = frameWidth / 2;
-        var centerY = frameHeight / 2;
+        var centerX = width / 2;
+        var centerY = height / 2;
         
         var minRadius = 1;
-        var maxRadius = Math.max(frameWidth, frameHeight) / 2 * 1.4142;
+        var maxRadius = Math.max(width, height) / 2 * 1.4142;
         var radiusStep = (maxRadius - minRadius) / stepsCount;
         var radius = minRadius;
 
@@ -1808,11 +2656,178 @@ function GenerateCircles(stepsCount) {
             result.push('<path d="' + pathData + '"/>');
         }
         
-        polygonsCache.Circles = result;
+        polygonsCache[cacheKey] = result;
     }
     
     return result;
 }
+
+function GenerateRings(stepsCount, width, height, out) {
+    
+    var cacheKey = 'rings' + '-' + width + 'x' + height + '-' + (out ? 'Out' : 'In');
+    var result = polygonsCache[cacheKey];
+    if (!result) {
+    
+        result = [];
+        var centerX = width / 2;
+        var centerY = height / 2;
+        
+        var minRadius = 1;
+        var maxRadius = Math.max(width, height) / 2 * 1.4142;
+        var radiusStep = (maxRadius - minRadius) / stepsCount;
+        var radius = minRadius;
+        var eps = 2;
+        
+        var opts = {
+            cx: centerX,
+            cy: centerY,
+            radius: radius,
+            start_angle: 0,
+            end_angle: 359.999
+        };
+        
+        
+        for(var i = 0; i < stepsCount; i++) {
+            var pathData = [
+                "M", opts.cx, (opts.cy - opts.radius),
+                "A", opts.radius, opts.radius, 0, 1, 0, opts.cx, opts.cy + opts.radius,
+                "A", opts.radius, opts.radius, 0, 1, 0, opts.cx, opts.cy - opts.radius,
+                "Z",
+                "M", opts.cx, (opts.cy - opts.radius - radiusStep - eps),
+                "A", opts.radius - radiusStep, opts.radius - radiusStep, 0, 1, 1, opts.cx, opts.cy + opts.radius - radiusStep + eps,
+                "A", opts.radius - radiusStep, opts.radius - radiusStep, 0, 1, 1, opts.cx, opts.cy - opts.radius - radiusStep - eps,
+                "Z"
+            ].join(" ");
+            
+            opts.radius += radiusStep;
+            
+            result.push('<path d="' + pathData + '"/>');
+        }
+        
+        // fix: filling center hole
+        opts.radius = minRadius
+        for(var i = 0; i < 3; i++) {
+            start = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.end_angle);
+            end = PolarToCartesian(opts.cx, opts.cy, opts.radius, opts.start_angle);
+            largeArcFlag = opts.end_angle - opts.start_angle <= 180 ? "0" : "1";
+            
+            var pathData = [
+                "M", start.x, start.y,
+                "A", opts.radius, opts.radius, 0, largeArcFlag, 0, end.x, end.y,
+                "L", opts.cx, opts.cy,
+                "Z"
+            ].join(" ");
+            
+            opts.radius += radiusStep * 2;
+            
+            result.splice(i, 0, '<path d="' + pathData + '"/>');
+        }
+        
+        if (out)
+            result = result.reverse();
+        
+        polygonsCache[cacheKey] = result;
+    }
+    
+    return result;
+}
+
+function GenerateBlindsPolygons(stepsCount, width, height, horizontal) {
+    
+    var cacheKey = 'blinds-' + width + 'x' + height + '-' + (horizontal ? 'Hor' : 'Vert');
+    var result = polygonsCache[cacheKey];
+    if (!result) {
+        
+        result = [];
+        
+        var xStep = width / stepsCount / 6;
+        var yStep = height / stepsCount / 6;
+        
+        var sixth = horizontal ? height / 6 : width / 6;
+        var third = horizontal ? height / 3 : width / 3;
+        var half = horizontal ? height / 2 : width / 2;
+        var third2 = horizontal ? height / 3 * 2 : width / 3 * 2;
+        var sixth5 = horizontal ? height / 6 * 5 : width / 6 * 5;
+         
+        var eps = horizontal ? yStep : xStep;
+        
+        var x, y;
+        
+        for(var i = 0; i < stepsCount; i++) {
+            
+            x = xStep * i;
+            y = yStep * i;
+            
+            if (horizontal) {
+                result.push(`<polygon points="${0},${y} ${width},${y} ${width},${y + yStep + eps} ${0},${y + yStep + eps}"/>`);
+                result.push(`<polygon points="${0},${sixth + y} ${width},${sixth + y} ${width},${sixth + y + yStep + eps} ${0},${sixth + y + yStep + eps}"/>`);
+                result.push(`<polygon points="${0},${third + y} ${width},${third + y} ${width},${third + y + yStep + eps} ${0},${third + y + yStep + eps}"/>`);
+                result.push(`<polygon points="${0},${half + y} ${width},${half + y} ${width},${half + y + yStep + eps} ${0},${half + y + yStep + eps}"/>`);
+                result.push(`<polygon points="${0},${third2 + y} ${width},${third2 + y} ${width},${third2 + y + yStep + eps} ${0},${third2 + y + yStep + eps}"/>`);
+                result.push(`<polygon points="${0},${sixth5 + y} ${width},${sixth5 + y} ${width},${sixth5 + y + yStep + eps} ${0},${sixth5 + y + yStep + eps}"/>`);
+            }
+            else {
+                result.push(`<polygon points="${x},${0} ${x + xStep + eps},${0} ${x + xStep + eps},${height} ${x},${height}"/>`);
+                result.push(`<polygon points="${sixth + x},${0} ${sixth + x + xStep + eps},${0} ${sixth + x + xStep + eps},${height} ${sixth + x},${height}"/>`);
+                result.push(`<polygon points="${third + x},${0} ${third + x + xStep + eps},${0} ${third + x + xStep + eps},${height} ${third + x},${height}"/>`);
+                result.push(`<polygon points="${half + x},${0} ${half + x + xStep + eps},${0} ${half + x + xStep + eps},${height} ${half + x},${height}"/>`);
+                result.push(`<polygon points="${third2 + x},${0} ${third2 + x + xStep + eps},${0} ${third2 + x + xStep + eps},${height} ${third2 + x},${height}"/>`);
+                result.push(`<polygon points="${sixth5 + x},${0} ${sixth5 + x + xStep + eps},${0} ${sixth5 + x + xStep + eps},${height} ${sixth5 + x},${height}"/>`);
+            }
+        }
+    
+        polygonsCache[cacheKey] = result;
+    }
+    
+    return result;
+}
+
+function GenerateStripsPolygons(width, height, fraction, direction) {
+    
+    var cacheKey = 'strips-' + width + 'x' + height + '-' + fraction + '-' + direction;
+        
+    var result = polygonsCache[cacheKey];
+    if (!result) {
+        
+        result = [];
+        var sortedPolys = {};
+        var xStep = width / fraction;
+        var yStep = height / fraction;
+        var eps = 0.5;
+        
+        for(var i = 0; i < fraction; i++) {
+            for(var j = 0; j < fraction; j++) {
+                
+                var x = xStep * i;
+                var y = yStep * j;
+                
+                var sum = i + j;
+                
+                if (sortedPolys[sum] == null)
+                    sortedPolys[sum] = [];
+                
+                if (direction == 'DownRight')
+                    sortedPolys[sum].push(`<polygon points="${x - eps},${y - eps} ${x + xStep + eps},${y - eps} ${x + xStep + eps},${y + yStep + eps} ${x - eps},${y + yStep + eps}"/>`);
+                else if (direction == 'DownLeft')
+                    sortedPolys[sum].push(`<polygon points="${width - x + eps},${y - eps} ${width - x - xStep - eps},${y - eps} ${width - x - xStep - eps},${y + yStep + eps} ${width - x + eps},${y + yStep + eps}"/>`);
+                else if (direction == 'UpRight')
+                    sortedPolys[sum].push(`<polygon points="${x - eps},${height - y + eps} ${x + xStep + eps},${height - y + eps} ${x + xStep + eps},${height - y - yStep - eps} ${x - eps},${height - y - yStep - eps}"/>`);
+                else if (direction == 'UpLeft')
+                    sortedPolys[sum].push(`<polygon points="${width - x + eps},${height - y + eps} ${width - x - xStep - eps},${height - y + eps} ${width - x - xStep - eps},${height - y - yStep - eps} ${width - x + eps},${height - y - yStep - eps}"/>`);
+            }
+        }
+
+        for (var key in sortedPolys) {
+            for(var i = 0; i < sortedPolys[key].length; i++)
+                result.push(sortedPolys[key][i]);
+        }
+        
+        polygonsCache[cacheKey] = result;
+    }
+        
+    return result;
+}
+
 
 function PolarToCartesian(centerX, centerY, radius, angleInDegrees) {
     var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
@@ -1842,6 +2857,20 @@ function ShuffleArray(array) {
     return array;
 }
 
+function RemoveFirstString(text, count) {
+
+    var lines = text.split('\n');
+    lines.splice(0, count);
+    return lines.join('\n');    
+}
+
+function RemoveLastString(text, count) {
+
+    var lines = text.split('\n');
+    lines.splice(lines.length - count, count);
+    return lines.join('\n');
+}
+
 function StackSlides(foreground, background) {
     $(background).css("z-index", 1);
     $(foreground).css("z-index", 2);
@@ -1863,7 +2892,9 @@ function ShowNext() {
     if (currentVisiblePage < maxVisiblePage) {
         var prevSlideId = '#slide-' + currentVisiblePage++;
         var slideId = '#slide-' + currentVisiblePage;
-        PlayTransition(slideId, prevSlideId);            
+        
+        if (@animateTransitions)
+            PrepareAndPlayTransition(slideId, prevSlideId);
     }
 }
 
@@ -1872,6 +2903,8 @@ function ShowPrev() {
     if (currentVisiblePage > 1) {
         var prevSlideId = '#slide-' + currentVisiblePage--;
         var slideId = '#slide-' + currentVisiblePage;
-        PlayTransition(slideId, prevSlideId);
+        
+        if (@animateTransitions)
+            PrepareAndPlayTransition(slideId, prevSlideId);
     }
 }

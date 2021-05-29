@@ -1,15 +1,15 @@
 ﻿@model TemplateContext<Paragraph>
 
 @{
-	Paragraph contextObject = Model.Object;
-	
-	var parentTextFrame = Model.Local.Get<TextFrame>("parent");
+    Paragraph contextObject = Model.Object;
+    
+    var parentTextFrame = Model.Local.Get<TextFrame>("parent");
     var tableContentFlag = Model.Local.Get<bool>("tableContent");
-	var parentContainerSize = Model.Local.Get<SizeF>("parentContainerSize");
-	
-	var paragraphFormatEffective = contextObject.ParagraphFormat.GetEffective();
-	
-	double[] margins = TextHelper.GetParagraphMargins(paragraphFormatEffective, parentTextFrame, parentContainerSize, Model);
+    var parentContainerSize = Model.Local.Get<SizeF>("parentContainerSize");
+    
+    var paragraphFormatEffective = contextObject.ParagraphFormat.GetEffective();
+    
+    double[] margins = TextHelper.GetParagraphMargins(paragraphFormatEffective, parentTextFrame, parentContainerSize, Model);
 }
 
 @functions
@@ -21,15 +21,15 @@
 }
 
 <p style="margin-left: @margins[0]px; margin-top: @margins[1]px; margin-right: @margins[2]px; margin-bottom: @margins[3]px; @GetTextStyle(contextObject)">
-	@if (paragraphFormatEffective.Bullet.Type != BulletType.None)
-	{
-		@Raw(Include("bullet", Model).ToString().Replace(Environment.NewLine, ""))
-	}
-	@foreach (Portion portion in contextObject.Portions) 
-	{ 
+    @if (paragraphFormatEffective.Bullet.Type != BulletType.None)
+    {
+        @Raw(Include("bullet", Model).ToString().Replace(Environment.NewLine, ""))
+    }
+    @foreach (Portion portion in contextObject.Portions) 
+    { 
         var subModel = Model.SubModel(portion);
         subModel.Local.Put("parentTextFrame", parentTextFrame);
         subModel.Local.Put("tableContent", tableContentFlag);
-		@Raw(Include("portion", subModel).ToString().Replace(Environment.NewLine, ""));
-	}
+        @Raw(Include("portion", subModel).ToString().Replace(Environment.NewLine, ""));
+    }
 </p>

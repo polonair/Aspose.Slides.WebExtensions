@@ -1,23 +1,31 @@
 ﻿@model TemplateContext<VideoFrame>
 
 @{
-	VideoFrame contextObject = Model.Object;
-	
-	var origin = Model.Local.Get<Point>("origin");
-	var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
-										(int)contextObject.X + origin.X,
-										(int)contextObject.Y + origin.Y,
-										(int)contextObject.Width,
-										(int)contextObject.Height);
+    VideoFrame contextObject = Model.Object;
+    
+    var origin = Model.Local.Get<Point>("origin");
+    var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
+                                        (int)contextObject.X + origin.X,
+                                        (int)contextObject.Y + origin.Y,
+                                        (int)contextObject.Width,
+                                        (int)contextObject.Height);
 
-        int width = (int)contextObject.Width;
-        int height = (int)contextObject.Height;
+    int width = (int)contextObject.Width;
+    int height = (int)contextObject.Height;
 
-        string videoSrc = VideoHelper.GetVideoURL(contextObject, Model);
-        string contentType = contextObject.EmbeddedVideo.ContentType;
+    string videoSrc = VideoHelper.GetVideoURL(contextObject, Model);
+    string contentType = contextObject.EmbeddedVideo.ContentType;
+        
+    string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
+    string animationAttributes = "";
+    
+    if (Model.Local.ContainsKey("animationAttributes"))
+    {
+        animationAttributes = Model.Local.Get<string>("animationAttributes");
+    }
 }
 
-<table class="table" style="@positionStyle">
+<table class="table" id="@id" style="@positionStyle" @Raw(animationAttributes)>
     <tr>
         <td>
         <video style="@positionStyle" controls>

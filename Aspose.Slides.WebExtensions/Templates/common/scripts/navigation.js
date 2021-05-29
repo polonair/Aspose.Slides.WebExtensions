@@ -4,21 +4,23 @@
     Presentation contextObject = Model.Object;
     var navigationEnabled = Model.Global.Get<bool>("navigationEnabled").ToString().ToLower();
     var animateTransitions = Model.Global.Get<bool>("animateTransitions").ToString().ToLower();
+    var animateShapes = Model.Global.Get<bool>("animateShapes").ToString().ToLower();
     var pagesCount = contextObject.Slides.Count;
 }
 
-var currentVisiblePage = 1;
+var currentVisiblePage = 0;
 var maxVisiblePage = @pagesCount;
 
 $(document).ready(function(){
       
-    if (@navigationEnabled) {
+    if (@navigationEnabled)
         InitNavigation();
-    }
     
-    if (!@animateTransitions) {
+    if (!@animateTransitions)
         ShowSlide(1);
-    }
+    else
+        currentVisiblePage = 1;
+    ChangeThumbSelection(1);
 });
 
 function InitNavigation() {
@@ -32,18 +34,55 @@ function InitNavigation() {
         $('.navigationArea').removeClass('navigationAreaBorder');
     }
     
+    SetThumbnailClickHandler();
+}
+
+function RemoveThumbnailClickHandler() {
+    $(".slideThumb").unbind();
+}
+
+function SetThumbnailClickHandler() {
+    RemoveThumbnailClickHandler();
     $(".slideThumb").click(function(){ ShowSlide($(this).data('number')); });
 }
 
 function ShowSlide(nextVisiblePage) {
     
-    PlayTransitionBegin();
-    $('#slide-' + currentVisiblePage).hide();
-    $('#slide-' + nextVisiblePage).show();
-    ChangeThumbSelection(nextVisiblePage);
-    
-    currentVisiblePage = nextVisiblePage;
-    PlayTransitionEnd();
+    if (nextVisiblePage != currentVisiblePage) {         
+        ChangeThumbSelection(nextVisiblePage);
+        var prevSlideId = '#slide-' + currentVisiblePage;
+        var slideId = '#slide-' + nextVisiblePage;
+        currentVisiblePage = nextVisiblePage;
+        
+        if (@animateTransitions) {
+            if (@animateShapes)
+                PauseAllEffects(animations);
+            
+            PrepareAndPlayTransition(slideId, prevSlideId);
+        }
+        else {
+            StackSlides(slideId, prevSlideId);
+            $(prevSlideId).hide();
+            $(slideId).show();
+            
+            if (@animateShapes) {
+                PauseAllEffects(prevAnimations);
+                RestoreAllEffects(prevAnimations);
+                AnimateShapes(slideId);
+                PlayNextAnimationsForTarget('slide');
+            }
+        }
+    }
+    else {
+        
+        if (@animateShapes) {
+            PauseAllEffects(animations);
+            RestoreAllEffects(animations);
+            PrepareAllEffects(animations);
+            ResetAnimationIndicies();
+            PlayNextAnimationsForTarget('slide');
+        }
+    }
 }
 
 function ChangeThumbSelection(nextVisiblePage) {

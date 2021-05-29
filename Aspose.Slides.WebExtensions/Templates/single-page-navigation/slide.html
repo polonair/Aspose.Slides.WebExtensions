@@ -3,17 +3,32 @@
 @{
     Slide contextObject = Model.Object;
     int slideNumber = SlideHelper.GetVisibleSlideNumber(contextObject);
+    var slideAnimationData = SlideHelper.GetSlidesAnimationCollection(contextObject);
 }
     
-@helper EmitShape(IShape shape, Slide contextObject) 
+@helper EmitShape(IShape shape, Slide contextObject, Dictionary<IShape, Tuple<string, string, float, float, string, int>> slideAnimationData) 
 {
     var margin = Model.Global.Get<int>("slideMargin");
     var origin = new Point(0, 0);
-
+    
+    string animationAttributes = "";
+    if (slideAnimationData.ContainsKey(shape))
+    {
+        var shapeAnimationData = slideAnimationData[shape];
+        
+        animationAttributes += "data-animation-type=\"" + shapeAnimationData.Item1 + "\" ";
+        animationAttributes += "data-animation-subtype=\"" + shapeAnimationData.Item2 + "\" ";
+        animationAttributes += "data-animation-duration=\"" + shapeAnimationData.Item3 + "\" ";
+        animationAttributes += "data-animation-delay=\"" + shapeAnimationData.Item4 + "\" ";
+        animationAttributes += "data-animation-clickTarget=\"" + shapeAnimationData.Item5 + "\" ";
+        animationAttributes += "data-animation-index=\"" + shapeAnimationData.Item6 + "\" ";
+    }
+        
     if (shape is AutoShape && (((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.Rectangle || ((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.NotDefined))
     {
         var subModel = Model.SubModel((AutoShape)shape);
         subModel.Local.Put<Point>("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
 
         @Include("autoshape", subModel)
     }
@@ -21,6 +36,7 @@
     {
         var subModel = Model.SubModel((VideoFrame)shape);
         subModel.Local.Put<Point> ("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
 
         @Include("videoframe", subModel)
     }
@@ -28,6 +44,7 @@
     {
         var subModel = Model.SubModel((PictureFrame)shape);
         subModel.Local.Put<Point>("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
 
         @Include("pictureframe", subModel)
     }
@@ -35,6 +52,7 @@
     {
         var subModel = Model.SubModel((Table)shape);
         subModel.Local.Put<Point>("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
 
         @Include("table", subModel)
     }
@@ -42,6 +60,7 @@
     {
         var subModel = Model.SubModel((Shape)shape);
         subModel.Local.Put("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
 
         @Include("shape", subModel)
     }  
@@ -57,20 +76,20 @@
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
         {
             if(shape.Placeholder == null) {
-                @EmitShape(shape, contextObject);
+                @EmitShape(shape, contextObject, slideAnimationData);
             }
         }
 
         @foreach (var shape in contextObject.LayoutSlide.Shapes)
         {
             if(shape.Placeholder == null) {
-                @EmitShape(shape, contextObject);
+                @EmitShape(shape, contextObject, slideAnimationData);
             }
         }        
         
         @foreach (var shape in contextObject.Shapes)
         {
-            @EmitShape(shape, contextObject);
+            @EmitShape(shape, contextObject, slideAnimationData);
         }
 
 </div>
