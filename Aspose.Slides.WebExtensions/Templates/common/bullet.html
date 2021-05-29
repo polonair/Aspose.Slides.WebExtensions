@@ -1,51 +1,51 @@
 @model TemplateContext<Paragraph>
 
 @{
-	Paragraph contextObject = Model.Object;
+    Paragraph contextObject = Model.Object;
     TextFrame parentTextFrame = Model.Local.Get<TextFrame>("parent");
     var tableContentFlag = Model.Local.Get<bool>("tableContent");
-	
-	var paragraphFormatEffective = contextObject.ParagraphFormat.GetEffective();
-	
-	double[] margins = new double[] { - Math.Abs(paragraphFormatEffective.Indent), 
-										0, 
-										Math.Abs(paragraphFormatEffective.Indent),
-										0 };
-										
-	if (paragraphFormatEffective.Bullet.Type == BulletType.Picture)
-	{
-		margins[2] -= TextHelper.GetPictureBulletSize(paragraphFormatEffective, Model);
-	}
-	else
-	{
-		margins[2] -= 12;  // FIXME magic number (ideally it should be bullet width)
-	}
-	
+    
+    var paragraphFormatEffective = contextObject.ParagraphFormat.GetEffective();
+    
+    double[] margins = new double[] { - Math.Abs(paragraphFormatEffective.Indent), 
+                                        0, 
+                                        Math.Abs(paragraphFormatEffective.Indent),
+                                        0 };
+                                        
+    if (paragraphFormatEffective.Bullet.Type == BulletType.Picture)
+    {
+        margins[2] -= TextHelper.GetPictureBulletSize(paragraphFormatEffective, Model);
+    }
+    else
+    {
+        margins[2] -= 12;  // FIXME magic number (ideally it should be bullet width)
+    }
+    
     var bulletSymbol = paragraphFormatEffective.Bullet.ActualBulletValue;
 }
 
 @functions
 {
-	string GetTextBulletStyle(Paragraph para, TextFrame textFrame, bool isTableContent)
-	{
-		return TextHelper.GetTextBulletStyle(para.ParagraphFormat.GetEffective(), textFrame.TextFrameFormat.GetEffective(), isTableContent, Model);
-	}
-	
-	string GetBulletImageUrl(Paragraph para)
-	{
-		return ImageHelper.GetImageURL(para.ParagraphFormat.GetEffective().Bullet.Picture.Image, Model);
-	}
-	
-	string GetPictureBulletStyle(Paragraph para)
-	{
-		return TextHelper.GetPictureBulletStyle(para.ParagraphFormat.GetEffective(), Model);
-	}
+    string GetTextBulletStyle(Paragraph para, TextFrame textFrame, bool isTableContent)
+    {
+        return TextHelper.GetTextBulletStyle(para.ParagraphFormat.GetEffective(), textFrame.TextFrameFormat.GetEffective(), isTableContent, Model);
+    }
+    
+    string GetBulletImageUrl(Paragraph para)
+    {
+        return ImageHelper.GetImageURL(para.ParagraphFormat.GetEffective().Bullet.Picture.Image, Model);
+    }
+    
+    string GetPictureBulletStyle(Paragraph para)
+    {
+        return TextHelper.GetPictureBulletStyle(para.ParagraphFormat.GetEffective(), Model);
+    }
 }
 
 <span class="portion" style="margin-left: @margins[0]px; margin-top: @margins[1]px; margin-right: @margins[2]px; margin-bottom: @margins[3]px; @GetTextBulletStyle(contextObject, parentTextFrame, tableContentFlag)">
-	@bulletSymbol
-	@if (paragraphFormatEffective.Bullet.Type == BulletType.Picture)
-	{
-		<img src="@GetBulletImageUrl(contextObject)" style="@GetPictureBulletStyle(contextObject)" />
-	}
+    @bulletSymbol
+    @if (paragraphFormatEffective.Bullet.Type == BulletType.Picture)
+    {
+        <img src="@GetBulletImageUrl(contextObject)" style="@GetPictureBulletStyle(contextObject)" />
+    }
 </span>

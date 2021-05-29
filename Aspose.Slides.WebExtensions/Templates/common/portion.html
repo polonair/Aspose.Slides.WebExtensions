@@ -1,17 +1,17 @@
 @model TemplateContext<Portion>
 
 @{
-	Portion contextObject = Model.Object;
+    Portion contextObject = Model.Object;
     var parentTextFrame = Model.Local.Get<TextFrame>("parentTextFrame");
     var tableContentFlag = Model.Local.Get<bool>("tableContent");
 }
 
 @functions
 {
-	string GetTextStyle(Portion portion, TextFrame textFrame, bool isTableContent)
-	{
-		return TextHelper.GetTextStyle(portion.PortionFormat.GetEffective(), textFrame.TextFrameFormat.GetEffective(), isTableContent, Model);
-	}
+    string GetTextStyle(Portion portion, TextFrame textFrame, bool isTableContent)
+    {
+        return TextHelper.GetTextStyle(portion.PortionFormat.GetEffective(), textFrame.TextFrameFormat.GetEffective(), isTableContent, Model);
+    }
 }
 
 <span class="portion" style="@GetTextStyle(contextObject, parentTextFrame, tableContentFlag)">@contextObject.Text</span>

@@ -1,16 +1,24 @@
 ﻿@model TemplateContext<PictureFrame>
 
 @{
-	PictureFrame contextObject = Model.Object;
-	
-	var origin = Model.Local.Get<Point>("origin");
-	var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
-										(int)contextObject.X + origin.X,
-										(int)contextObject.Y + origin.Y,
-										(int)contextObject.Width,
-										(int)contextObject.Height);
-	
-	string imgSrc = ImageHelper.GetImageURL(contextObject.PictureFormat.Picture.Image, Model);
+    PictureFrame contextObject = Model.Object;
+    
+    var origin = Model.Local.Get<Point>("origin");
+    var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
+                                        (int)contextObject.X + origin.X,
+                                        (int)contextObject.Y + origin.Y,
+                                        (int)contextObject.Width,
+                                        (int)contextObject.Height);
+    
+    string imgSrc = ImageHelper.GetImageURL(contextObject.PictureFormat.Picture.Image, Model);
+    
+    string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
+    string animationAttributes = "";
+    
+    if (Model.Local.ContainsKey("animationAttributes"))
+    {
+        animationAttributes = Model.Local.Get<string>("animationAttributes");
+    }
 }
 
-<img src="@imgSrc" class="pictureframe" style="@positionStyle" />
+<img src="@imgSrc" id="@id" class="pictureframe" style="@positionStyle" @Raw(animationAttributes)/>

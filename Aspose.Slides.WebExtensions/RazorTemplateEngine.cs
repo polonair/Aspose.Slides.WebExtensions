@@ -59,13 +59,13 @@ namespace Aspose.Slides.WebExtensions
             }
         }
 
-        public string Compile<TModel>(string key, TModel model)
+        public string Compile(string key, object model)
         {
             Type templateType = null;
             if (!m_templateTypes.TryGetValue(key, out templateType) || !templateType.Equals(model.GetType()))
                 throw new ArgumentException(string.Format("Can't find template \"{0}\" for type {1}. Check Input and Output types correspondence.", key, model.GetType().GenericTypeArguments[0].ToString()), "key");
 
-            return m_razorService.Run(key, typeof(TModel), model);
+            return m_razorService.Run(key, model.GetType(), model);
         }
 
         private readonly IRazorEngineService m_razorService;

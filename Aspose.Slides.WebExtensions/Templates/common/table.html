@@ -1,63 +1,71 @@
 @model TemplateContext<Table>
 
 @{
-	Table contextObject = Model.Object;
-	
-	var origin = Model.Local.Get<Point>("origin");
-	var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
-										(int)contextObject.X + origin.X,
-										(int)contextObject.Y + origin.Y,
-										(int)contextObject.Width,
-										(int)contextObject.Height);
+    Table contextObject = Model.Object;
+    
+    var origin = Model.Local.Get<Point>("origin");
+    var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
+                                        (int)contextObject.X + origin.X,
+                                        (int)contextObject.Y + origin.Y,
+                                        (int)contextObject.Width,
+                                        (int)contextObject.Height);
+                                        
+    string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
+    string animationAttributes = "";
+    
+    if (Model.Local.ContainsKey("animationAttributes"))
+    {
+        animationAttributes = Model.Local.Get<string>("animationAttributes");
+    }
 }
 
 @functions
 {
-	string GetCellStyle(ICell cell)
-	{
-		var cellFormat = cell.CellFormat.GetEffective();
-	
-		string background = FillHelper.GetFillStyle(cellFormat.FillFormat, Model);
-		string borderLeft = string.Format("border-left: {0};", LineHelper.GetLineStyle(cellFormat.BorderLeft));
-		string borderTop = string.Format("border-top: {0};", LineHelper.GetLineStyle(cellFormat.BorderTop));
-		string borderRight = string.Format("border-right: {0};", LineHelper.GetLineStyle(cellFormat.BorderRight));
-		string borderBottom = string.Format("border-bottom: {0};", LineHelper.GetLineStyle(cellFormat.BorderBottom));
-		string verticalAlign = TextHelper.GetVerticalAlignmentStyle(cell.TextAnchorType);
-		
-		return string.Join(" ", background, borderLeft, borderTop, borderRight, borderBottom, verticalAlign);
-	}
+    string GetCellStyle(ICell cell)
+    {
+        var cellFormat = cell.CellFormat.GetEffective();
+    
+        string background = FillHelper.GetFillStyle(cellFormat.FillFormat, Model);
+        string borderLeft = string.Format("border-left: {0};", LineHelper.GetLineStyle(cellFormat.BorderLeft));
+        string borderTop = string.Format("border-top: {0};", LineHelper.GetLineStyle(cellFormat.BorderTop));
+        string borderRight = string.Format("border-right: {0};", LineHelper.GetLineStyle(cellFormat.BorderRight));
+        string borderBottom = string.Format("border-bottom: {0};", LineHelper.GetLineStyle(cellFormat.BorderBottom));
+        string verticalAlign = TextHelper.GetVerticalAlignmentStyle(cell.TextAnchorType);
+        
+        return string.Join(" ", background, borderLeft, borderTop, borderRight, borderBottom, verticalAlign);
+    }
 }
 
-<table class="table" style="@positionStyle">
-	@for (int i = 0; i < contextObject.Rows.Count; i++)
-	{
-		var rowHeight = string.Format("height: {0}px", contextObject.Rows[i].Height);
-		<tr style="@rowHeight">
-		@for (int j = 0; j < contextObject.Columns.Count; j++)
-		{
-			var cell = contextObject[j, i];
-			if (cell.FirstRowIndex ==  i && cell.FirstColumnIndex == j)
-			{
-				var spans = cell.IsMergedCell ? string.Format("rowspan=\"{0}\" colspan=\"{1}\"", cell.RowSpan, cell.ColSpan) : "";
-				<td width="@cell.Width px" @Raw(spans) style="@GetCellStyle(cell)">
-					@{
-						for(int k = 0; k < cell.TextFrame.Paragraphs.Count; k++)
-						{
-							var para = (Paragraph)cell.TextFrame.Paragraphs[k];
-						
-							var subModel = Model.SubModel(para);
-							double[] margins = new double[] { cell.MarginLeft, cell.MarginTop, cell.MarginRight, cell.MarginBottom };
-							subModel.Local.Put("margins", margins);
-							subModel.Local.Put("parent", cell.TextFrame);
-							subModel.Local.Put("parentContainerSize", new SizeF((float)cell.Width, (float)cell.Height));
+<table class="table" id="@id" style="@positionStyle" @Raw(animationAttributes)>
+    @for (int i = 0; i < contextObject.Rows.Count; i++)
+    {
+        var rowHeight = string.Format("height: {0}px", contextObject.Rows[i].Height);
+        <tr style="@rowHeight">
+        @for (int j = 0; j < contextObject.Columns.Count; j++)
+        {
+            var cell = contextObject[j, i];
+            if (cell.FirstRowIndex ==  i && cell.FirstColumnIndex == j)
+            {
+                var spans = cell.IsMergedCell ? string.Format("rowspan=\"{0}\" colspan=\"{1}\"", cell.RowSpan, cell.ColSpan) : "";
+                <td width="@cell.Width px" @Raw(spans) style="@GetCellStyle(cell)">
+                    @{
+                        for(int k = 0; k < cell.TextFrame.Paragraphs.Count; k++)
+                        {
+                            var para = (Paragraph)cell.TextFrame.Paragraphs[k];
+                        
+                            var subModel = Model.SubModel(para);
+                            double[] margins = new double[] { cell.MarginLeft, cell.MarginTop, cell.MarginRight, cell.MarginBottom };
+                            subModel.Local.Put("margins", margins);
+                            subModel.Local.Put("parent", cell.TextFrame);
+                            subModel.Local.Put("parentContainerSize", new SizeF((float)cell.Width, (float)cell.Height));
                             subModel.Local.Put("tableContent", true);
-							
-							@Include("paragraph", subModel)
-						}
-					}
-				</td>
-			}
-		}
-		</tr>
-	}
+                            
+                            @Include("paragraph", subModel)
+                        }
+                    }
+                </td>
+            }
+        }
+        </tr>
+    }
 </table>

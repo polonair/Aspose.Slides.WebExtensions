@@ -1,35 +1,44 @@
 ﻿@model TemplateContext<AutoShape>
 
 @{
-	AutoShape contextObject = Model.Object;
-	
-	var origin = Model.Local.Get<Point>("origin");
-	var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
-										(int)contextObject.X + origin.X,
-										(int)contextObject.Y + origin.Y,
-										(int)contextObject.Width,
-										(int)contextObject.Height);
+    AutoShape contextObject = Model.Object;
+    
+    var origin = Model.Local.Get<Point>("origin");
+    var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
+                                        (int)contextObject.X + origin.X,
+                                        (int)contextObject.Y + origin.Y,
+                                        (int)contextObject.Width,
+                                        (int)contextObject.Height);
+                                        
+    string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
+    string animationAttributes = "";
+    
+    if (Model.Local.ContainsKey("animationAttributes"))
+    {
+        animationAttributes = Model.Local.Get<string>("animationAttributes");
+    }
+    
 }
 
 @functions
 {
-	string GetShapeStyle(AutoShape shape)
-	{
-		string background = FillHelper.GetFillStyle(shape.FillFormat.GetEffective(), Model);
-		string borderStyle = string.Format("border: {0};", LineHelper.GetLineStyle(shape.LineFormat.GetEffective()));
-				
-		return string.Join(" ", background, borderStyle);
-	}
+    string GetShapeStyle(AutoShape shape)
+    {
+        string background = FillHelper.GetFillStyle(shape.FillFormat.GetEffective(), Model);
+        string borderStyle = string.Format("border: {0};", LineHelper.GetLineStyle(shape.LineFormat.GetEffective()));
+                
+        return string.Join(" ", background, borderStyle);
+    }
 }
 
 @{
-	<div class="shape" style="@positionStyle @GetShapeStyle(contextObject)">
-		@{
-			var subModel = Model.SubModel((TextFrame)contextObject.TextFrame);
-			subModel.Local.Put("origin", origin);
-			subModel.Local.Put("parent", contextObject);
-			
-			@Include("textframe", subModel)        
-		}
-	</div>
+    <div class="shape" id="@id" style="@positionStyle @GetShapeStyle(contextObject)" @Raw(animationAttributes)>
+        @{
+            var subModel = Model.SubModel((TextFrame)contextObject.TextFrame);
+            subModel.Local.Put("origin", origin);
+            subModel.Local.Put("parent", contextObject);
+            
+            @Include("textframe", subModel)        
+        }
+    </div>
 }

@@ -1,7 +1,14 @@
 ﻿@model TemplateContext<Presentation>    
         
 @{    
-    Presentation contextObject = Model.Object;    
+    Presentation contextObject = Model.Object;
+	var transitionsEnabled = Model.Global.Get<bool>("animateTransitions");
+	if (!transitionsEnabled)
+	{
+		Model.Global.Put("animateShapes", false);
+	}
+	var slideWidth = contextObject.SlideSize.Size.Width;
+    var slideHeight = contextObject.SlideSize.Size.Height;
 }
     
 <!DOCTYPE html>    
@@ -17,7 +24,8 @@
     <link rel="stylesheet" type="text/css" href="master.css" />    
     <script src="jquery.js"></script>    
     <script src="anime.js"></script>    
-    <script src="animation.js"></script>    
+    <script src="animation.js"></script>
+    <script src="effects.js"></script>
     <script src="navigation.js"></script>
 </head>    
 <body>    
@@ -50,6 +58,16 @@
                     <clipPath id="effectsclip7" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
                     <clipPath id="effectsclip8" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
                 </defs>
+            </svg>
+            <svg id="patheffects" width="@slideWidth" height="@slideHeight" viewBox="0 0 @slideWidth @slideHeight">
+                <path id="entranceBouncePath" d="M -310 -150 Q -200 -330 -110 -20 Q -80 -80 -60 -10 Q -40 -50 -20 0 Q -10 -30 0 0" fill="none"></path>
+                <path id="exitBouncePath" d="M 0 0 Q 110 -180 200 130 Q 230 70 250 140 Q 270 100 290 150 Q 300 120 310 150" fill="none"></path>
+                <path id="entranceSpiralPath" d="M -430 -210 C -310 -380 90 -380 200 -300 C 400 -200 350 60 110 130 C -130 150 -200 -70 20 -80 C 140 -70 70 50 0 0" fill="none"></path>
+                <path id="exitSpiralPath" d="M 0 0 C -50 -10 0 -90 70 -40 C 150 40 -20 150 -110 30 C -160 -50 -70 -200 160 -150 C 370 -100 430 380 -350 400" fill="none"></path>
+                <path id="entranceCenterRevolvePath" d="M 0 230 A 40 40 0 0 0 0 0" fill="none"></path>
+                <path id="exitCenterRevolvePath" d="M 0 0 A 40 40 0 1 1 0 230" fill="none"></path>
+                <path id="entranceCurveUpDownPath" d="M -70 240 C 40 260 140 180 140 70 C 140 -20 30 -70 0 0" fill="none"></path>
+                <path id="exitCurveUpDownPath" d="M 0 0 C 10 -40 120 -40 130 70 C 120 160 90 220 -70 240" fill="none"></path>
             </svg>
         </div>
     </div>
