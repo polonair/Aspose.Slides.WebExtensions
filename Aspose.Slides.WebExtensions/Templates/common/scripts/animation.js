@@ -135,7 +135,7 @@ function AnimateShapes(slideId) {
         for (var targetShape in animations) {
             if (targetShape != 'slide') {
                 $('#' + targetShape).unbind();
-                $('#' + targetShape).click(function(e){ PlayNextAnimationsForTarget(targetShape); e.stopPropagation(); });
+                $('#' + targetShape).click({targetShape: targetShape}, function(e){ PlayNextAnimationsForTarget(e.data.targetShape); e.stopPropagation(); });
                 $('#' + targetShape).css('cursor', 'pointer');
             }
         }
