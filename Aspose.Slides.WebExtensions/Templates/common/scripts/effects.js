@@ -7,156 +7,196 @@ const exitCenterRevolvePath = anime.path('#exitCenterRevolvePath');
 const entranceCurveUpDownPath = anime.path('#entranceCurveUpDownPath');
 const exitCurveUpDownPath = anime.path('#exitCurveUpDownPath');
 
-function GetAnimationEffect(type, subtype, shapeId, duration, delay) {
-    switch (type)    {
+function GetAnimationEffect(type, subtype, shapeId, duration, delay, extra) {
+    switch (type) {
         case 'EntranceAppear':
-            return new EntranceAppearEffect(shapeId, duration, delay, subtype);
+            return new EntranceAppearEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitAppear':
-            return new ExitAppearEffect(shapeId, duration, delay, subtype);
+            return new ExitAppearEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceFade':
-            return new EntranceFadeEffect(shapeId, duration, delay, subtype);
+            return new EntranceFadeEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitFade':
-            return new ExitFadeEffect(shapeId, duration, delay, subtype);
+            return new ExitFadeEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceFly':
-            return new EntranceFlyEffect(shapeId, duration, delay, subtype);
+            return new EntranceFlyEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitFly':
-            return new ExitFlyEffect(shapeId, duration, delay, subtype);
+            return new ExitFlyEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceAscend':
-            return new EntranceAscendDescendEffect(shapeId, duration, delay, 'EntranceAscend');
+            return new EntranceAscendDescendEffect(shapeId, duration, delay, 'EntranceAscend', extra);
         case 'EntranceDescend':
-            return new EntranceAscendDescendEffect(shapeId, duration, delay, 'EntranceDescend');
+            return new EntranceAscendDescendEffect(shapeId, duration, delay, 'EntranceDescend', extra);
         case 'ExitAscend':
-            return new ExitAscendDescendEffect(shapeId, duration, delay, 'ExitAscend');
+            return new ExitAscendDescendEffect(shapeId, duration, delay, 'ExitAscend', extra);
         case 'ExitDescend':
-            return new ExitAscendDescendEffect(shapeId, duration, delay, 'ExitDescend');
+            return new ExitAscendDescendEffect(shapeId, duration, delay, 'ExitDescend', extra);
         case 'EntranceSplit':
-            return new EntranceSplitEffect(shapeId, duration, delay, subtype);
+            return new EntranceSplitEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitSplit':
-            return new ExitSplitEffect(shapeId, duration, delay, subtype);
+            return new ExitSplitEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceWheel':
-            return new EntranceWheelEffect(shapeId, duration, delay, subtype);
+            return new EntranceWheelEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitWheel':
-            return new ExitWheelEffect(shapeId, duration, delay, subtype);
+            return new ExitWheelEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceRandomBars':
-            return new EntranceRandomBarsEffect(shapeId, duration, delay, subtype);
+            return new EntranceRandomBarsEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitRandomBars':
-            return new ExitRandomBarsEffect(shapeId, duration, delay, subtype);
+            return new ExitRandomBarsEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceCircle':
-            return new EntranceCircleEffect(shapeId, duration, delay, subtype);
+            return new EntranceCircleEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitCircle':
-            return new ExitCircleEffect(shapeId, duration, delay, subtype);        
+            return new ExitCircleEffect(shapeId, duration, delay, subtype, extra);        
         case 'EntranceBox':
-            return new EntranceBoxEffect(shapeId, duration, delay, subtype);
+            return new EntranceBoxEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitBox':
-            return new ExitBoxEffect(shapeId, duration, delay, subtype);
+            return new ExitBoxEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceDiamond':
-            return new EntranceDiamondEffect(shapeId, duration, delay, subtype);
+            return new EntranceDiamondEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitDiamond':
-            return new ExitDiamondEffect(shapeId, duration, delay, subtype);
+            return new ExitDiamondEffect(shapeId, duration, delay, subtype, extra);
         case 'EntrancePlus':
-            return new EntrancePlusEffect(shapeId, duration, delay, subtype);
+            return new EntrancePlusEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitPlus':
-            return new ExitPlusEffect(shapeId, duration, delay, subtype);
+            return new ExitPlusEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceBlinds':
-            return new EntranceBlindsEffect(shapeId, duration, delay, subtype);
+            return new EntranceBlindsEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitBlinds':
-            return new ExitBlindsEffect(shapeId, duration, delay, subtype);
+            return new ExitBlindsEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceWipe':
-            return new EntranceWipeEffect(shapeId, duration, delay, subtype);
+            return new EntranceWipeEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitWipe':
-            return new ExitWipeEffect(shapeId, duration, delay, subtype);
+            return new ExitWipeEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceWedge':
-            return new EntranceWedgeEffect(shapeId, duration, delay, subtype);
+            return new EntranceWedgeEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitWedge':
-            return new ExitWedgeEffect(shapeId, duration, delay, subtype);
+            return new ExitWedgeEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceDissolve':
-            return new EntranceDissolveEffect(shapeId, duration, delay, subtype);
+            return new EntranceDissolveEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitDissolve':
-            return new ExitDissolveEffect(shapeId, duration, delay, subtype);
+            return new ExitDissolveEffect(shapeId, duration, delay, subtype, extra);
         case 'EntrancePeek':
-            return new EntrancePeekEffect(shapeId, duration, delay, subtype);
+            return new EntrancePeekEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitPeek':
-            return new ExitPeekEffect(shapeId, duration, delay, subtype);
+            return new ExitPeekEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceStrips':
-            return new EntranceStripsEffect(shapeId, duration, delay, subtype);
+            return new EntranceStripsEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitStrips':
-            return new ExitStripsEffect(shapeId, duration, delay, subtype);
+            return new ExitStripsEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceFadedSwivel':
-            return new EntranceFadedSwivelEffect(shapeId, duration, delay, subtype);
+            return new EntranceFadedSwivelEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitFadedSwivel':
-            return new ExitFadedSwivelEffect(shapeId, duration, delay, subtype);
+            return new ExitFadedSwivelEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceFadedZoom':
-            return new EntranceFadedZoomEffect(shapeId, duration, delay, subtype);
+            return new EntranceFadedZoomEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitFadedZoom':
-            return new ExitFadedZoomEffect(shapeId, duration, delay, subtype);
+            return new ExitFadedZoomEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceExpand':
-            return new EntranceExpandEffect(shapeId, duration, delay, subtype);
+            return new EntranceExpandEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitExpand':
-            return new ExitExpandEffect(shapeId, duration, delay, subtype);
+            return new ExitExpandEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceZoom':
-            return new EntranceZoomEffect(shapeId, duration, delay, subtype);
+            return new EntranceZoomEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitZoom':
-            return new ExitZoomEffect(shapeId, duration, delay, subtype);
+            return new ExitZoomEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceRiseUp':
-            return new EntranceRiseUpEffect(shapeId, duration, delay, subtype);
+            return new EntranceRiseUpEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitRiseUp':
-            return new ExitRiseUpEffect(shapeId, duration, delay, subtype);
+            return new ExitRiseUpEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceCompress':
-            return new EntranceCompressEffect(shapeId, duration, delay, subtype);
+            return new EntranceCompressEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitCompress':
-            return new ExitCompressEffect(shapeId, duration, delay, subtype);
+            return new ExitCompressEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceSpinner':
-            return new EntranceSpinnerEffect(shapeId, duration, delay, subtype);
+            return new EntranceSpinnerEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitSpinner':
-            return new ExitSpinnerEffect(shapeId, duration, delay, subtype);
+            return new ExitSpinnerEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceGrowAndTurn':
-            return new EntranceGrowAndTurnEffect(shapeId, duration, delay, subtype);
+            return new EntranceGrowAndTurnEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitGrowAndTurn':
-            return new ExitGrowAndTurnEffect(shapeId, duration, delay, subtype);
+            return new ExitGrowAndTurnEffect(shapeId, duration, delay, subtype, extra);
         case 'EntrancePinwheel':
-            return new EntrancePinwheelEffect(shapeId, duration, delay, subtype);
+            return new EntrancePinwheelEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitPinwheel':
-            return new ExitPinwheelEffect(shapeId, duration, delay, subtype);
+            return new ExitPinwheelEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceCredits':
-            return new EntranceCreditsEffect(shapeId, duration, delay, subtype);
+            return new EntranceCreditsEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitCredits':
-            return new ExitCreditsEffect(shapeId, duration, delay, subtype);
+            return new ExitCreditsEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceSwivel':
-            return new EntranceSwivelEffect(shapeId, duration, delay, subtype);
+            return new EntranceSwivelEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitSwivel':
-            return new ExitSwivelEffect(shapeId, duration, delay, subtype);
+            return new ExitSwivelEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceFloat':
-            return new EntranceFloatEffect(shapeId, duration, delay, subtype);
+            return new EntranceFloatEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitFloat':
-            return new ExitFloatEffect(shapeId, duration, delay, subtype);
+            return new ExitFloatEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceBoomerang':
-            return new EntranceBoomerangEffect(shapeId, duration, delay, subtype);
+            return new EntranceBoomerangEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitBoomerang':
-            return new ExitBoomerangEffect(shapeId, duration, delay, subtype);
+            return new ExitBoomerangEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceWhip':
-            return new EntranceWhipEffect(shapeId, duration, delay, subtype);
+            return new EntranceWhipEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitWhip':
-            return new ExitWhipEffect(shapeId, duration, delay, subtype);
+            return new ExitWhipEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceSwish':
-            return new EntranceSwishEffect(shapeId, duration, delay, subtype);
+            return new EntranceSwishEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitSwish':
-            return new ExitSwishEffect(shapeId, duration, delay, subtype);
+            return new ExitSwishEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceBounce':
-            return new EntranceBounceEffect(shapeId, duration, delay, subtype);
+            return new EntranceBounceEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitBounce':
-            return new ExitBounceEffect(shapeId, duration, delay, subtype);
+            return new ExitBounceEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceSpiral':
-            return new EntranceSpiralEffect(shapeId, duration, delay, subtype);
+            return new EntranceSpiralEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitSpiral':
-            return new ExitSpiralEffect(shapeId, duration, delay, subtype);
+            return new ExitSpiralEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceCenterRevolve':
-            return new EntranceCenterRevolveEffect(shapeId, duration, delay, subtype);
+            return new EntranceCenterRevolveEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitCenterRevolve':
-            return new ExitCenterRevolveEffect(shapeId, duration, delay, subtype);
+            return new ExitCenterRevolveEffect(shapeId, duration, delay, subtype, extra);
         case 'EntranceCurveUpDown':
-            return new EntranceCurveUpDownEffect(shapeId, duration, delay, subtype);
+            return new EntranceCurveUpDownEffect(shapeId, duration, delay, subtype, extra);
         case 'ExitCurveUpDown':
-            return new ExitCurveUpDownEffect(shapeId, duration, delay, subtype);
+            return new ExitCurveUpDownEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisSpin':
+            return new EmphasisSpinEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisGrowShrink':
+            return new EmphasisGrowShrinkEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisFlashBulb':
+            return new EmphasisFlashBulbEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisTeeter':
+            return new EmphasisTeeterEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisLighten':
+            return new EmphasisLightenEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisDarken':
+            return new EmphasisDarkenEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisFlicker':
+            return new EmphasisFlickerEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisDesaturate':
+            return new EmphasisDesaturateEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisTransparency':
+            return new EmphasisTransparencyEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisBlink':
+            return new EmphasisBlinkEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisChangeFillColor':
+            return new EmphasisChangeFillColorEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisBrushOnColor':
+            return new EmphasisBrushOnColorEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisColorBlend':
+            return new EmphasisColorBlendEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisGrowWithColor':
+            return new EmphasisGrowWithColorEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisChangeLineColor':
+            return new EmphasisChangeLineColorEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisShimmer':
+            return new EmphasisShimmerEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisWave':
+            return new EmphasisWaveEffect(shapeId, duration, delay, subtype, extra);
+        case 'EmphasisContrastingColor':
+            return new EmphasisContrastingColorEffect(shapeId, duration, delay, subtype, extra);    
+        case 'EmphasisComplementaryColor':
+            return new EmphasisComplementaryColorEffect(shapeId, duration, delay, subtype, extra);    
+        case 'EmphasisComplementaryColor2':
+            return new EmphasisComplementaryColor2Effect(shapeId, duration, delay, subtype, extra);        
             
         default:
             return new EmptyEffect(shapeId, duration, delay, type);
@@ -165,17 +205,20 @@ function GetAnimationEffect(type, subtype, shapeId, duration, delay) {
 
 class Effect {
     
-    constructor(shapeId, duration, delay, subtype) {
+    constructor(shapeId, duration, delay, subtype, extra) {
         this.shapeId = shapeId;
         this.duration = duration * 1000;
         this.delay = delay * 1000;
         this.subtype = subtype;
+        this.extra = extra;
         
         this.shapeParams = { left: parseInt($(this.shapeId).css('left').replace('px', '')), 
                              top: parseInt($(this.shapeId).css('top').replace('px', '')),
                              width: parseInt($(this.shapeId).css('width').replace('px', '')),
                              height: parseInt($(this.shapeId).css('height').replace('px', '')),
-                             opacity: parseInt($(this.shapeId).css('opacity'))
+                             opacity: parseInt($(this.shapeId).css('opacity')),
+                             background: $(this.shapeId).css('background-color'),
+                             border: $(this.shapeId).css('border')
                            };
     }
     
@@ -194,6 +237,8 @@ class Effect {
         $(this.shapeId).css('width', this.shapeParams.width + 'px');
         $(this.shapeId).css('height', this.shapeParams.height + 'px');
         $(this.shapeId).css('opacity', this.shapeParams.opacity);
+        $(this.shapeId).css('background-color', this.shapeParams.background);
+        $(this.shapeId).css('border', this.shapeParams.border);
         
         $(this.shapeId).css({'transform': ''});
         $(this.shapeId).css('clip-path', '');
@@ -2036,6 +2081,619 @@ class ExitCurveUpDownEffect extends Effect {
     }
 }
 
+class EmphasisSpinEffect extends Effect {
+    
+    Prepare() {
+        var shapeId = this.shapeId;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            rotateZ: this.extra    
+        });
+    }
+    
+    Finish() {
+        $(this.shapeId).css('transform', 'rotateZ(' + this.extra + 'deg)');
+    }
+}
+
+class EmphasisGrowShrinkEffect extends Effect {
+    
+    Prepare() {
+        var shapeId = this.shapeId;
+        var coefs = this.extra.match(/^{X=(-?[\d.]+), Y=(-?[\d.]+)}$/i);
+        this.xcoef = parseFloat(coefs[1]) / 100;
+        this.ycoef = parseFloat(coefs[2]) / 100;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            scaleX: this.xcoef,
+            scaleY: this.ycoef
+        });
+    }
+    
+    Finish() {
+        $(this.shapeId).css('transform', 'scaleX(' + this.xcoef + ') scaleY(' + this.ycoef + ')');
+    }
+}
+
+class EmphasisFlashBulbEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var emphasisColor = ShadeBlendConvert(0.4, $(shapeId).css('background-color'));
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            direction: 'alternate',
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            scale: 1.1,
+            background: emphasisColor
+        });
+    }
+}
+
+class EmphasisLightenEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var emphasisColor = ShadeBlendConvert(0.5, $(shapeId).css('background-color'), false, true);
+        this.emphasisColor = emphasisColor;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisDarkenEffect extends Effect {
+
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var emphasisColor = ShadeBlendConvert(-0.5, $(shapeId).css('background-color'), false, true);
+        this.emphasisColor = emphasisColor;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisFlickerEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var emphasisColor = 'rgb(255,255,255)';
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            direction: 'alternate',
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: emphasisColor
+        });
+    }
+}
+
+class EmphasisDesaturateEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var rgbstring = originalColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        var rgb = [parseInt(rgbstring[1]), parseInt(rgbstring[2]), parseInt(rgbstring[3])];
+        var grayColor = rgb[0] * 0.3086 + rgb[1] * 0.6094 + rgb[2] * 0.0820;
+        var sat = 0.2;
+        var emphasisColor = 'rgb(' + Math.round(rgb[0] * sat + grayColor * (1-sat)) + ',' + Math.round(rgb[1] * sat + grayColor * (1-sat)) + ',' + Math.round(rgb[2] * sat + grayColor * (1-sat)) + ')';
+        this.emphasisColor = emphasisColor;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisTeeterEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration / 8,
+            delay: this.delay,
+            rotateZ: 5
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration / 4,
+            delay: this.delay,
+            rotateZ: -5
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration / 4,
+            delay: this.delay,
+            rotateZ: 5
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration / 4,
+            delay: this.delay,
+            rotateZ: -5
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration / 8,
+            delay: this.delay,
+            rotateZ: 0
+        });
+    }
+}
+
+class EmphasisTransparencyEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: 10,
+            opacity: this.extra
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            opacity: this.extra
+        });
+    }
+    
+    Finish() {
+        $(this.shapeId).css('opacity', this.extra);
+    }
+}
+
+class EmphasisBlinkEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration / 2,
+            delay: this.delay,
+            complete: function(anim) {
+                $(shapeId).hide();
+            }
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration / 2,
+            delay: this.delay,
+            complete: function(anim) {
+                $(shapeId).show();
+            }
+        });
+    }
+}
+
+class EmphasisChangeFillColorEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var emphasisColor = this.extra;
+        this.emphasisColor = emphasisColor;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisBrushOnColorEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var emphasisColor = this.extra;
+        this.emphasisColor = emphasisColor;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: 10,
+            background: [originalColor, emphasisColor]
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: emphasisColor
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisColorBlendEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var emphasisColor = this.extra;
+        this.emphasisColor = emphasisColor;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisGrowWithColorEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var emphasisColor = this.extra;
+        this.emphasisColor = emphasisColor;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisChangeLineColorEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('border-style') != 'none' ? $(shapeId).css('border-color') : $(shapeId).css('background-color');
+        var emphasisColor = this.extra;
+        this.emphasisColor = emphasisColor;
+        
+        if ($(shapeId).css('border-style') == 'none') {
+            $(this.shapeId).css('border-style', 'solid');    
+            $(this.shapeId).css('border-width', '1px');
+            $(this.shapeId).css('border-color', originalColor);
+        }
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            borderColor: [originalColor, emphasisColor]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('border-color', this.emphasisColor);    
+    }
+}
+
+class EmphasisShimmerEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear',
+            direction: 'alternate'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            rotateY: '-10deg',
+            rotateZ: '-5deg',
+            scaleX: 0.8,
+            skew: '5deg',
+            translateX: '10px',
+            translateY: '-20px',
+            perspective: '500px'
+        });
+    }
+}
+
+class EmphasisWaveEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        
+        var coefs = this.extra.match(/^{X=(-?[\d.]+), Y=(-?[\d.]+)}$/i);
+        var xcoef = parseFloat(coefs[1]);
+        var    ycoef = parseFloat(coefs[2]);        
+        
+        var originalLeft = parseFloat($(shapeId).css('left'));
+        var originalTop = parseFloat($(shapeId).css('top'));
+        
+        var emphasisLeft = originalLeft + 15 * xcoef;
+        var emphasisTop = originalTop + 15 * ycoef;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+        
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            rotateZ: [0, 20, -20, 0],
+            left: [originalLeft, emphasisLeft, originalLeft],
+            top: [originalTop, emphasisTop, originalTop]
+        });
+    }
+}
+
+class EmphasisContrastingColorEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var rgbstring = originalColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        var rgb = [parseInt(rgbstring[1]), parseInt(rgbstring[2]), parseInt(rgbstring[3])];
+        
+        var originalHSL = rgbToHsl(rgb[0], rgb[1], rgb[2]);
+        var newHue1 = ((originalHSL[0] * 360 + 45) % 360) / 360;
+        var newHue2 = ((originalHSL[0] * 360 + 90) % 360) / 360;
+        var newHue3 = ((originalHSL[0] * 360 + 135) % 360) / 360;
+        var newHue4 = ((originalHSL[0] * 360 + 180) % 360) / 360;
+        var emphasisRGB1 = hslToRgb(newHue1, originalHSL[1], originalHSL[2]);
+        var emphasisRGB2 = hslToRgb(newHue2, originalHSL[1], originalHSL[2]);
+        var emphasisRGB3 = hslToRgb(newHue3, originalHSL[1], originalHSL[2]);
+        var emphasisRGB4 = hslToRgb(newHue4, originalHSL[1], originalHSL[2]);
+        var emphasisColor1 = 'rgb(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ')';
+        var emphasisColor2 = 'rgb(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ')';
+        var emphasisColor3 = 'rgb(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ')';
+        var emphasisColor4 = 'rgb(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ')';
+        this.emphasisColor = emphasisColor4;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor1, emphasisColor2, emphasisColor3, emphasisColor4]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisComplementaryColorEffect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var rgbstring = originalColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        var rgb = [parseInt(rgbstring[1]), parseInt(rgbstring[2]), parseInt(rgbstring[3])];
+        
+        var originalHSL = rgbToHsl(rgb[0], rgb[1], rgb[2]);
+        var newHue1 = ((originalHSL[0] * 360 + 120) % 360) / 360;
+        var newHue2 = ((originalHSL[0] * 360 + 240) % 360) / 360;
+        var newHue3 = ((originalHSL[0] * 360 + 360) % 360) / 360;
+        var newHue4 = ((originalHSL[0] * 360 + 480) % 360) / 360;
+        var emphasisRGB1 = hslToRgb(newHue1, originalHSL[1], originalHSL[2]);
+        var emphasisRGB2 = hslToRgb(newHue2, originalHSL[1], originalHSL[2]);
+        var emphasisRGB3 = hslToRgb(newHue3, originalHSL[1], originalHSL[2]);
+        var emphasisRGB4 = hslToRgb(newHue4, originalHSL[1], originalHSL[2]);
+        var emphasisColor1 = 'rgb(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ')';
+        var emphasisColor2 = 'rgb(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ')';
+        var emphasisColor3 = 'rgb(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ')';
+        var emphasisColor4 = 'rgb(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ')';
+        this.emphasisColor = emphasisColor4;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor1, emphasisColor2, emphasisColor3, emphasisColor4]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
+
+class EmphasisComplementaryColor2Effect extends Effect {
+    
+    Prepare() {
+        
+        var shapeId = this.shapeId;
+        var originalColor = $(shapeId).css('background-color');
+        var rgbstring = originalColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        var rgb = [parseInt(rgbstring[1]), parseInt(rgbstring[2]), parseInt(rgbstring[3])];
+        
+        var originalHSL = rgbToHsl(rgb[0], rgb[1], rgb[2]);
+        var newHue1 = ((originalHSL[0] * 360 + 60) % 360) / 360;
+        var newHue2 = ((originalHSL[0] * 360 + 120) % 360) / 360;
+        var newHue3 = ((originalHSL[0] * 360 + 180) % 360) / 360;
+        var newHue4 = ((originalHSL[0] * 360 + 240) % 360) / 360;
+        var emphasisRGB1 = hslToRgb(newHue1, originalHSL[1], originalHSL[2]);
+        var emphasisRGB2 = hslToRgb(newHue2, originalHSL[1], originalHSL[2]);
+        var emphasisRGB3 = hslToRgb(newHue3, originalHSL[1], originalHSL[2]);
+        var emphasisRGB4 = hslToRgb(newHue4, originalHSL[1], originalHSL[2]);
+        var emphasisColor1 = 'rgb(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ')';
+        var emphasisColor2 = 'rgb(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ')';
+        var emphasisColor3 = 'rgb(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ')';
+        var emphasisColor4 = 'rgb(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ')';
+        this.emphasisColor = emphasisColor4;
+        
+        this.effectTimeline = anime.timeline({
+            targets: shapeId,
+            autoplay: false,
+            easing: 'linear'
+        });
+    
+        this.effectTimeline.add({
+            duration: this.duration,
+            delay: this.delay,
+            background: [originalColor, emphasisColor1, emphasisColor2, emphasisColor3, emphasisColor4]
+        });
+    }
+    
+    Finish() { 
+        $(this.shapeId).css('backgroundColor', this.emphasisColor);    
+    }
+}
 
 class EmptyEffect extends Effect {
     
@@ -2076,4 +2734,75 @@ function GetFlyEffectTranslate(shapeParams, subtype) {
         case 'BottomRight':
             return {x: frameWidth - shapeParams.left + 5, y: frameHeight - shapeParams.top + 5};
     }
+}
+
+function ShadeBlendConvert (p,c0,c1,l){
+    let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
+    if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a))return null;
+    if(!this.pSBCr)this.pSBCr=(d)=>{
+        let n=d.length,x={};
+        if(n>9){
+            [r,g,b,a]=d=d.split(","),n=d.length;
+            if(n<3||n>4)return null;
+            x.r=i(r[3]=="a"?r.slice(5):r.slice(4)),x.g=i(g),x.b=i(b),x.a=a?parseFloat(a):-1
+        }else{
+            if(n==8||n==6||n<4)return null;
+            if(n<6)d="#"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(n>4?d[4]+d[4]:"");
+            d=i(d.slice(1),16);
+            if(n==9||n==5)x.r=d>>24&255,x.g=d>>16&255,x.b=d>>8&255,x.a=m((d&255)/0.255)/1000;
+            else x.r=d>>16,x.g=d>>8&255,x.b=d&255,x.a=-1
+        }return x};
+    h=c0.length>9,h=a?c1.length>9?true:c1=="c"?!h:false:h,f=this.pSBCr(c0),P=p<0,t=c1&&c1!="c"?this.pSBCr(c1):P?{r:0,g:0,b:0,a:-1}:{r:255,g:255,b:255,a:-1},p=P?p*-1:p,P=1-p;
+    if(!f||!t)return null;
+    if(l)r=m(P*f.r+p*t.r),g=m(P*f.g+p*t.g),b=m(P*f.b+p*t.b);
+    else r=m((P*f.r**2+p*t.r**2)**0.5),g=m((P*f.g**2+p*t.g**2)**0.5),b=m((P*f.b**2+p*t.b**2)**0.5);
+    a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;
+    if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
+    else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
+}
+
+function rgbToHsl(r, g, b){
+    r /= 255, g /= 255, b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
+
+    if(max == min){
+        h = s = 0; // achromatic
+    }else{
+        var d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch(max){
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    return [h, s, l];
+}
+
+function hslToRgb(h, s, l){
+    var r, g, b;
+
+    if(s == 0){
+        r = g = b = l; // achromatic
+    }else{
+        var hue2rgb = function hue2rgb(p, q, t){
+            if(t < 0) t += 1;
+            if(t > 1) t -= 1;
+            if(t < 1/6) return p + (q - p) * 6 * t;
+            if(t < 1/2) return q;
+            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        }
+
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
