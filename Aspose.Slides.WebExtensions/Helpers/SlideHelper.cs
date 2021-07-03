@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Aspose.Slides.Animation;
 using Aspose.Slides.SlideShow;
 
@@ -83,9 +84,9 @@ namespace Aspose.Slides.WebExtensions.Helpers
             return result;
         }
 
-        public static Dictionary<IShape, Tuple<string, string, float, float, string, int>> GetSlidesAnimationCollection(ISlide slide)
+        public static Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> GetSlidesAnimationCollection(ISlide slide)
         {
-            var result = new Dictionary<IShape, Tuple<string, string, float, float, string, int>>();
+            var result = new Dictionary<IShape, Tuple<string, string, float, float, string, string, int>>();
 
             int onclickIndex;
             onclickIndex = FillSequenceEffectCollection(slide.LayoutSlide.MasterSlide.Timeline.MainSequence, result, 0);
@@ -102,7 +103,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
             return result;
         }
 
-        private static int FillSequenceEffectCollection(ISequence sequence, Dictionary<IShape, Tuple<string, string, float, float, string, int>> shapeEffectsCollection, int onclickIndex)
+        private static int FillSequenceEffectCollection(ISequence sequence, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> shapeEffectsCollection, int onclickIndex)
         {
             float prevDelay = 0;
             float maxPrevDuration = 0;
@@ -119,12 +120,40 @@ namespace Aspose.Slides.WebExtensions.Helpers
 
                 string targetShapeId = "";
 
+                IColorFormat toColor = null;
+                string extra = null;
                 float duration = 0;
                 foreach (var behavior in effect.Behaviors)
                 {
-                    if (behavior.GetType() == typeof(PropertyEffect) || behavior.GetType() == typeof(FilterEffect))
+                    if (behavior.GetType() == typeof(ColorEffect))
+                        toColor = ((ColorEffect)behavior).To;
+
+                    if (behavior.GetType() == typeof(SetEffect) && ((SetEffect)behavior).To is IColorFormat)
                     {
-                        if (type == EffectType.CenterRevolve || type == EffectType.Bounce) // a crutch...
+                        toColor = (IColorFormat)((SetEffect)behavior).To;
+                        duration = behavior.Timing.Duration;
+                        break;
+                    }
+
+                    if (type == EffectType.Wave && behavior.GetType() == typeof(MotionEffect))
+                        extra = ((MotionEffect)behavior).RotationCenter.ToString();
+
+                    if (type == EffectType.Transparency && behavior.GetType() == typeof(SetEffect))
+                        extra = ((SetEffect)behavior).To.ToString();
+
+                    if (type == EffectType.Spin && behavior.GetType() == typeof(RotationEffect))
+                        extra = ((RotationEffect)behavior).By.ToString();
+
+                    if (type == EffectType.GrowShrink && behavior.GetType() == typeof(ScaleEffect))
+                        extra = ((ScaleEffect)behavior).By.ToString();
+
+                    if (behavior.GetType() == typeof(PropertyEffect) 
+                        || behavior.GetType() == typeof(FilterEffect)
+                        || behavior.GetType() == typeof(RotationEffect)
+                        || behavior.GetType() == typeof(ScaleEffect)
+                        || behavior.GetType() == typeof(ColorEffect))
+                    {
+                        if (type == EffectType.CenterRevolve || type == EffectType.Bounce || type == EffectType.Teeter || type == EffectType.Flicker || type == EffectType.Wave) // a crutch...
                         {
                             duration += behavior.Timing.Duration;
                         }
@@ -135,6 +164,9 @@ namespace Aspose.Slides.WebExtensions.Helpers
                         }
                     }
                 }
+
+                if (float.IsInfinity(duration))
+                    duration = 0.5f;
 
                 if (type == EffectType.CenterRevolve || type == EffectType.Bounce) // a crutch...
                     duration /= 2;
@@ -161,11 +193,27 @@ namespace Aspose.Slides.WebExtensions.Helpers
                     targetShapeId = "slide";
 
                 float totalDelay = delay + prevDelay;
+                
+                if (toColor != null && toColor.ColorType != ColorType.NotDefined)
+                    extra = GetDestinationColor(shape, toColor);
 
-                shapeEffectsCollection.Add(shape, new Tuple<string, string, float, float, string, int>(classType.ToString() + type.ToString(), subType.ToString(), duration, totalDelay, targetShapeId, onclickIndex));
+                if (!shapeEffectsCollection.ContainsKey(shape))
+                    shapeEffectsCollection.Add(shape, new Tuple<string, string, float, float, string, string, int>(classType.ToString() + type.ToString(), subType.ToString(), duration, totalDelay, targetShapeId, extra, onclickIndex));
             }
 
             return onclickIndex;
+        }
+
+        private static string GetDestinationColor(IShape shape, IColorFormat colorFormat)
+        {
+            var cloneShape = shape.Slide.Shapes.AddClone(shape);
+            cloneShape.FillFormat.FillType = FillType.Solid;
+            cloneShape.FillFormat.SolidFillColor.CopyFrom(colorFormat);
+
+            Color effectiveColor = cloneShape.FillFormat.GetEffective().SolidFillColor;
+            shape.Slide.Shapes.Remove(cloneShape);
+
+            return "rgb(" + effectiveColor.R + "," + effectiveColor.G + "," + effectiveColor.B + ")";
         }
     }
 }

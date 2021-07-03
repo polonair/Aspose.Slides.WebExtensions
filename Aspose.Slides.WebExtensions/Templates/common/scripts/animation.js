@@ -193,7 +193,7 @@ function FillSlideShapeAnimations(slideId) {
             while (animations[clickTarget].length <= parseInt($(this).attr("data-animation-index")))
                 animations[clickTarget].push([]);
             
-            animations[clickTarget][$(this).attr("data-animation-index")].push(GetAnimationEffect($(this).attr("data-animation-type"), $(this).attr("data-animation-subtype"), slideId + ' > #' + this.id, $(this).attr("data-animation-duration"), $(this).attr("data-animation-delay")));
+            animations[clickTarget][$(this).attr("data-animation-index")].push(GetAnimationEffect($(this).attr("data-animation-type"), $(this).attr("data-animation-subtype"), slideId + ' > #' + this.id, $(this).attr("data-animation-duration"), $(this).attr("data-animation-delay"), $(this).attr("data-animation-extra")));
         }
     });
 }
@@ -209,8 +209,8 @@ function GetSlideAnimatedShapesId(slideId) {
 function CreateAnimationEffects(animatedShapesId) {
     
     var result = [];
-    for    (var i = 0; i < animatedShapesId.length; i++) {
-        result.push(GetAnimationEffect($(animatedShapesId[i]).data("animation-type"), $(animatedShapesId[i]).data("animation-subtype"),animatedShapesId[i], $(animatedShapesId[i]).data("animation-duration"), $(animatedShapesId[i]).data("animation-delay")));
+    for (var i = 0; i < animatedShapesId.length; i++) {
+        result.push(GetAnimationEffect($(animatedShapesId[i]).data("animation-type"), $(animatedShapesId[i]).data("animation-subtype"),animatedShapesId[i], $(animatedShapesId[i]).data("animation-duration"), $(animatedShapesId[i]).data("animation-delay"), $(animatedShapesId[i]).data("animation-extra")));
     }
     
     return result;
