@@ -27,7 +27,7 @@
         string background = FillHelper.GetFillStyle(shape.FillFormat.GetEffective(), Model);
         string borderStyle = string.Format("border: {0};", LineHelper.GetLineStyle(shape.LineFormat.GetEffective()));
                 
-        return string.Join(" ", background, borderStyle);
+        return string.Join(" ", new string[] {background, borderStyle});
     }
 }
 

@@ -2,7 +2,7 @@
 
 @{
     var effectiveBg = Model.Object.Background.GetEffective();
-    var color = ColorTranslator.ToHtml(effectiveBg.FillFormat.SolidFillColor); 
+    var color = ColorHelper.GetRrbaColorString(effectiveBg.FillFormat.SolidFillColor); 
 }
 
 .master-bg {

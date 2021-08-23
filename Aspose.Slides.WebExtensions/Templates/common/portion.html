@@ -4,6 +4,8 @@
     Portion contextObject = Model.Object;
     var parentTextFrame = Model.Local.Get<TextFrame>("parentTextFrame");
     var tableContentFlag = Model.Local.Get<bool>("tableContent");
+    var clickHyperlink = contextObject.PortionFormat.GetEffective().HyperlinkClick;
+    string hyperlink = clickHyperlink != null ? clickHyperlink.ExternalUrl : "";
 }
 
 @functions
@@ -14,4 +16,12 @@
     }
 }
 
+@if (!string.IsNullOrEmpty(hyperlink))
+{
+    @Raw("<a href=\"" + hyperlink + "\">");
+}
 <span class="portion" style="@GetTextStyle(contextObject, parentTextFrame, tableContentFlag)">@contextObject.Text</span>
+@if (!string.IsNullOrEmpty(hyperlink))
+{
+    @Raw("</a>");
+}

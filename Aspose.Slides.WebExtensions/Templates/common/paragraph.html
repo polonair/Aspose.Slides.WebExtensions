@@ -10,6 +10,8 @@
     var paragraphFormatEffective = contextObject.ParagraphFormat.GetEffective();
     
     double[] margins = TextHelper.GetParagraphMargins(paragraphFormatEffective, parentTextFrame, parentContainerSize, Model);
+    var marginStyle = "margin-left: " + margins[0] + "px; margin-top: " + margins[1] + "px; margin-right: " + margins[2] + "px; margin-bottom: " + margins[3] + "px; ";
+    var paragraphStyle = marginStyle + GetTextStyle(contextObject);
 }
 
 @functions
@@ -20,7 +22,7 @@
     }
 }
 
-<p style="margin-left: @margins[0]px; margin-top: @margins[1]px; margin-right: @margins[2]px; margin-bottom: @margins[3]px; @GetTextStyle(contextObject)">
+<p style="@paragraphStyle">
     @if (paragraphFormatEffective.Bullet.Type != BulletType.None)
     {
         @Raw(Include("bullet", Model).ToString().Replace(Environment.NewLine, ""))

@@ -22,6 +22,8 @@
     }
     
     var bulletSymbol = paragraphFormatEffective.Bullet.ActualBulletValue;
+    var marginStyle = "margin-left: " + margins[0] + "px; margin-top: " + margins[1] + "px; margin-right: " + margins[2] + "px; margin-bottom: " + margins[3] + "px; ";
+    var bulletStyle = marginStyle + GetTextBulletStyle(contextObject, parentTextFrame, tableContentFlag);
 }
 
 @functions
@@ -42,7 +44,7 @@
     }
 }
 
-<span class="portion" style="margin-left: @margins[0]px; margin-top: @margins[1]px; margin-right: @margins[2]px; margin-bottom: @margins[3]px; @GetTextBulletStyle(contextObject, parentTextFrame, tableContentFlag)">
+<span class="portion" style="@bulletStyle">
     @bulletSymbol
     @if (paragraphFormatEffective.Bullet.Type == BulletType.Picture)
     {
