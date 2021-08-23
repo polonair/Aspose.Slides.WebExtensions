@@ -215,8 +215,8 @@ namespace Aspose.Slides.WebExtensions.Helpers
                         underlineStyle = "solid";
                         break;
                 }
-
-                textDecorationStyle = string.Format("text-decoration: underline {0} {1};", underlineStyle, ColorTranslator.ToHtml(format.UnderlineFillFormat.SolidFillColor));
+                
+                textDecorationStyle = string.Format("text-decoration: underline {0} {1};", underlineStyle, ColorHelper.GetRrbaColorString(format.UnderlineFillFormat.SolidFillColor));
             }
 
             var shadowFix = (textFrameFormat.TextVerticalType == TextVerticalType.Vertical || textFrameFormat.TextVerticalType == TextVerticalType.Vertical270 ? -1 : 1)
@@ -228,11 +228,11 @@ namespace Aspose.Slides.WebExtensions.Helpers
                                                     shadowFix * format.EffectFormat.OuterShadowEffect.Distance * Math.Cos((Math.PI / 180) * format.EffectFormat.OuterShadowEffect.Direction),
                                                     shadowFix * format.EffectFormat.OuterShadowEffect.Distance * Math.Sin((Math.PI / 180) * format.EffectFormat.OuterShadowEffect.Direction),
                                                     format.EffectFormat.OuterShadowEffect.BlurRadius,
-                                                    ColorTranslator.ToHtml(format.EffectFormat.OuterShadowEffect.ShadowColor));
+                                                    ColorHelper.GetRrbaColorString(format.EffectFormat.OuterShadowEffect.ShadowColor));
 
             string strokeStyle = "";
             if (format.LineFormat.FillFormat.FillType == FillType.Solid)
-                strokeStyle = string.Format("-webkit-text-stroke: {0}px {1};", format.LineFormat.Width, ColorTranslator.ToHtml(format.LineFormat.FillFormat.SolidFillColor));
+                strokeStyle = string.Format("-webkit-text-stroke: {0}px {1};", format.LineFormat.Width, ColorHelper.GetRrbaColorString(format.LineFormat.FillFormat.SolidFillColor));
             else if (format.LineFormat.FillFormat.FillType == FillType.Gradient)
                 strokeStyle = "";
 
@@ -284,7 +284,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 case BulletType.Numbered:
                     if (format.Bullet.IsBulletHardColor)
                     {
-                        fontFill = string.Format("color: {0};", ColorTranslator.ToHtml(format.Bullet.FillFormat.SolidFillColor));
+                        fontFill = string.Format("color: {0};", ColorHelper.GetRrbaColorString(format.Bullet.FillFormat.SolidFillColor));
                     }
                     else
                     {
@@ -319,7 +319,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                                                     shadowFix * firstPortionFormatEffective.EffectFormat.OuterShadowEffect.Distance * Math.Cos((Math.PI / 180) * firstPortionFormatEffective.EffectFormat.OuterShadowEffect.Direction),
                                                     shadowFix * firstPortionFormatEffective.EffectFormat.OuterShadowEffect.Distance * Math.Sin((Math.PI / 180) * firstPortionFormatEffective.EffectFormat.OuterShadowEffect.Direction),
                                                     firstPortionFormatEffective.EffectFormat.OuterShadowEffect.BlurRadius,
-                                                    ColorTranslator.ToHtml(firstPortionFormatEffective.EffectFormat.OuterShadowEffect.ShadowColor));
+                                                    ColorHelper.GetRrbaColorString(firstPortionFormatEffective.EffectFormat.OuterShadowEffect.ShadowColor));
 
             string fontHeightStyle = string.Format("font-size: {0}px;", format.Bullet.Height * firstPortionFormatEffective.FontHeight / 100);
             string fontFamilyStyle = string.Format("font-family: {0};", bulletFont);

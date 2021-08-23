@@ -9,6 +9,9 @@
     }
     var slideWidth = contextObject.SlideSize.Size.Width;
     var slideHeight = contextObject.SlideSize.Size.Height;
+    var viewboxValue = "0 0 " + slideWidth + " " + slideHeight;
+    var prevSlideButtonPosition = "left: " + (slideWidth / 2 - 100 - 5) + "px; top: " + (slideHeight + 40) + "px;";
+    var nextSlideButtonPosition = "left: " + (slideWidth / 2 + 5) + "px; top: " + (slideHeight + 40) + "px;";
 }
     
 <!DOCTYPE html>    
@@ -19,17 +22,27 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">    
 <head>    
     <meta charset="utf-8" />    
-    <title>@contextObject.DocumentProperties.Title</title>    
-    <link rel="stylesheet" type="text/css" href="pres.css" />    
-    <link rel="stylesheet" type="text/css" href="master.css" />    
+    <title>@contextObject.DocumentProperties.Title</title>
+    <style>
+        @Include("styles-pres", Model)
+    </style>
+    <style>
+        @Include("styles-master", Model.SubModel((MasterSlide)contextObject.Masters[0]))
+    </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js">
     </script>
-    <script src="animation.js"></script>
-    <script src="effects.js"></script>
-    <script src="navigation.js"></script>
-</head>    
+    <script>
+        @Include("scripts-animation", Model)
+    </script>
+    <script>
+        @Include("scripts-effects", Model)
+    </script>
+    <script>
+        @Include("scripts-navigation", Model)
+    </script>
+</head>
 <body>    
     <div class="bg">
         <div id="flash" class="slide" style="background-color: #FFFFFF; outline: 0; display: none;">
@@ -50,20 +63,20 @@
         <div id="svgdiv">
             <svg width="0" height="0" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
                 <defs>
-                    <clipPath id="effectsclip" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
-                    <clipPath id="effectsclip1" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
-                    <clipPath id="effectsclip2" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
-                    <clipPath id="effectsclip3" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
-                    <clipPath id="effectsclip4" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
-                    <clipPath id="effectsclip5" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
-                    <clipPath id="effectsclip6" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
-                    <clipPath id="effectsclip7" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
-                    <clipPath id="effectsclip8" viewbox="0 0 @Model.Object.SlideSize.Size.Width @Model.Object.SlideSize.Size.Height"></clipPath>
+                    <clipPath id="effectsclip" viewbox="@viewboxValue"></clipPath>
+                    <clipPath id="effectsclip1" viewbox="@viewboxValue"></clipPath>
+                    <clipPath id="effectsclip2" viewbox="@viewboxValue"></clipPath>
+                    <clipPath id="effectsclip3" viewbox="@viewboxValue"></clipPath>
+                    <clipPath id="effectsclip4" viewbox="@viewboxValue"></clipPath>
+                    <clipPath id="effectsclip5" viewbox="@viewboxValue"></clipPath>
+                    <clipPath id="effectsclip6" viewbox="@viewboxValue"></clipPath>
+                    <clipPath id="effectsclip7" viewbox="@viewboxValue"></clipPath>
+                    <clipPath id="effectsclip8" viewbox="@viewboxValue"></clipPath>
                 </defs>
             </svg>
         </div>
         <div id="svgdivpaths">
-            <svg id="patheffects" width="@slideWidth" height="@slideHeight" viewBox="0 0 @slideWidth @slideHeight">
+            <svg id="patheffects" width="@slideWidth" height="@slideHeight" viewBox="@viewboxValue">
                 <path id="entranceBouncePath" d="M -310 -150 Q -200 -330 -110 -20 Q -80 -80 -60 -10 Q -40 -50 -20 0 Q -10 -30 0 0" fill="none"></path>
                 <path id="exitBouncePath" d="M 0 0 Q 110 -180 200 130 Q 230 70 250 140 Q 270 100 290 150 Q 300 120 310 150" fill="none"></path>
                 <path id="entranceSpiralPath" d="M -430 -210 C -310 -380 90 -380 200 -300 C 400 -200 350 60 110 130 C -130 150 -200 -70 20 -80 C 140 -70 70 50 0 0" fill="none"></path>
@@ -76,7 +89,7 @@
         </div>
     </div>
         
-    <button class="navigationButton" id="PrevSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 - 100 - 5)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Prev Slide</button>    
-    <button class="navigationButton" id="NextSlide" style="left: @(Model.Object.SlideSize.Size.Width / 2 + 5)px; top: @(Model.Object.SlideSize.Size.Height + 40)px;">Next Slide</button>
+    <button class="navigationButton" id="PrevSlide" style="@prevSlideButtonPosition">Prev Slide</button>    
+    <button class="navigationButton" id="NextSlide" style="@nextSlideButtonPosition">Next Slide</button>    
 </body>
 </html>

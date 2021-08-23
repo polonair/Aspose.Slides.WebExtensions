@@ -1,3 +1,5 @@
+@model TemplateContext<Presentation>
+
 const entranceBouncePath = anime.path('#entranceBouncePath');
 const exitBouncePath = anime.path('#exitBouncePath');
 const entranceSpiralPath = anime.path('#entranceSpiralPath');
@@ -2236,11 +2238,12 @@ class EmphasisDesaturateEffect extends Effect {
         
         var shapeId = this.shapeId;
         var originalColor = $(shapeId).css('background-color');
-        var rgbstring = originalColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        var rgbstring = originalColor.match(/^rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*([\.\d]+)\s*)?\)$/i);
+        var alpha = rgbstring[5] ?? '1';
         var rgb = [parseInt(rgbstring[1]), parseInt(rgbstring[2]), parseInt(rgbstring[3])];
         var grayColor = rgb[0] * 0.3086 + rgb[1] * 0.6094 + rgb[2] * 0.0820;
         var sat = 0.2;
-        var emphasisColor = 'rgb(' + Math.round(rgb[0] * sat + grayColor * (1-sat)) + ',' + Math.round(rgb[1] * sat + grayColor * (1-sat)) + ',' + Math.round(rgb[2] * sat + grayColor * (1-sat)) + ')';
+        var emphasisColor = 'rgb(' + Math.round(rgb[0] * sat + grayColor * (1-sat)) + ',' + Math.round(rgb[1] * sat + grayColor * (1-sat)) + ',' + Math.round(rgb[2] * sat + grayColor * (1-sat)) + ',' + alpha + ')';
         this.emphasisColor = emphasisColor;
         
         this.effectTimeline = anime.timeline({
@@ -2575,7 +2578,8 @@ class EmphasisContrastingColorEffect extends Effect {
         
         var shapeId = this.shapeId;
         var originalColor = $(shapeId).css('background-color');
-        var rgbstring = originalColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        var rgbstring = originalColor.match(/^rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*([\.\d]+)\s*)?\)$/i);
+        var alpha = rgbstring[5] ?? '1';        
         var rgb = [parseInt(rgbstring[1]), parseInt(rgbstring[2]), parseInt(rgbstring[3])];
         
         var originalHSL = rgbToHsl(rgb[0], rgb[1], rgb[2]);
@@ -2587,10 +2591,10 @@ class EmphasisContrastingColorEffect extends Effect {
         var emphasisRGB2 = hslToRgb(newHue2, originalHSL[1], originalHSL[2]);
         var emphasisRGB3 = hslToRgb(newHue3, originalHSL[1], originalHSL[2]);
         var emphasisRGB4 = hslToRgb(newHue4, originalHSL[1], originalHSL[2]);
-        var emphasisColor1 = 'rgb(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ')';
-        var emphasisColor2 = 'rgb(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ')';
-        var emphasisColor3 = 'rgb(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ')';
-        var emphasisColor4 = 'rgb(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ')';
+        var emphasisColor1 = 'rgba(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ',' + alpha + ')';
+        var emphasisColor2 = 'rgba(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ',' + alpha + ')';
+        var emphasisColor3 = 'rgba(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ',' + alpha + ')';
+        var emphasisColor4 = 'rgba(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ',' + alpha + ')';
         this.emphasisColor = emphasisColor4;
         
         this.effectTimeline = anime.timeline({
@@ -2617,7 +2621,8 @@ class EmphasisComplementaryColorEffect extends Effect {
         
         var shapeId = this.shapeId;
         var originalColor = $(shapeId).css('background-color');
-        var rgbstring = originalColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        var rgbstring = originalColor.match(/^rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*([\.\d]+)\s*)?\)$/i);
+        var alpha = rgbstring[5] ?? '1';    
         var rgb = [parseInt(rgbstring[1]), parseInt(rgbstring[2]), parseInt(rgbstring[3])];
         
         var originalHSL = rgbToHsl(rgb[0], rgb[1], rgb[2]);
@@ -2629,10 +2634,10 @@ class EmphasisComplementaryColorEffect extends Effect {
         var emphasisRGB2 = hslToRgb(newHue2, originalHSL[1], originalHSL[2]);
         var emphasisRGB3 = hslToRgb(newHue3, originalHSL[1], originalHSL[2]);
         var emphasisRGB4 = hslToRgb(newHue4, originalHSL[1], originalHSL[2]);
-        var emphasisColor1 = 'rgb(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ')';
-        var emphasisColor2 = 'rgb(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ')';
-        var emphasisColor3 = 'rgb(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ')';
-        var emphasisColor4 = 'rgb(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ')';
+        var emphasisColor1 = 'rgba(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ',' + alpha + ')';
+        var emphasisColor2 = 'rgba(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ',' + alpha + ')';
+        var emphasisColor3 = 'rgba(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ',' + alpha + ')';
+        var emphasisColor4 = 'rgba(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ',' + alpha + ')';
         this.emphasisColor = emphasisColor4;
         
         this.effectTimeline = anime.timeline({
@@ -2659,7 +2664,10 @@ class EmphasisComplementaryColor2Effect extends Effect {
         
         var shapeId = this.shapeId;
         var originalColor = $(shapeId).css('background-color');
-        var rgbstring = originalColor.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        
+        var rgbstring = originalColor.match(/^rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(,\s*([\.\d]+)\s*)?\)$/i);
+        var alpha = rgbstring[5] ?? '1';
+        
         var rgb = [parseInt(rgbstring[1]), parseInt(rgbstring[2]), parseInt(rgbstring[3])];
         
         var originalHSL = rgbToHsl(rgb[0], rgb[1], rgb[2]);
@@ -2671,10 +2679,10 @@ class EmphasisComplementaryColor2Effect extends Effect {
         var emphasisRGB2 = hslToRgb(newHue2, originalHSL[1], originalHSL[2]);
         var emphasisRGB3 = hslToRgb(newHue3, originalHSL[1], originalHSL[2]);
         var emphasisRGB4 = hslToRgb(newHue4, originalHSL[1], originalHSL[2]);
-        var emphasisColor1 = 'rgb(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ')';
-        var emphasisColor2 = 'rgb(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ')';
-        var emphasisColor3 = 'rgb(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ')';
-        var emphasisColor4 = 'rgb(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ')';
+        var emphasisColor1 = 'rgba(' + emphasisRGB1[0] + ',' + emphasisRGB1[1] + ',' + emphasisRGB1[2] + ',' + alpha + ')';
+        var emphasisColor2 = 'rgba(' + emphasisRGB2[0] + ',' + emphasisRGB2[1] + ',' + emphasisRGB2[2] + ',' + alpha + ')';
+        var emphasisColor3 = 'rgba(' + emphasisRGB3[0] + ',' + emphasisRGB3[1] + ',' + emphasisRGB3[2] + ',' + alpha + ')';
+        var emphasisColor4 = 'rgba(' + emphasisRGB4[0] + ',' + emphasisRGB4[1] + ',' + emphasisRGB4[2] + ',' + alpha + ')';
         this.emphasisColor = emphasisColor4;
         
         this.effectTimeline = anime.timeline({

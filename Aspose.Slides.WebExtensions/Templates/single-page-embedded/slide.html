@@ -1,0 +1,103 @@
+﻿@model TemplateContext<Slide>
+
+@{
+    Slide contextObject = Model.Object;
+    bool animateTransitions = Model.Global.Get<bool>("animateTransitions");
+    int slideNumber = SlideHelper.GetVisibleSlideNumber(contextObject);
+    var slideAnimationData = SlideHelper.GetSlidesAnimationCollection(contextObject);
+    var slideId = "slide-" + slideNumber;
+    var slideStyle = "display: " + (animateTransitions ? "none" : "block") + ";";
+}
+    
+@helper EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData) 
+{
+    var margin = Model.Global.Get<int>("slideMargin");
+    var visibleSlideNumber = animateTransitions ? 1 : slideNumber;
+    var slideOriginY = ((int)(contextObject.Presentation.SlideSize.Size.Height + (margin + 1) / 2f) * (visibleSlideNumber - 1)) + (!animateTransitions ? margin * visibleSlideNumber: 0);
+    var origin = new Point((!animateTransitions ? margin: 0), slideOriginY);
+    
+    string animationAttributes = "";
+    if (slideAnimationData.ContainsKey(shape))
+    {
+        var shapeAnimationData = slideAnimationData[shape];
+        
+        animationAttributes += "data-animation-type=\"" + shapeAnimationData.Item1 + "\" ";
+        animationAttributes += "data-animation-subtype=\"" + shapeAnimationData.Item2 + "\" ";
+        animationAttributes += "data-animation-duration=\"" + shapeAnimationData.Item3 + "\" ";
+        animationAttributes += "data-animation-delay=\"" + shapeAnimationData.Item4 + "\" ";
+        animationAttributes += "data-animation-clickTarget=\"" + shapeAnimationData.Item5 + "\" ";
+        animationAttributes += "data-animation-extra=\"" + shapeAnimationData.Item6 + "\" ";
+        animationAttributes += "data-animation-index=\"" + shapeAnimationData.Item7 + "\" ";
+    }
+        
+
+
+    if (shape is AutoShape && (((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.Rectangle || ((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.NotDefined))
+    {
+        var subModel = Model.SubModel((AutoShape)shape);
+        subModel.Local.Put<Point>("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
+
+        @Include("autoshape", subModel)
+    }
+    else if (shape is VideoFrame)
+    {
+        var subModel = Model.SubModel((VideoFrame)shape);
+        subModel.Local.Put<Point> ("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
+
+        @Include("videoframe", subModel)
+    }
+    else if (shape is PictureFrame)
+    {
+        var subModel = Model.SubModel((PictureFrame)shape);
+        subModel.Local.Put<Point>("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
+
+        @Include("pictureframe", subModel)
+    }
+    else if (shape is Table)
+    {
+        var subModel = Model.SubModel((Table)shape);
+        subModel.Local.Put<Point>("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
+
+        @Include("table", subModel)
+    }
+    else if (shape is Shape)
+    {
+        var subModel = Model.SubModel((Shape)shape);
+        subModel.Local.Put("origin", origin);
+        subModel.Local.Put("animationAttributes", animationAttributes);
+
+        @Include("shape", subModel)
+    }  
+}
+    
+<div id="@slideId" class="slide master-bg" 
+     data-transition-type="@contextObject.SlideShowTransition.Type"
+     data-transition-speed="@contextObject.SlideShowTransition.Speed"
+     data-transition-direction="@SlideHelper.GetSlideTransitionDirection(contextObject)"
+     data-transition-extra="@SlideHelper.GetSlideTransitionExtraData(contextObject)"
+     style="@slideStyle">
+    
+        @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
+        {
+            if(shape.Placeholder == null) {
+                @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData);
+            }
+        }
+
+        @foreach (var shape in contextObject.LayoutSlide.Shapes)
+        {
+            if(shape.Placeholder == null) {
+                @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData);
+            }
+        }        
+        
+        @foreach (var shape in contextObject.Shapes)
+        {
+            @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData);
+        }
+
+</div>

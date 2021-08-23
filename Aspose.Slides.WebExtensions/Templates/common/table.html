@@ -32,7 +32,7 @@
         string borderBottom = string.Format("border-bottom: {0};", LineHelper.GetLineStyle(cellFormat.BorderBottom));
         string verticalAlign = TextHelper.GetVerticalAlignmentStyle(cell.TextAnchorType);
         
-        return string.Join(" ", background, borderLeft, borderTop, borderRight, borderBottom, verticalAlign);
+        return string.Join(" ", new string[] {background, borderLeft, borderTop, borderRight, borderBottom, verticalAlign});
     }
 }
 
@@ -47,7 +47,8 @@
             if (cell.FirstRowIndex ==  i && cell.FirstColumnIndex == j)
             {
                 var spans = cell.IsMergedCell ? string.Format("rowspan=\"{0}\" colspan=\"{1}\"", cell.RowSpan, cell.ColSpan) : "";
-                <td width="@cell.Width px" @Raw(spans) style="@GetCellStyle(cell)">
+                var cellWidth = cell.Width + " px";
+                <td width="@cellWidth" @Raw(spans) style="@GetCellStyle(cell)">
                     @{
                         for(int k = 0; k < cell.TextFrame.Paragraphs.Count; k++)
                         {

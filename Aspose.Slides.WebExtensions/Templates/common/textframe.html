@@ -15,7 +15,7 @@
         string positioningStyle = TextHelper.GetTextPositioningStyle(textFrame, Model.Local.Get<AutoShape>("parent"));
         string columnsParameters = TextHelper.GetTextFrameColumnsStyle(textFrame.TextFrameFormat.GetEffective());
         
-        return string.Join(" ", positioningStyle, columnsParameters);
+        return string.Join(" ", new string[] {positioningStyle, columnsParameters});
     }
 }
 

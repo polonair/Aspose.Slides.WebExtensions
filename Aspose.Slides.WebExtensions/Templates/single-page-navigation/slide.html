@@ -4,6 +4,7 @@
     Slide contextObject = Model.Object;
     int slideNumber = SlideHelper.GetVisibleSlideNumber(contextObject);
     var slideAnimationData = SlideHelper.GetSlidesAnimationCollection(contextObject);
+    var slideId = "slide-" + slideNumber;
 }
     
 @helper EmitShape(IShape shape, Slide contextObject, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData) 
@@ -67,7 +68,7 @@
     }  
 }
     
-<div id="slide-@slideNumber" class="slide master-bg" 
+<div id="@slideId" class="slide master-bg" 
      data-transition-type="@contextObject.SlideShowTransition.Type"
      data-transition-speed="@contextObject.SlideShowTransition.Speed"
      data-transition-direction="@SlideHelper.GetSlideTransitionDirection(contextObject)"

@@ -14,7 +14,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
             switch (format.FillType)
             {
                 case FillType.Solid:
-                    result = string.Format("background-color: {0};", ColorTranslator.ToHtml(format.SolidFillColor));
+                    result = string.Format("background-color: {0};", ColorHelper.GetRrbaColorString(format.SolidFillColor));
                     break;
                 case FillType.Picture:
                     result = string.Format("background-image: url(\"{0}\");", ImageHelper.GetImageURL(format.PictureFillFormat.Picture.Image, model));
@@ -36,11 +36,9 @@ namespace Aspose.Slides.WebExtensions.Helpers
             string gradStops = "";
             foreach (var gradStop in format.GradientStops.ToList().OrderBy(stop => stop.Position))
             {
-                gradStops += string.Format(", {0}", ColorTranslator.ToHtml(gradStop.Color));
+                gradStops += string.Format(", {0}", ColorHelper.GetRrbaColorString(gradStop.Color));
                 if (gradStop.Position > 0 && gradStop.Position < 1)
-                {
                     gradStops += string.Format(" {0}%", gradStop.Position * 100);
-                }
             }
 
             if (format.GradientShape == GradientShape.Linear)
