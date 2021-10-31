@@ -24,7 +24,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 {
                     Bitmap image = (shape as Shape).GetThumbnail();
                     image.Save(ms, ImageFormat.Png);
-                    return "data:image/png;base64, " + Convert.ToBase64String(ms.ToArray());
+                    return "'data:image/png;base64, " + Convert.ToBase64String(ms.ToArray()) + "'";
                 }
             }
             else
@@ -75,6 +75,11 @@ namespace Aspose.Slides.WebExtensions.Helpers
             }
 
             return result;
+        }
+
+        public static string GetSubstitutionMarkup(string templateMarkup, IShape shape, Point origin, string animationAttributes)
+        {
+            return null;
         }
     }
 }
