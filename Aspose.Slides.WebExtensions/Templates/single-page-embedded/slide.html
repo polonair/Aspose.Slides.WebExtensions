@@ -30,48 +30,58 @@
         animationAttributes += "data-animation-index=\"" + shapeAnimationData.Item7 + "\" ";
     }
         
+	string standardIncludeResult = "";
+    
+	if (shape is AutoShape && (((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.Rectangle || ((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.NotDefined))
+	{
+		var subModel = Model.SubModel((AutoShape)shape);
+		subModel.Local.Put<Point>("origin", origin);
+		subModel.Local.Put("animationAttributes", animationAttributes);
 
+		standardIncludeResult = Include("autoshape", subModel).ToString();
+	}
+	else if (shape is VideoFrame)
+	{
+		var subModel = Model.SubModel((VideoFrame)shape);
+		subModel.Local.Put<Point> ("origin", origin);
+		subModel.Local.Put("animationAttributes", animationAttributes);
 
-    if (shape is AutoShape && (((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.Rectangle || ((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.NotDefined))
+		standardIncludeResult = Include("videoframe", subModel).ToString();
+	}
+	else if (shape is PictureFrame)
+	{
+		var subModel = Model.SubModel((PictureFrame)shape);
+		subModel.Local.Put<Point>("origin", origin);
+		subModel.Local.Put("animationAttributes", animationAttributes);
+
+		standardIncludeResult = Include("pictureframe", subModel).ToString();
+	}
+	else if (shape is Table)
+	{
+		var subModel = Model.SubModel((Table)shape);
+		subModel.Local.Put<Point>("origin", origin);
+		subModel.Local.Put("animationAttributes", animationAttributes);
+
+		standardIncludeResult = Include("table", subModel).ToString();
+	}
+	else if (shape is Shape)
+	{
+		var subModel = Model.SubModel((Shape)shape);
+		subModel.Local.Put("origin", origin);
+		subModel.Local.Put("animationAttributes", animationAttributes);
+
+		standardIncludeResult = Include("shape", subModel).ToString();
+	}
+	
+	string substitutionMarkup = ShapeHelper.GetSubstitutionMarkup(standardIncludeResult, shape, origin, animationAttributes);
+    if (string.IsNullOrEmpty(substitutionMarkup))
     {
-        var subModel = Model.SubModel((AutoShape)shape);
-        subModel.Local.Put<Point>("origin", origin);
-        subModel.Local.Put("animationAttributes", animationAttributes);
-
-        @Include("autoshape", subModel)
+		@Raw(standardIncludeResult);
     }
-    else if (shape is VideoFrame)
+    else
     {
-        var subModel = Model.SubModel((VideoFrame)shape);
-        subModel.Local.Put<Point> ("origin", origin);
-        subModel.Local.Put("animationAttributes", animationAttributes);
-
-        @Include("videoframe", subModel)
+        @Raw(substitutionMarkup);
     }
-    else if (shape is PictureFrame)
-    {
-        var subModel = Model.SubModel((PictureFrame)shape);
-        subModel.Local.Put<Point>("origin", origin);
-        subModel.Local.Put("animationAttributes", animationAttributes);
-
-        @Include("pictureframe", subModel)
-    }
-    else if (shape is Table)
-    {
-        var subModel = Model.SubModel((Table)shape);
-        subModel.Local.Put<Point>("origin", origin);
-        subModel.Local.Put("animationAttributes", animationAttributes);
-
-        @Include("table", subModel)
-    }
-    else if (shape is Shape)
-    {
-        var subModel = Model.SubModel((Shape)shape);
-        subModel.Local.Put("origin", origin);
-        subModel.Local.Put("animationAttributes", animationAttributes);
-
-        @Include("shape", subModel)
-    }  
 }
     
 <div id="@slideId" class="slide master-bg" 

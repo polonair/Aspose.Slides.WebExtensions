@@ -5,6 +5,8 @@
     bool animateTransitions = Model.Global.Get<bool>("animateTransitions");
     int slideNumber = SlideHelper.GetVisibleSlideNumber(contextObject);
     var slideAnimationData = SlideHelper.GetSlidesAnimationCollection(contextObject);
+    var slideId = "slide-" + slideNumber;
+    var slideStyle = "display: " + (animateTransitions ? "none" : "block") + ";";
 }
     
 @helper EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData) 
@@ -72,12 +74,12 @@
     }  
 }
     
-<div id="slide-@slideNumber" class="slide master-bg" 
+<div id="@slideId" class="slide master-bg" 
      data-transition-type="@contextObject.SlideShowTransition.Type"
      data-transition-speed="@contextObject.SlideShowTransition.Speed"
      data-transition-direction="@SlideHelper.GetSlideTransitionDirection(contextObject)"
      data-transition-extra="@SlideHelper.GetSlideTransitionExtraData(contextObject)"
-     style="display: @(animateTransitions ? "none" : "block");">
+     style="@slideStyle">
     
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
         {
