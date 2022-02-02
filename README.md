@@ -19,7 +19,10 @@ Benefits of the new approach:
 -	Individual result – no need to deal with other users markup/parameters artifacts.
 ![Fig.1 Old and new HTML export approach schemes](https://raw.githubusercontent.com/aspose-slides/Aspose.Slides.WebExtensions/main/pic1.png)
 
+**Info**: Besides enhancing HTML export capabilities, Aspose also improved its free online web apps, especially the [PowerPoint to Word](https://products.aspose.app/slides/conversion/ppt-to-word), [PowerPoint to PDF](https://products.aspose.app/slides/conversion), and [PowerPoint to JPG](https://products.aspose.app/slides/conversion/ppt-to-jpg) converters.
+
 ## Main Components
+
 The first base part of new approach is IWebDocument interface, which aggregates few other interfaces (IInput, IOutput, IStorage) – they allow to control input and output objects, storage management and saving results. Classes implementing these interfaces are encapsulated into Aspose.Slides itself.
 
 The second base part is ITemplateEngine interface. Implementation of this interface defines how presentation data (got from Aspose.Slides API) transform into resulting HTML. ITemplateEngine interface is implemented by RazorTemplateEngine class in release version of Aspose.Slides.WebExtensions – it uses ASP.NET Razor template system to generate HTML output.
@@ -368,5 +371,4 @@ This case requires specific changes to templates and helpers, and go beyond the 
 
 
 [Home](https://www.aspose.com/) | [Product Page](https://products.aspose.com/slides/) | [Docs](https://docs.aspose.com/slides/) | [Demos](https://products.aspose.app/slides/family) | [API Reference](https://apireference.aspose.com/slides) | [Blog](https://blog.aspose.com/category/slides/) | [Search](https://search.aspose.com/) | [Free Support](https://forum.aspose.com/c/slides) | [Temporary License](https://purchase.aspose.com/temporary-license)
-
 
