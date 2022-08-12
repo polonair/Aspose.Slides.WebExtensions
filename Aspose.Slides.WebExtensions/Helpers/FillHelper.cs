@@ -17,7 +17,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                     result = string.Format("background-color: {0};", ColorHelper.GetRrbaColorString(format.SolidFillColor));
                     break;
                 case FillType.Picture:
-                    result = string.Format("background-image: url(\"{0}\");", ImageHelper.GetImageURL(format.PictureFillFormat.Picture.Image, model));
+                    result = string.Format("background-image: url('{0}');", ImageHelper.GetImageURL(format.PictureFillFormat.Picture.Image, model));
                     break;
                 case FillType.Gradient:
                     result = string.Format("background: {0};", FillHelper.GetGradientFill(format.GradientFormat));

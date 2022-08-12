@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\artificial.pptx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\demo-transitions.pptx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
