@@ -4,12 +4,73 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Aspose.Slides.Animation;
+using Aspose.Slides.Export.Web;
 using Aspose.Slides.SlideShow;
 
 namespace Aspose.Slides.WebExtensions.Helpers
 {
     public static class SlideHelper
     {
+        public static string GetNextSlide(TemplateContext<Slide> Model)
+        {
+            IPresentation presentation = Model.Object.Presentation;
+            Slide current = Model.Object as Slide;
+            string result = "";
+            if (presentation != null && presentation != null)
+            {
+                for (int i = 0; i < presentation.Slides.Count - 1; i++)
+                {
+                    if (presentation.Slides[i] == current)
+                    {
+                        result = string.Format("location.href='slide{0}.html';", presentation.Slides[i + 1].SlideNumber);
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+        public static string GetPrevSlide(TemplateContext<Slide> Model)
+        {
+            IPresentation presentation = Model.Object.Presentation;
+            Slide current = Model.Object as Slide;
+            string result = "";
+            if (presentation != null && presentation != null)
+            {
+                for (int i = 0; i < presentation.Slides.Count - 1; i++)
+                {
+                    if (presentation.Slides[i + 1].SlideNumber == current.SlideNumber)
+                    {
+                        result = string.Format("location.href='slide{0}.html';", presentation.Slides[i].SlideNumber);
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+        public static string GetPrevStyle(TemplateContext<Slide> Model)
+        {
+            IPresentation presentation = Model.Object.Presentation;
+            string result = "display: unset !important;";
+            if (presentation != null)
+            {
+                var top = presentation.SlideSize.Size.Height + 40;
+                var left = 10 + presentation.SlideSize.Size.Width / 2 - 100 - 5;
+                result += String.Format(" top: {0}px; left: {1}px;", NumberHelper.ToCssNumber(top), NumberHelper.ToCssNumber(left));
+            }
+            return result;
+        }
+        public static string GetNextStyle(TemplateContext<Slide> Model)
+        {
+            IPresentation presentation = Model.Object.Presentation;
+            string result = "display: unset !important;";
+            if (presentation != null)
+            {
+                var top = presentation.SlideSize.Size.Height + 40;
+                var left = 10 + presentation.SlideSize.Size.Width / 2 + 5; 
+                result += String.Format(" top: {0}px; left: {1}px;", NumberHelper.ToCssNumber(top), NumberHelper.ToCssNumber(left));
+            }
+            return result;
+        }
         public static int GetVisibleSlideNumber(ISlide slide)
         {
             int hiddenSlidesCount = 0;
