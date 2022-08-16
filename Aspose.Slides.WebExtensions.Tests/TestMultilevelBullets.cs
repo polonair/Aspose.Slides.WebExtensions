@@ -53,34 +53,38 @@ namespace Aspose.Slides.WebExtensions.Tests
             XmlElement root = indexHtml.DocumentElement;
             XmlNode svg = root.SelectSingleNode("//html:div[@id='svgdivpaths']/html:svg", namespaceManager);
 
-            Assert.IsNotNull(svg);
+            Assert.IsNotNull(svg, "div#svgdivpaths block not found");
             string width = svg.Attributes["width"].Value;
-            Assert.AreEqual("959.75", width);
+            Assert.AreEqual("959.75", width, "div#svgdivpaths block should be 959.75 px wide");
             string height = svg.Attributes["height"].Value;
-            Assert.AreEqual("540", height);
+            Assert.AreEqual("540", height, "div#svgdivpaths block should be 540 px high");
             string viewbox = svg.Attributes["viewBox"].Value;
-            Assert.AreEqual("0 0 959.75 540", viewbox);
+            Assert.AreEqual("0 0 959.75 540", viewbox, "div#svgdivpaths block viewBox attribute should be equal to '0 0 959.75 540'");
         }
         [Test]
         public void TestAnimationJs()
         {
             string animationsJsPath = Path.Combine(OutputPath, "animation.js");
             string animationsJsContent = File.ReadAllText(animationsJsPath);
-            Assert.IsTrue(animationsJsContent.Contains("var frameWidth = 959.75;"));
-            Assert.IsTrue(animationsJsContent.Contains("var frameHeight = 540;"));
+            Assert.IsTrue(animationsJsContent.Contains("var frameWidth = 959.75;"), "animation.js should contain string 'var frameWidth = 959.75;'");
+            Assert.IsTrue(animationsJsContent.Contains("var frameHeight = 540;"), "animation.js should contain string 'var frameHeight = 540;'");
         }
         [Test]
         public void TestPresCss()
         {
             string pressCssPath = Path.Combine(OutputPath, "pres.css");
             string presCssContent = File.ReadAllText(pressCssPath);
-            string bgClassStyle = System.Text.RegularExpressions.Regex.Match(presCssContent, "\\.bg[^{]*\\{[^}]+\\}").Value;
-            Assert.IsTrue(bgClassStyle.Contains("width: 979.75px;"));
-            Assert.IsTrue(bgClassStyle.Contains("height: 560px;"));
+            Match bgMatch = System.Text.RegularExpressions.Regex.Match(presCssContent, "\\.bg[^{]*\\{[^}]+\\}");
+            Assert.IsTrue(bgMatch.Success, ".bg not found in pres.css");
+            string bgClassStyle = bgMatch.Value;
+            Assert.IsTrue(bgClassStyle.Contains("width: 979.75px;"), ".bg in pres.css should have property width equals to 813.75px");
+            Assert.IsTrue(bgClassStyle.Contains("height: 560px;"), ".bg in pres.css should have property height equals to 615.25px");
 
-            string slideClassStyle = System.Text.RegularExpressions.Regex.Match(presCssContent, "\\.slide[^{]*\\{[^}]+\\}").Value;
-            Assert.IsTrue(slideClassStyle.Contains("width: 964.75px;"));
-            Assert.IsTrue(slideClassStyle.Contains("height: 545px;"));
+            Match slideMatch = System.Text.RegularExpressions.Regex.Match(presCssContent, "\\.slide[^{]*\\{[^}]+\\}");
+            Assert.IsTrue(slideMatch.Success, ".slide not found in pres.css");
+            string slideClassStyle = slideMatch.Value;
+            Assert.IsTrue(slideClassStyle.Contains("width: 964.75px;"), ".slide in pres.css should have property width equals to 798.75px");
+            Assert.IsTrue(slideClassStyle.Contains("height: 545px;"), ".slide in pres.css should have property height equals to 600.25px");
         }
     }
 }
