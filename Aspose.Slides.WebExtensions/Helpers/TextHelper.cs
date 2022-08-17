@@ -243,7 +243,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 spacingStyle = string.Format("letter-spacing: {0}px;", NumberHelper.ToCssNumber(format.Spacing));
 
             string fontBoldItalicStyle = GetTextFontItalicStyle(format);
-            string fontFamilyStyle = string.Format("font-family: {0};", format.LatinFont);
+            string fontFamilyStyle = string.Format("font-family: {0};", FontHelper.SelectFont(format, model));
             string fontHeightStyle = string.Format("font-size: {0}px;", NumberHelper.ToCssNumber(fontHeight));
             string fontCapStyle = "";
             if (format.TextCapType == TextCapType.All)
