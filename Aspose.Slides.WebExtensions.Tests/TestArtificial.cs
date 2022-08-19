@@ -2,6 +2,7 @@
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.WebExtensions;
 using NUnit.Framework;
+using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -11,6 +12,33 @@ namespace Aspose.Slides.WebExtensions.Tests
     [TestFixture]
     public class TestArtificial
     {
+        public class SlideTestCase
+        {
+            public int Number { get; }
+            public string ImageFileName { get; }
+
+            public SlideTestCase(int number, string imageFileName)
+            {
+                this.Number = number;
+                this.ImageFileName = imageFileName;
+            }
+            public static IEnumerable TestCases
+            {
+                get
+                {
+                    yield return new SlideTestCase(1, "image0.jpeg");
+                    yield return new SlideTestCase(2, "image3.jpeg");
+                    yield return new SlideTestCase(3, "image2.jpeg");
+                    yield return new SlideTestCase(4, "image3.jpeg");
+                    yield return new SlideTestCase(5, "image3.jpeg");
+                }
+            }
+            public override string ToString()
+            {
+                return string.Format("#{0}, FileName='{1}'", Number, ImageFileName);
+            }
+        }
+
         private string TemplatePath = null;
         private string PresentationFilePath = null;
         private string OutputPath = null;
@@ -40,42 +68,16 @@ namespace Aspose.Slides.WebExtensions.Tests
             namespaceManager = new XmlNamespaceManager(indexHtml.NameTable);
             namespaceManager.AddNamespace("html", "http://www.w3.org/1999/xhtml");
         }
-        [Test]
-        public void TestSlidesBackground()
+        [Test, TestCaseSource(typeof(SlideTestCase), "TestCases")]
+        public void TestSlidesBackground(SlideTestCase slideTestCase)
         {
             XmlElement root = indexHtml.DocumentElement;
-            XmlNodeList nodes = root.SelectNodes("//html:div[@class='slide master-bg']", namespaceManager);
+            string slideXPath = string.Format("//html:div[@id='slide-{0}']", slideTestCase.Number);
+            XmlNode slide = root.SelectSingleNode(slideXPath, namespaceManager);
 
-            Assert.AreEqual(5, nodes.Count, "Document should contain 5 slides");
-
-            string id = nodes[0].Attributes["id"].Value;
-            Assert.AreEqual("slide-1", id);
-            string style = nodes[0].Attributes["style"].Value;
-            Assert.IsTrue(style.Contains("background-image: url('images/image0.jpeg');"), "First slide should have background image image0.jpeg");
-            Assert.IsTrue(style.Contains("background-size: cover;"));
-
-            id = nodes[1].Attributes["id"].Value;
-            Assert.AreEqual("slide-2", id);
-            style = nodes[1].Attributes["style"].Value;
-            Assert.IsTrue(style.Contains("background-image: url('images/image3.jpeg');"), "Second slide should have background image image3.jpeg");
-            Assert.IsTrue(style.Contains("background-size: cover;"));
-
-            id = nodes[2].Attributes["id"].Value;
-            Assert.AreEqual("slide-3", id);
-            style = nodes[2].Attributes["style"].Value;
-            Assert.IsTrue(style.Contains("background-image: url('images/image2.jpeg');"), "Third slide should have background image image2.jpeg");
-            Assert.IsTrue(style.Contains("background-size: cover;"));
-
-            id = nodes[3].Attributes["id"].Value;
-            Assert.AreEqual("slide-4", id);
-            style = nodes[3].Attributes["style"].Value;
-            Assert.IsTrue(style.Contains("background-image: url('images/image3.jpeg');"), "Fourth slide should have background image image3.jpeg");
-            Assert.IsTrue(style.Contains("background-size: cover;"));
-
-            id = nodes[4].Attributes["id"].Value;
-            Assert.AreEqual("slide-5", id);
-            style = nodes[4].Attributes["style"].Value;
-            Assert.IsTrue(style.Contains("background-image: url('images/image3.jpeg');"), "Fifth slide should have background image image3.jpeg");
+            string style = slide.Attributes["style"].Value;
+            string expected = string.Format("background-image: url('images/{0}');", slideTestCase.ImageFileName);
+            Assert.IsTrue(style.Contains(expected), "First slide should have background image {0}", slideTestCase.ImageFileName);
             Assert.IsTrue(style.Contains("background-size: cover;"));
         }
     }
