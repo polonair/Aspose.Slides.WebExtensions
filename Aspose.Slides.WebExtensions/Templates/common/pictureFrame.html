@@ -6,6 +6,12 @@
     var origin = Model.Local.Get<Point>("origin");
     
     string imgSrc = ImageHelper.GetImageURL(contextObject.PictureFormat.Picture.Image, Model);
+	imgSrc = ImageHelper.Crop(
+            imgSrc,
+            contextObject.PictureFormat.CropLeft, 
+            contextObject.PictureFormat.CropTop, 
+            contextObject.PictureFormat.CropRight, 
+            contextObject.PictureFormat.CropBottom);
     if (contextObject.PictureFormat.Picture.Image.ContentType == "image/tiff")
     {
         ImageHelper.ConvertTiffToPng(contextObject.PictureFormat.Picture.Image, Model);

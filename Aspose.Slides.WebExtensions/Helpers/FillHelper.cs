@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2001-2020 Aspose Pty Ltd. All Rights Reserved.
 
 using Aspose.Slides.Export.Web;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace Aspose.Slides.WebExtensions.Helpers
 {
@@ -29,17 +29,26 @@ namespace Aspose.Slides.WebExtensions.Helpers
 
             return result;
         }
-
-        private static string GetGradientFill(IGradientFormatEffectiveData format)
+        private static string GetGradStops(IGradientFormatEffectiveData format) 
         {
-            string result = "";
             string gradStops = "";
-            foreach (var gradStop in format.GradientStops.ToList().OrderBy(stop => stop.Position))
+            var gsList = new List<IGradientStopEffectiveData>();
+
+            foreach (IGradientStopEffectiveData gradStop in format.GradientStops)  gsList.Add(gradStop);
+            gsList.Sort((x, y) => ((x.Position - y.Position) < 0) ? -1 : (((x.Position - y.Position) > 0) ? 1 : 0));
+
+            foreach (var gradStop in gsList)
             {
                 gradStops += string.Format(", {0}", ColorHelper.GetRrbaColorString(gradStop.Color));
                 if (gradStop.Position > 0 && gradStop.Position < 1)
                     gradStops += string.Format(" {0}%", gradStop.Position * 100);
             }
+            return gradStops;
+        }
+        private static string GetGradientFill(IGradientFormatEffectiveData format)
+        {
+            string result = "";
+            string gradStops = GetGradStops(format);
 
             if (format.GradientShape == GradientShape.Linear)
             {
