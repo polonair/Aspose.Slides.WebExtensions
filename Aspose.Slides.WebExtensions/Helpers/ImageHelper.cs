@@ -100,24 +100,6 @@ namespace Aspose.Slides.WebExtensions.Helpers
 
             return bitmap;
         }
-        public static void AddImagesOutput(WebDocument document, string outputPath, IPresentation pres)
-        {
-            for (int index = 0; index < pres.Images.Count; index++)
-            {
-                IPPImage image = pres.Images[index];
-
-                string ext;
-                if (image.ContentType == "image/x-emf" || image.ContentType == "image/x-wmf") // Output will convert metafiles to png
-                    ext = "png";
-                else
-                    ext = ((PPImage)image).PartType.Extension;
-
-                string path = Path.Combine(outputPath, string.Format("image{0}.{1}", index, ext));
-
-                var outputFile = document.Output.Add(path, image);
-                document.Output.BindResource(outputFile, image);
-            }
-        }
         public static string GetImagePositioningStyle(PictureFrame pictureFrame, Point origin)
         {
             var transform = "";
