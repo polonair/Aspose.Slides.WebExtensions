@@ -30,6 +30,9 @@
     <None Update="TestData\html5issues.pptx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\notes.pptx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\table.pptx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
