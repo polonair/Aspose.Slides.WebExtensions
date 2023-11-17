@@ -86,8 +86,8 @@ namespace Aspose.Slides.WebExtensions.Helpers
             if (!string.IsNullOrEmpty(transform)) transform = string.Format("transform:{0};", transform);
 
             var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;{4}",
-                (int)pictureFrame.X + origin.X,
-                (int)pictureFrame.Y + origin.Y,
+                (int)pictureFrame.X,// + origin.X,
+                (int)pictureFrame.Y,// + origin.Y,
                 (int)pictureFrame.Width,
                 (int)pictureFrame.Height,
                 transform);
