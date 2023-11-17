@@ -36,7 +36,8 @@ namespace Aspose.Slides.WebExtensions.Tests
                 string OutputPath = Path.Combine(RootDirectory, "multi-page-demo-output");
 
                 SlidePath = Path.Combine(OutputPath, string.Format("slides/slide{0}.html", slideNumber));
-                string htmlContent = File.ReadAllText(this.SlidePath);
+                Assert.IsTrue(File.Exists(SlidePath));
+                string htmlContent = File.ReadAllText(this.SlidePath);                
                 htmlContent = FixVideoTag(htmlContent);
 
                 Document = new XmlDocument();

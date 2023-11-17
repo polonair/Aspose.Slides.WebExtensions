@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Policy;
 using Aspose.Slides.Animation;
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.SlideShow;
@@ -11,65 +12,55 @@ namespace Aspose.Slides.WebExtensions.Helpers
 {
     public static class SlideHelper
     {
-        public static string GetNextSlide(TemplateContext<Slide> Model)
+        private static string GetNeighbourSlide(TemplateContext<Slide> Model, int currentIdxShift, int neighbourIdxShift)
         {
-            IPresentation presentation = Model.Object.Presentation;
-            Slide current = Model.Object as Slide;
             string result = "";
-            if (presentation != null && presentation != null)
+            Slide current = Model.Object as Slide;
+            if (current != null)
             {
-                for (int i = 0; i < presentation.Slides.Count - 1; i++)
+                IPresentation presentation = current.Presentation;
+                if (presentation != null)
                 {
-                    if (presentation.Slides[i] == current)
+                    for (int i = 0; i < presentation.Slides.Count - 1; i++)
                     {
-                        result = string.Format("location.href='slide{0}.html';", presentation.Slides[i + 1].SlideNumber);
-                        break;
+                        if (presentation.Slides[i + currentIdxShift].SlideNumber == current.SlideNumber)
+                        {
+                            result = string.Format("location.href='slide{0}.html';", presentation.Slides[i + neighbourIdxShift].SlideNumber);
+                            break;
+                        }
                     }
                 }
             }
             return result;
         }
+        public static string GetNextSlide(TemplateContext<Slide> Model)
+        {
+            return GetNeighbourSlide(Model, 0, 1);
+        }
         public static string GetPrevSlide(TemplateContext<Slide> Model)
         {
+            return GetNeighbourSlide(Model, 1, 0);
+        }
+        private static string GetNavigationButtonStyle(TemplateContext<Slide> Model, int leftShiftFromCenter, int paddingTop) 
+        { 
             IPresentation presentation = Model.Object.Presentation;
-            Slide current = Model.Object as Slide;
-            string result = "";
-            if (presentation != null && presentation != null)
+            int slideMargin = Model.Global.ContainsKey("slideMargin") ? Model.Global.Get<int>("slideMargin") : 10;
+            string result = "display: unset !important;";
+            if (presentation != null)
             {
-                for (int i = 0; i < presentation.Slides.Count - 1; i++)
-                {
-                    if (presentation.Slides[i + 1].SlideNumber == current.SlideNumber)
-                    {
-                        result = string.Format("location.href='slide{0}.html';", presentation.Slides[i].SlideNumber);
-                        break;
-                    }
-                }
+                var top = presentation.SlideSize.Size.Height + 40;
+                var left = slideMargin + presentation.SlideSize.Size.Width / 2 + leftShiftFromCenter;
+                result += string.Format(" top: {0}px; left: {1}px;", NumberHelper.ToCssNumber(top), NumberHelper.ToCssNumber(left));
             }
             return result;
         }
         public static string GetPrevStyle(TemplateContext<Slide> Model)
         {
-            IPresentation presentation = Model.Object.Presentation;
-            string result = "display: unset !important;";
-            if (presentation != null)
-            {
-                var top = presentation.SlideSize.Size.Height + 40;
-                var left = 10 + presentation.SlideSize.Size.Width / 2 - 100 - 5;
-                result += String.Format(" top: {0}px; left: {1}px;", NumberHelper.ToCssNumber(top), NumberHelper.ToCssNumber(left));
-            }
-            return result;
+            return GetNavigationButtonStyle(Model, -105, 40);
         }
         public static string GetNextStyle(TemplateContext<Slide> Model)
         {
-            IPresentation presentation = Model.Object.Presentation;
-            string result = "display: unset !important;";
-            if (presentation != null)
-            {
-                var top = presentation.SlideSize.Size.Height + 40;
-                var left = 10 + presentation.SlideSize.Size.Width / 2 + 5; 
-                result += String.Format(" top: {0}px; left: {1}px;", NumberHelper.ToCssNumber(top), NumberHelper.ToCssNumber(left));
-            }
-            return result;
+            return GetNavigationButtonStyle(Model, 5, 40);
         }
         public static int GetVisibleSlideNumber(ISlide slide)
         {
