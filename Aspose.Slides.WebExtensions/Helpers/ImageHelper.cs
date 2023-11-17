@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using Aspose.Slides.Util;
 
 namespace Aspose.Slides.WebExtensions.Helpers
@@ -31,6 +30,39 @@ namespace Aspose.Slides.WebExtensions.Helpers
             return result;
         }
 
+        internal static string Crop(string imgSrc, float cropLeft, float cropTop, float cropRight, float cropBottom)
+        {
+            const string b64prefix = "data:image/png;base64, ";
+            if (cropLeft != 0f || cropTop != 0f || cropRight != 0f || cropBottom != 0f)
+            {
+                if (imgSrc.StartsWith(b64prefix))
+                {
+                    byte[] imgData = Convert.FromBase64String(imgSrc.Substring(b64prefix.Length));
+                    Image originImage = Image.FromStream(new MemoryStream(imgData));
+
+                    Rectangle srcRect = new Rectangle(
+                                (int)(originImage.Width * cropLeft / 100),
+                                (int)(originImage.Height * cropTop / 100),
+                                (int)(originImage.Width * (100 - cropLeft - cropRight) / 100),
+                                (int)(originImage.Height * (100 - cropTop - cropBottom) / 100));
+                    Rectangle destRect = new Rectangle(0, 0, srcRect.Width, srcRect.Height);
+
+                    Bitmap resultBmp = new Bitmap(destRect.Width, destRect.Height);
+                    using (Graphics g = Graphics.FromImage(resultBmp))
+                    {
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        g.DrawImage(originImage, destRect, srcRect, GraphicsUnit.Pixel);
+                        g.Flush();
+                    }
+                    MemoryStream resultStream = new MemoryStream();
+                    resultBmp.Save(resultStream, ImageFormat.Png);
+                    return String.Format("{1}{0}", Convert.ToBase64String(resultStream.ToArray()), b64prefix);
+                }
+                throw new NotImplementedException();
+            }
+            return imgSrc;
+        }
         public static void ConvertTiffToPng<T>(IPPImage image, TemplateContext<T> model)
         {
             if (image.ContentType == "image/tiff")

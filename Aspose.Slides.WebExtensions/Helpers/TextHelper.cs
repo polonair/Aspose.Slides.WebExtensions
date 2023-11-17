@@ -116,7 +116,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
             string paddingTopStyle = string.Format("padding-top: {0}px;", (int)paddingTop);
             string paddingLeftStyle = string.Format("padding-left: {0}px;", (int)paddingLeft);
 
-            return string.Join(" ", paddingTopStyle, paddingLeftStyle, writingModeStyle);
+            return string.Join(" ", new string[] { paddingTopStyle, paddingLeftStyle, writingModeStyle });
         }
 
         public static string GetHorizontalAlignmentStyle(TextAlignment textAlignment)
@@ -273,7 +273,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 lineSpacingStyle = TextHelper.GetLineSpacingStyle(nestingFormat, fontHeight);
             }
 
-            return string.Join(" ",
+            return string.Join(" ", new string[] {
                             fontBoldItalicStyle,
                             fontFamilyStyle,
                             fontHeightStyle,
@@ -285,7 +285,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                             spacingStyle,
                             fontCapStyle,
                             whiteSpacePreStyle,
-                            lineSpacingStyle);
+                            lineSpacingStyle });
 
         }
 
@@ -306,7 +306,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
             if (portions.Count < 2 && format.Bullet.Type == BulletType.None) lineSpacingStyle = "";
 
             
-            return string.Join(" ", alignment, lineSpacingStyle);
+            return string.Join(" ", new string[]{ alignment, lineSpacingStyle });
         }
 
         public static string GetTextBulletStyle<T>(IParagraphFormatEffectiveData format, ITextFrameFormatEffectiveData textFrameFormat, bool isTableContent, TemplateContext<T> model)
@@ -362,7 +362,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
             string fontHeightStyle = string.Format("font-size: {0}px;", NumberHelper.ToCssNumber(format.Bullet.Height * firstPortionFormatEffective.FontHeight / 100f));
             string fontFamilyStyle = string.Format("font-family: {0};", bulletFont);
 
-            return string.Join(" ", fontBoldItalicStyle, fontFill, outerShadowStyle, fontHeightStyle, fontFamilyStyle);
+            return string.Join(" ", new string[] { fontBoldItalicStyle, fontFill, outerShadowStyle, fontHeightStyle, fontFamilyStyle });
         }
 
         public static string GetPictureBulletStyle<T>(IParagraphFormatEffectiveData format, TemplateContext<T> model)
@@ -455,7 +455,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
             string fontWeight = format.FontBold ? "font-weight: bold;" : "";
             string fontStyle = format.FontItalic ? "font-style: italic;" : "";
 
-            return string.Join(" ", fontWeight, fontStyle);
+            return string.Join(" ", new string[] { fontWeight, fontStyle });
         }
 
         private static bool HasParagraphDrawnBullet(Paragraph paragraph)

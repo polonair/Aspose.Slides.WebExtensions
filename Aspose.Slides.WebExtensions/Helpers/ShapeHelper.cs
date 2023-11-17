@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using Aspose.Slides.Export.Web;
-using System.Linq;
 
 namespace Aspose.Slides.WebExtensions.Helpers
 {
@@ -38,9 +37,9 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 }
                 catch (ArgumentException)
                 {
-                    if (shape is OleObjectFrame frame && frame.SubstitutePictureFormat != null && frame.SubstitutePictureFormat.Picture != null)
+                    if (shape is OleObjectFrame && (shape as OleObjectFrame).SubstitutePictureFormat != null && (shape as OleObjectFrame).SubstitutePictureFormat.Picture != null)
                     {
-                        imgSrcPath = model.Output.GetResourcePath(frame.SubstitutePictureFormat.Picture.Image);
+                        imgSrcPath = model.Output.GetResourcePath((shape as OleObjectFrame).SubstitutePictureFormat.Picture.Image);
                     }
                     else
                     {
@@ -52,7 +51,6 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 return result;
             }
         }
-
         public static string ConvertPathToRelative(string toPath, string fromPath)
         {
             // fixing paths with no root by adding fake root drive letter
@@ -77,17 +75,17 @@ namespace Aspose.Slides.WebExtensions.Helpers
 
             foreach (var slide in pres.Slides)
             {
-                result.AddRange(slide.Shapes.OfType<T>());
+                foreach(var item in slide.Shapes) if (item is T) result.Add((T)item);
             }
             
             foreach (var slide in pres.LayoutSlides)
             {
-                result.AddRange(slide.Shapes.OfType<T>());
+                foreach (var item in slide.Shapes) if (item is T) result.Add((T)item);
             }
             
             foreach (var slide in pres.Masters)
             {
-                result.AddRange(slide.Shapes.OfType<T>());
+                foreach (var item in slide.Shapes) if (item is T) result.Add((T)item);
             }
 
             return result;
