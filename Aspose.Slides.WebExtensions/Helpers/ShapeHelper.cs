@@ -99,8 +99,8 @@ namespace Aspose.Slides.WebExtensions.Helpers
         }
         public static string GetPositionStyle(Shape shape, Point origin)
         {
-            int left = (int)shape.X + origin.X;
-            int top = (int)shape.Y + origin.Y;
+            int left = (int)shape.X;// + origin.X;
+            int top = (int)shape.Y;// + origin.Y;
             int width = (int)shape.Width;
             int height = (int)shape.Height;
 
