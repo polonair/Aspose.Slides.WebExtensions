@@ -45,7 +45,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /e /y /i /r &quot;$(TargetDir)Templates\common\*.*&quot; &quot;$(TargetDir)Templates\single-page\&quot;" />
+    <Exec Command="xcopy /e /y /i /r &quot;$(TargetDir)Templates\common\*.*&quot; &quot;$(TargetDir)Templates\single-page\&quot;&#xD;&#xA;xcopy /e /y /i /r &quot;$(TargetDir)Templates\common\*.*&quot; &quot;$(TargetDir)Templates\multi-page\&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>
