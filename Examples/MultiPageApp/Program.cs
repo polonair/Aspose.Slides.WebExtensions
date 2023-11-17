@@ -56,14 +56,33 @@ namespace MultiPageApp
                 document.Global.Put("scriptsPath", scriptsPath);
 
                 // setup folder-by-section folders structure
-                foreach (ISection section in pres.Sections)
+                if (pres.Sections.Count > 0)
                 {
-                    foreach (Slide slide in section.GetSlidesListOfSection())
+                    foreach (ISection section in pres.Sections)
+                    {
+                        foreach (Slide slide in section.GetSlidesListOfSection())
+                        {
+                            if (slide.Hidden)
+                                continue;
+
+                            string subPath = Path.Combine(section.Name, string.Format("slide{0}.html", slide.SlideNumber));
+                            string path = Path.Combine(outputPath, subPath);
+
+                            string key = string.Format("slide{0}path", slide.SlideNumber);
+                            document.Global.Put(key, subPath);
+
+                            document.Output.Add(path, "slide", slide);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (Slide slide in pres.Slides)
                     {
                         if (slide.Hidden)
                             continue;
 
-                        string subPath = Path.Combine(section.Name, string.Format("slide{0}.html", slide.SlideNumber));
+                        string subPath = Path.Combine("slides", string.Format("slide{0}.html", slide.SlideNumber));
                         string path = Path.Combine(outputPath, subPath);
 
                         string key = string.Format("slide{0}path", slide.SlideNumber);
