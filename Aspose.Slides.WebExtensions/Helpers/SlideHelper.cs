@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Aspose.Slides.Animation;
+using Aspose.Slides.Export.Web;
 using Aspose.Slides.SlideShow;
 
 namespace Aspose.Slides.WebExtensions.Helpers
@@ -214,6 +215,16 @@ namespace Aspose.Slides.WebExtensions.Helpers
             shape.Slide.Shapes.Remove(cloneShape);
 
             return "rgb(" + effectiveColor.R + "," + effectiveColor.G + "," + effectiveColor.B + ")";
+        }
+        public static string GetBackgroundStyle(TemplateContext<Slide> model)
+        {
+            var backgroundFillFormat = model.Object.Background.GetEffective().FillFormat;
+            string backgroundStyle = FillHelper.GetFillStyle(backgroundFillFormat, model);
+            if (backgroundFillFormat.FillType == FillType.Picture && backgroundFillFormat.PictureFillFormat.PictureFillMode == PictureFillMode.Stretch)
+            {
+                backgroundStyle += " background-size: cover;";
+            }
+            return backgroundStyle;
         }
     }
 }
