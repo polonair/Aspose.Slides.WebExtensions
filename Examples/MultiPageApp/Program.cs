@@ -1,4 +1,5 @@
 ﻿using Aspose.Slides;
+using Aspose.Slides.Export;
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.WebExtensions;
 using System;
@@ -24,6 +25,24 @@ namespace MultiPageApp
             using (Presentation pres = new Presentation("demo.pptx"))
             {
                 WebDocument document = pres.ToMultiPageWebDocument("templates\\multi-page", @"mutil-page-output");
+                document.Save();
+            }
+        }
+
+        static void ExportWithNotes()
+        {
+            using (Presentation pres = new Presentation("notes.pptx"))
+            {
+                WebDocumentOptionsEx options = new WebDocumentOptionsEx
+                {
+                    TemplateEngine = new RazorTemplateEngine(),
+                    OutputSaver = new FileOutputSaver(),
+                    AnimateTransitions = false,
+                    NotesCommentsLayoutingOptions = new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull },
+                };
+
+                WebDocument document = pres.ToMultiPageWebDocument(options, "templates\\multi-page", @"multi-page-notes-output");
+
                 document.Save();
             }
         }
