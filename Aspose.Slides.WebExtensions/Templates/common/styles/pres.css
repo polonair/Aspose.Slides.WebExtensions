@@ -27,18 +27,19 @@
     }
 
     .bg {
-            @(fixSlides ? "width: " + (Model.Object.SlideSize.Size.Width + margin * 2) + "px;" : "")
-            @(fixSlides ? "height: " + (Model.Object.SlideSize.Size.Height + margin * 2) + "px;" : "")
+            @(fixSlides ? "width: " + NumberHelper.ToCssNumber(Model.Object.SlideSize.Size.Width + margin * 2) + "px;" : "")
+            @(fixSlides ? "height: " + NumberHelper.ToCssNumber(Model.Object.SlideSize.Size.Height + margin * 2) + "px;" : "")
             @(fixSlides ? "overflow: hidden;" : "")
             @(fixSlides ? "position: fixed;" : "")
     }
     
     .slide {
-        width: @((Model.Object.SlideSize.Size.Width + margin / 2) + "px");
-        height: @((Model.Object.SlideSize.Size.Height + margin / 2) + "px");
+        width: @(NumberHelper.ToCssNumber(Model.Object.SlideSize.Size.Width + margin / 2) + "px");
+        height: @(NumberHelper.ToCssNumber(Model.Object.SlideSize.Size.Height + margin / 2) + "px");
         outline: 1px solid #c6c6c6;
         overflow: hidden;
         margin: @(margin + "px");
+        position: relative;
         @(fixSlides ? "position: absolute;" : "")
     }
     

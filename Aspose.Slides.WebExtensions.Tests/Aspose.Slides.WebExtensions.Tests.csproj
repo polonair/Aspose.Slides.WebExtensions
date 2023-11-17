@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\artificial.pptx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\demo-transitions.pptx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -30,13 +33,19 @@
     <None Update="TestData\html5issues.pptx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\multilevel-bullets.pptx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\SamplePPT1.ppt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\table.pptx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /e /y /i /r &quot;$(TargetDir)Templates\common\*.*&quot; &quot;$(TargetDir)Templates\single-page\&quot;" />
+    <Exec Command="xcopy /e /y /i /r &quot;$(TargetDir)Templates\common\*.*&quot; &quot;$(TargetDir)Templates\single-page\&quot;&#xD;&#xA;xcopy /e /y /i /r &quot;$(TargetDir)Templates\common\*.*&quot; &quot;$(TargetDir)Templates\multi-page\&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

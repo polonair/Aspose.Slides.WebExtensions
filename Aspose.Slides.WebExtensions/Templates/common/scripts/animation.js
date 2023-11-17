@@ -5,8 +5,8 @@
     var animateTransitions = Model.Global.Get<bool>("animateTransitions").ToString().ToLower();
     var animateShapes = Model.Global.Get<bool>("animateShapes").ToString().ToLower();
     var pagesCount = contextObject.Slides.Count;
-    var slideWidth = contextObject.SlideSize.Size.Width;
-    var slideHeight = contextObject.SlideSize.Size.Height;
+    var slideWidth = NumberHelper.ToCssNumber(contextObject.SlideSize.Size.Width);
+    var slideHeight = NumberHelper.ToCssNumber(contextObject.SlideSize.Size.Height);
 }
 
 

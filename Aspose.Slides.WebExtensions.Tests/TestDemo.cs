@@ -61,5 +61,19 @@ namespace Aspose.Slides.WebExtensions.Tests
                 Assert.IsTrue(style.Contains("height: 2px"), "Headline connector's div block should be 2px high");
             }
         }
+        [Test]
+        public void TestLinkTextColor()
+        {
+            XmlElement root = indexHtml.DocumentElement;
+            XmlNodeList links = root.SelectNodes("//html:div[@id='slide-282-shape-77']/html:div/html:p/html:a/html:span", namespaceManager);
+
+            Assert.AreEqual(3, links.Count);
+            foreach (XmlNode node in links)
+            {
+                string style = node.Attributes["style"].Value;
+                Assert.IsTrue(style.Contains("color: rgba(5, 99, 193, 1);"), "Link text color should be 'rgba(5, 99, 193, 1)'");
+                Assert.IsTrue(style.Contains("text-decoration: underline solid rgba(5, 99, 193, 1);"), "Link text decoration should be 'underline solid rgba(5, 99, 193, 1)'");
+            }
+        }
     }
 }

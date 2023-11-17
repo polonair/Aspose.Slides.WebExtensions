@@ -6,7 +6,8 @@
     int slideNumber = SlideHelper.GetVisibleSlideNumber(contextObject);
     var slideAnimationData = SlideHelper.GetSlidesAnimationCollection(contextObject);
     var slideId = "slide-" + slideNumber;
-    var slideStyle = "display: " + (animateTransitions ? "none" : "block") + ";";
+    var bckgStyle = SlideHelper.GetBackgroundStyle(Model);
+    var slideStyle = "display: " + (animateTransitions ? "none" : "block") + ";" + bckgStyle;
 }
     
 @helper EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData) 

@@ -148,9 +148,21 @@ namespace Aspose.Slides.WebExtensions.Helpers
 
         public static string GetTextStyle<T>(IPortionFormatEffectiveData format, ITextFrameFormatEffectiveData textFrameFormat, bool isTableContent, TemplateContext<T> model)
         {
+            bool isHyperLink = false;
             float fontHeight = format.FontHeight;
 
             string fontFillStyle = FillHelper.GetFillStyle(format.FillFormat, model);
+            if (model is TemplateContext<Portion> portion && portion.Object.PortionFormat.HyperlinkClick != null)
+            {
+                isHyperLink = true;
+                TextFrame parentTextFrame = model.Local.Get<TextFrame>("parentTextFrame");
+                var hyperLinkDefaultColor = ColorHelper.GetRrbaColorString(parentTextFrame.Presentation.MasterTheme.ColorScheme.Hyperlink.Color);
+                if (portion.Object.PortionFormat.HyperlinkClick.ColorSource == HyperlinkColorSource.Styles)
+                {
+                    fontFillStyle = string.Format("background-color: {0}; ", hyperLinkDefaultColor);
+                }
+                fontFillStyle += string.Format("text-decoration: underline solid {0}; ", hyperLinkDefaultColor);
+            }
             if (fontFillStyle.StartsWith("background-color: "))
             {
                 // fix for solid fill
@@ -186,7 +198,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 textDecorationStyle = string.Format("text-decoration: line-through {0};", underlineStyle);
             }
             
-            if (format.FontUnderline != TextUnderlineType.None)
+            if (format.FontUnderline != TextUnderlineType.None && !isHyperLink)
             {
                 string underlineStyle = "";
                 switch (format.FontUnderline)
@@ -243,7 +255,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 spacingStyle = string.Format("letter-spacing: {0}px;", NumberHelper.ToCssNumber(format.Spacing));
 
             string fontBoldItalicStyle = GetTextFontItalicStyle(format);
-            string fontFamilyStyle = string.Format("font-family: {0};", format.LatinFont);
+            string fontFamilyStyle = string.Format("font-family: {0};", FontHelper.SelectFont(format, model));
             string fontHeightStyle = string.Format("font-size: {0}px;", NumberHelper.ToCssNumber(fontHeight));
             string fontCapStyle = "";
             if (format.TextCapType == TextCapType.All)

@@ -3,13 +3,65 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Policy;
 using Aspose.Slides.Animation;
+using Aspose.Slides.Export.Web;
 using Aspose.Slides.SlideShow;
 
 namespace Aspose.Slides.WebExtensions.Helpers
 {
     public static class SlideHelper
     {
+        private static string GetNeighbourSlide(TemplateContext<Slide> Model, int currentIdxShift, int neighbourIdxShift)
+        {
+            string result = "";
+            Slide current = Model.Object as Slide;
+            if (current != null)
+            {
+                IPresentation presentation = current.Presentation;
+                if (presentation != null)
+                {
+                    for (int i = 0; i < presentation.Slides.Count - 1; i++)
+                    {
+                        if (presentation.Slides[i + currentIdxShift].SlideNumber == current.SlideNumber)
+                        {
+                            result = string.Format("location.href='slide{0}.html';", presentation.Slides[i + neighbourIdxShift].SlideNumber);
+                            break;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        public static string GetNextSlide(TemplateContext<Slide> Model)
+        {
+            return GetNeighbourSlide(Model, 0, 1);
+        }
+        public static string GetPrevSlide(TemplateContext<Slide> Model)
+        {
+            return GetNeighbourSlide(Model, 1, 0);
+        }
+        private static string GetNavigationButtonStyle(TemplateContext<Slide> Model, int leftShiftFromCenter, int paddingTop) 
+        { 
+            IPresentation presentation = Model.Object.Presentation;
+            int slideMargin = Model.Global.ContainsKey("slideMargin") ? Model.Global.Get<int>("slideMargin") : 10;
+            string result = "display: unset !important;";
+            if (presentation != null)
+            {
+                var top = presentation.SlideSize.Size.Height + 40;
+                var left = slideMargin + presentation.SlideSize.Size.Width / 2 + leftShiftFromCenter;
+                result += string.Format(" top: {0}px; left: {1}px;", NumberHelper.ToCssNumber(top), NumberHelper.ToCssNumber(left));
+            }
+            return result;
+        }
+        public static string GetPrevStyle(TemplateContext<Slide> Model)
+        {
+            return GetNavigationButtonStyle(Model, -105, 40);
+        }
+        public static string GetNextStyle(TemplateContext<Slide> Model)
+        {
+            return GetNavigationButtonStyle(Model, 5, 40);
+        }
         public static int GetVisibleSlideNumber(ISlide slide)
         {
             int hiddenSlidesCount = 0;
@@ -214,6 +266,16 @@ namespace Aspose.Slides.WebExtensions.Helpers
             shape.Slide.Shapes.Remove(cloneShape);
 
             return "rgb(" + effectiveColor.R + "," + effectiveColor.G + "," + effectiveColor.B + ")";
+        }
+        public static string GetBackgroundStyle(TemplateContext<Slide> model)
+        {
+            var backgroundFillFormat = model.Object.Background.GetEffective().FillFormat;
+            string backgroundStyle = FillHelper.GetFillStyle(backgroundFillFormat, model);
+            if (backgroundFillFormat.FillType == FillType.Picture && backgroundFillFormat.PictureFillFormat.PictureFillMode == PictureFillMode.Stretch)
+            {
+                backgroundStyle += " background-size: cover;";
+            }
+            return backgroundStyle;
         }
     }
 }
