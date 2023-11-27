@@ -19,9 +19,10 @@ namespace Aspose.Slides.WebExtensions.Helpers
 
             if (model.Global.Get<bool>("embedImages"))
             {
+                Shape asShape = shape as Shape;
                 using (MemoryStream ms = new MemoryStream())
+                using (Bitmap image = GetShapeThumbnail(asShape))
                 {
-                    Bitmap image = (shape as Shape).GetThumbnail();
                     image.Save(ms, ImageFormat.Png);
                     return "'data:image/png;base64, " + Convert.ToBase64String(ms.ToArray()) + "'";
                 }
@@ -91,20 +92,55 @@ namespace Aspose.Slides.WebExtensions.Helpers
             return result;
         }
 
+        private static Bitmap GetShapeThumbnail(IShape shape)
+        {
+            AutoShape autoShape = shape as AutoShape;
+
+            Bitmap thumbnail;
+            if (autoShape != null && !string.IsNullOrEmpty(autoShape.TextFrame.Text))
+            {
+                // Copy shape paragraphs -> remove text -> get shape image -> restore paragraphs. Export text as HTML markup in the template.
+                List<Paragraph> paraColl = new List<Paragraph>();
+                foreach (Paragraph para in autoShape.TextFrame.Paragraphs)
+                    paraColl.Add(new Paragraph(para));
+
+                try
+                {
+                    autoShape.TextFrame.Paragraphs.Clear();
+                    thumbnail = autoShape.GetThumbnail();
+                }
+                finally
+                {
+                    foreach (Paragraph para in paraColl)
+                        autoShape.TextFrame.Paragraphs.Add(para);
+                }
+            }
+            else if (shape is IConnector)
+            {
+                thumbnail = shape.GetThumbnail(ShapeThumbnailBounds.Appearance, 1, 1);
+            }
+            else
+            {
+                thumbnail = shape.GetThumbnail();
+            }
+
+            return thumbnail;
+        }
+
         public static string GetSubstitutionMarkup(string templateMarkup, IShape shape, Point origin, string animationAttributes)
         {
             return null;
         }
         public static string GetPositionStyle(Shape shape, Point origin)
         {
-            int left = (int)shape.X;// + origin.X;
-            int top = (int)shape.Y;// + origin.Y;
+            int left = (int)shape.X;
+            int top = (int)shape.Y;
             int width = (int)shape.Width;
             int height = (int)shape.Height;
 
-            if (shape is Connector connector && height == 0)
+            if (shape is Connector && height == 0)
             {
-                height = (int)connector.LineFormat.Width;
+                height = (int)(shape as Connector).LineFormat.Width;
             }
             return string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;", left, top, width, height);
         }

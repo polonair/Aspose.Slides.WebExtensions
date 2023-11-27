@@ -24,7 +24,29 @@ namespace Aspose.Slides.WebExtensions.Helpers
             }
             else
             {
-                result = "data:image/png;base64, " + Convert.ToBase64String(image.BinaryData);
+                byte[] dataSource = image.BinaryData;
+                if (image.ContentType == "image/x-emf" || image.ContentType == "image/x-wmf")
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        Bitmap bitmap = MetafileToBitmap(image);
+                        bitmap.Save(ms, ImageFormat.Png);
+                        ms.Flush();
+                        dataSource = ms.ToArray();
+                    }
+                }
+                else if (image.ContentType == "image/tiff")
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        Bitmap bitmap = new Bitmap(image.SystemImage);
+                        bitmap.Save(ms, ImageFormat.Png);
+                        ms.Flush();
+                        dataSource = ms.ToArray();
+                    }
+                }
+
+                result = "data:image/png;base64, " + Convert.ToBase64String(dataSource);
             }
 
             return result;
@@ -84,6 +106,24 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 }
             }
         }
+        public static IPPImage GetShapeFillImage(Shape shape, FillFormatEffectiveData format)
+        {
+            LineParamArguments arguments = new LineParamArguments(shape.FrameImpl.CloneT(), null, null, shape.Slide, null);
+            var fillParam = FillParam.CreateFillFormatEffective(arguments, format);
+
+            using (Bitmap bitmap = new Bitmap((int)shape.Width, (int)shape.Height))
+            {
+                using (Graphics graphics = Graphics.FromImage(bitmap))
+                using (Brush brush = Drawing.BrushCalculator.GetSystemBrush(fillParam))
+                    graphics.FillRectangle(brush, 0, 0, bitmap.Width, bitmap.Height);
+
+                using (var ms = new MemoryStream())
+                {
+                    bitmap.Save(ms, ImageFormat.Png);
+                    return new PPImage(shape.Presentation, ms.ToArray());
+                }
+            }
+        }
         public static Bitmap MetafileToBitmap(IPPImage image)
         {
             Metafile metafile = (Metafile)image.SystemImage;
@@ -118,8 +158,8 @@ namespace Aspose.Slides.WebExtensions.Helpers
             if (!string.IsNullOrEmpty(transform)) transform = string.Format("transform:{0};", transform);
 
             var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;{4}",
-                (int)pictureFrame.X,// + origin.X,
-                (int)pictureFrame.Y,// + origin.Y,
+                (int)pictureFrame.X,
+                (int)pictureFrame.Y,
                 (int)pictureFrame.Width,
                 (int)pictureFrame.Height,
                 transform);

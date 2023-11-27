@@ -3,6 +3,7 @@
 using Aspose.Slides.Export.Web;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace Aspose.Slides.WebExtensions.Helpers
 {
@@ -17,13 +18,40 @@ namespace Aspose.Slides.WebExtensions.Helpers
                     result = string.Format("background-color: {0};", ColorHelper.GetRrbaColorString(format.SolidFillColor));
                     break;
                 case FillType.Picture:
-                    result = string.Format("background-image: url('{0}');", ImageHelper.GetImageURL(format.PictureFillFormat.Picture.Image, model));
+                    IPPImage fillImage;
+                    IPictureFillFormatEffectiveData picFillFormat = format.PictureFillFormat;
+                    Shape asShape = model.Object as Shape;
+                    if (asShape != null && picFillFormat.PictureFillMode == PictureFillMode.Tile)
+                    {
+                        fillImage = ImageHelper.GetShapeFillImage(asShape, (FillFormatEffectiveData)format);
+
+                        var imagesPath = model.Global.Get<string>("imagesPath");
+                        string path = Path.Combine(imagesPath, string.Format("tileimage{0}.{1}", asShape.UniqueId,
+                                                   ((PPImage)fillImage).PartType.Extension));
+                        fillImage.SystemImage.Save(path);
+                        //IOutputFile outputFile;
+                        //if (!model.Output.Files.ContainsKey(path))
+                        //    outputFile = model.Output.Add(path, fillImage);
+                        //else 
+                        //    outputFile = model.Output.Files[path];
+                        //model.Output.BindResource(outputFile, fillImage);
+
+                        // TODO: This ^^ solution is better than this one vv, but it works
+
+                        var slidesPath = model.Global.Get<string>("slidesPath");
+                        result = string.Format("background-image: url(\'{0}\');", ShapeHelper.ConvertPathToRelative(path, slidesPath));
+                    }
+                    else
+                    {
+                        fillImage = format.PictureFillFormat.Picture.Image;
+                        result = string.Format("background-image: url(\'{0}\');", ImageHelper.GetImageURL(fillImage, model));
+                    }
                     break;
                 case FillType.Gradient:
                     result = string.Format("background: {0};", FillHelper.GetGradientFill(format.GradientFormat));
                     break;
                 case FillType.Pattern:
-                    result = string.Format("background: url(\"{0}\") repeat;", PatternGenerator.GetPatternImage(format.PatternFormat.PatternStyle, format.PatternFormat.ForeColor, format.PatternFormat.BackColor));
+                    result = string.Format("background: url(\'{0}\') repeat;", PatternGenerator.GetPatternImage(format.PatternFormat.PatternStyle, format.PatternFormat.ForeColor, format.PatternFormat.BackColor));
                     break;
             }
 
