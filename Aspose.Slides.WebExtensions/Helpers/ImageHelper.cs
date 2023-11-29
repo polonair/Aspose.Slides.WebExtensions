@@ -53,7 +53,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
             return result;
         }
 
-        internal static string Crop(string imgSrc, float cropLeft, float cropTop, float cropRight, float cropBottom)
+        public static string Crop(string imgSrc, float cropLeft, float cropTop, float cropRight, float cropBottom)
         {
             const string b64prefix = "data:image/png;base64, ";
             if (cropLeft != 0f || cropTop != 0f || cropRight != 0f || cropBottom != 0f)

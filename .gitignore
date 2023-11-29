@@ -16,3 +16,4 @@ _ReSharper*/
 packages/
 *.gitattributes
 /.vs/
+/Aspose.Slides.WebExtensions.Tests/TestData/Out/*
