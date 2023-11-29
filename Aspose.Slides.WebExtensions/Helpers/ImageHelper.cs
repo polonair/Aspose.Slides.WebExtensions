@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using Aspose.Slides.Util;
+using System.Collections.Generic;
 
 namespace Aspose.Slides.WebExtensions.Helpers
 {
@@ -24,7 +25,29 @@ namespace Aspose.Slides.WebExtensions.Helpers
             }
             else
             {
-                result = "data:image/png;base64, " + Convert.ToBase64String(image.BinaryData);
+                byte[] dataSource = image.BinaryData;
+                if (image.ContentType == "image/x-emf" || image.ContentType == "image/x-wmf")
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        Bitmap bitmap = MetafileToBitmap(image);
+                        bitmap.Save(ms, ImageFormat.Png);
+                        ms.Flush();
+                        dataSource = ms.ToArray();
+                    }
+                }
+                else if (image.ContentType == "image/tiff")
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        Bitmap bitmap = new Bitmap(image.SystemImage);
+                        bitmap.Save(ms, ImageFormat.Png);
+                        ms.Flush();
+                        dataSource = ms.ToArray();
+                    }
+                }
+
+                result = "data:image/png;base64, " + Convert.ToBase64String(dataSource);
             }
 
             return result;
@@ -83,6 +106,36 @@ namespace Aspose.Slides.WebExtensions.Helpers
                     }
                 }
             }
+        }
+        public static Bitmap GetShapeFillImage(Shape shape, IFillFormatEffectiveData format)
+        {
+            AutoShape aShape = shape as AutoShape;
+            if (aShape != null)
+            {
+                List<List<string>> store = new List<List<string>>();
+                foreach (var par in aShape.TextFrame.Paragraphs)
+                {
+                    store.Add(new List<string>());
+                    foreach (var por in par.Portions)
+                    {
+                        store[store.Count - 1].Add(por.Text);
+                        por.Text = "";
+                    }
+                }
+
+                Bitmap r = aShape.GetThumbnail();
+
+                for (int i = 0; i < store.Count; i++)
+                {
+                    for (int j = 0; j < store[i].Count; j++)
+                    {
+                        aShape.TextFrame.Paragraphs[i].Portions[j].Text = store[i][j];
+                    }
+                }
+
+                return r;
+            }
+            return null;
         }
         public static Bitmap MetafileToBitmap(IPPImage image)
         {

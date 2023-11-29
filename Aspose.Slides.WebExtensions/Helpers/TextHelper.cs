@@ -152,7 +152,8 @@ namespace Aspose.Slides.WebExtensions.Helpers
             float fontHeight = format.FontHeight;
 
             string fontFillStyle = FillHelper.GetFillStyle(format.FillFormat, model);
-            if (model is TemplateContext<Portion> portion && portion.Object.PortionFormat.HyperlinkClick != null)
+            TemplateContext<Portion> portion = model as TemplateContext<Portion>;
+            if (portion != null && portion.Object.PortionFormat.HyperlinkClick != null)
             {
                 isHyperLink = true;
                 TextFrame parentTextFrame = model.Local.Get<TextFrame>("parentTextFrame");
