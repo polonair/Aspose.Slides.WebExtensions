@@ -51,6 +51,186 @@ namespace Aspose.Slides.WebExtensions.Tests
             CompareDir(EthalonPath, OutputPath);
         }
 
+
+        [Test]
+        public void Test_Html5issues()
+        {
+            var projectPath = "c:\\ASPOSE\\Aspose.Slides.WebExtensions\\Aspose.Slides.WebExtensions.Tests\\";
+            var RootDirectory = projectPath;
+            var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "html5issues.pptx");
+            var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "html5issues");
+            var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
+            var OutputPath = Path.Combine(RootDirectory, "TestData", "Out", "SLIDESNET_43877", "html5issues");
+
+            var sourcePath1 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "single-page"));
+            var sourcePath2 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "common"));
+
+            Directory.CreateDirectory(OutputPath);
+            Directory.CreateDirectory(TemplatePath);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath1, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath1, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath1, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath1, TemplatePath), true);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath2, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath2, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath2, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath2, TemplatePath), true);
+
+            using (Presentation pres = new Presentation(PresentationFilePath))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    EmbedImages = true
+                };
+                WebDocument document = pres.ToSinglePageWebDocument(options, TemplatePath, OutputPath);
+                document.Save();
+            }
+
+            CompareDir(EthalonPath, OutputPath);
+        }
+
+
+        [Test]
+        public void Test_Multilevel_Bullets()
+        {
+            var projectPath = "c:\\ASPOSE\\Aspose.Slides.WebExtensions\\Aspose.Slides.WebExtensions.Tests\\";
+            var RootDirectory = projectPath;
+            var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "multilevel-bullets.pptx");
+            var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "multilevel-bullets");
+            var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
+            var OutputPath = Path.Combine(RootDirectory, "TestData", "Out", "SLIDESNET_43877", "multilevel-bullets");
+
+            var sourcePath1 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "single-page"));
+            var sourcePath2 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "common"));
+
+            Directory.CreateDirectory(OutputPath);
+            Directory.CreateDirectory(TemplatePath);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath1, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath1, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath1, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath1, TemplatePath), true);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath2, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath2, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath2, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath2, TemplatePath), true);
+
+            using (Presentation pres = new Presentation(PresentationFilePath))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    EmbedImages = true
+                };
+                WebDocument document = pres.ToSinglePageWebDocument(options, TemplatePath, OutputPath);
+                document.Save();
+            }
+
+            CompareDir(EthalonPath, OutputPath);
+        }
+
+
+        [Test]
+        public void Test_Artificial()
+        {
+            var projectPath = "c:\\ASPOSE\\Aspose.Slides.WebExtensions\\Aspose.Slides.WebExtensions.Tests\\";
+            var RootDirectory = projectPath;
+            var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "artificial.pptx");
+            var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "artificial");
+            var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
+            var OutputPath = Path.Combine(RootDirectory, "TestData", "Out", "SLIDESNET_43877", "artificial");
+
+            var sourcePath1 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "single-page"));
+            var sourcePath2 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "common"));
+
+            Directory.CreateDirectory(OutputPath);
+            Directory.CreateDirectory(TemplatePath);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath1, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath1, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath1, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath1, TemplatePath), true);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath2, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath2, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath2, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath2, TemplatePath), true);
+
+            using (Presentation pres = new Presentation(PresentationFilePath))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    EmbedImages = true
+                };
+                WebDocument document = pres.ToSinglePageWebDocument(options, TemplatePath, OutputPath);
+                document.Save();
+            }
+
+            CompareDir(EthalonPath, OutputPath);
+        }
+
+
+        [Test]
+        public void Test_SamplePPT1()
+        {
+            var projectPath = "c:\\ASPOSE\\Aspose.Slides.WebExtensions\\Aspose.Slides.WebExtensions.Tests\\";
+            var RootDirectory = projectPath;
+            var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "SamplePPT1.ppt");
+            var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "SamplePPT1");
+            var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
+            var OutputPath = Path.Combine(RootDirectory, "TestData", "Out", "SLIDESNET_43877", "SamplePPT1");
+
+            var sourcePath1 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "single-page"));
+            var sourcePath2 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "common"));
+
+            Directory.CreateDirectory(OutputPath);
+            Directory.CreateDirectory(TemplatePath);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath1, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath1, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath1, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath1, TemplatePath), true);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath2, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath2, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath2, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath2, TemplatePath), true);
+
+            using (Presentation pres = new Presentation(PresentationFilePath))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    EmbedImages = true
+                };
+                WebDocument document = pres.ToSinglePageWebDocument(options, TemplatePath, OutputPath);
+                document.Save();
+            }
+
+            CompareDir(EthalonPath, OutputPath);
+        }
+
+
+        [Test]
+        public void Test_Table()
+        {
+            var projectPath = "c:\\ASPOSE\\Aspose.Slides.WebExtensions\\Aspose.Slides.WebExtensions.Tests\\";
+            var RootDirectory = projectPath;
+            var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "table.pptx");
+            var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "table");
+            var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
+            var OutputPath = Path.Combine(RootDirectory, "TestData", "Out", "SLIDESNET_43877", "table");
+
+            var sourcePath1 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "single-page"));
+            var sourcePath2 = Path.GetFullPath(Path.Combine(RootDirectory, "..", "Aspose.Slides.WebExtensions", "templates", "common"));
+
+            Directory.CreateDirectory(OutputPath);
+            Directory.CreateDirectory(TemplatePath);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath1, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath1, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath1, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath1, TemplatePath), true);
+
+            foreach (string dirPath in Directory.GetDirectories(sourcePath2, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath2, TemplatePath));
+            foreach (string newPath in Directory.GetFiles(sourcePath2, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath2, TemplatePath), true);
+
+            using (Presentation pres = new Presentation(PresentationFilePath))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    EmbedImages = true
+                };
+                WebDocument document = pres.ToSinglePageWebDocument(options, TemplatePath, OutputPath);
+                document.Save();
+            }
+
+            CompareDir(EthalonPath, OutputPath);
+        }
+
         private void CompareDir(string ethalonPath, string outputPath)
         {
             int cnt = 0;
@@ -86,6 +266,11 @@ namespace Aspose.Slides.WebExtensions.Tests
         {
             string content =  File.ReadAllText(filename);
 
+            content = content.Replace("&#167;", "§");
+            content = content.Replace("&#39;", "\'");
+
+            content = content.Replace(",", ".");
+
             content = content.Replace("\r", " ");
             content = content.Replace("\n", " ");
             content = content.Replace("\t", " ");
@@ -93,11 +278,14 @@ namespace Aspose.Slides.WebExtensions.Tests
             while (content.IndexOf("  ") >= 0)
                 content = content.Replace("  ", " ");
 
-            content = content.Replace("> <", "><");
+            content = content.Replace(" <", "<");
+            content = content.Replace("> ", ">");
             content = content.Replace("><", ">\n<");
             content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-280-shape-39\" [^>]+>", "");
+            content = Regex.Replace(content, "\'data:image/png;base64[^\']+'", "");
             content = content.Replace("<source src=\"video0.mp4\"", "");
             content = content.Replace("<source src=\"media/video0.mp4\"", "");
+
             File.WriteAllText(filename + ".tst", content);
             return Encoding.UTF8.GetBytes(content);
         }
