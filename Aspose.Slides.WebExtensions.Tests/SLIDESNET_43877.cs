@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Drawing;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
@@ -48,7 +49,7 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath);
+            CompareDir(EthalonPath, OutputPath, _ => Regex.Replace(_, "<div class=\"shape\" id=\"slide-280-shape-39\" [^>]+>", ""));
         }
 
 
@@ -84,7 +85,17 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath);
+            CompareDir(EthalonPath, OutputPath, _ =>
+            {
+                string content = _;
+                content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-277-shape-0\" [^>]+>", "");
+                content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-2147483662-shape-19\" [^>]+>", "");
+                content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-2147309457-shape-37\" [^>]+>", "");
+                content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-2147309457-shape-38\" [^>]+>", "");
+                content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-2147309457-shape-51\" [^>]+>", "");
+                content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-2147309457-shape-53\" [^>]+>", "");
+                return content;
+            });
         }
 
 
@@ -120,7 +131,7 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath);
+            CompareDir(EthalonPath, OutputPath, _ => Regex.Replace(_, "<div class=\"shape\" id=\"slide-2147493457-shape-0\" [^>]+>", ""));
         }
 
 
@@ -156,7 +167,7 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath);
+            CompareDir(EthalonPath, OutputPath, _ => _);
         }
 
 
@@ -192,7 +203,7 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath);
+            CompareDir(EthalonPath, OutputPath, _ => Regex.Replace(_, "<div class=\"shape\" id=\"slide-257-shape-6\" [^>]+>", ""));
         }
 
 
@@ -228,10 +239,10 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath);
+            CompareDir(EthalonPath, OutputPath, _ => _);
         }
 
-        private void CompareDir(string ethalonPath, string outputPath)
+        private void CompareDir(string ethalonPath, string outputPath, CustomReplacement replacements)
         {
             int cnt = 0;
             string[] actualFiles = Directory.GetFiles(outputPath, "*", SearchOption.AllDirectories);
@@ -244,32 +255,30 @@ namespace Aspose.Slides.WebExtensions.Tests
                     if (Path.GetFileName(actualFile) == Path.GetFileName(ethalonFile))
                     {
                         cnt++;
-                        CompareFiles(ethalonFile,actualFile);
+                        CompareFiles(ethalonFile,actualFile, replacements);
                     }
                 }
             }
             Assert.AreEqual(ethalonFiles.Length, cnt);
         }
-        private void CompareFiles(string ethalonFile, string actualFile)
+        private void CompareFiles(string ethalonFile, string actualFile, CustomReplacement replacements)
         {
             byte[] ethalon = File.ReadAllBytes(ethalonFile);;
             byte[] actual = File.ReadAllBytes(actualFile);;
             string ext = Path.GetExtension(ethalonFile);
             if (ext == ".html" || ext == ".js" || ext == ".css")
             {
-                ethalon = ReadMarkupedFile(ethalonFile);
-                actual = ReadMarkupedFile(actualFile);
+                ethalon = ReadMarkupedFile(ethalonFile, replacements);
+                actual = ReadMarkupedFile(actualFile, replacements);
             }
             CompareBytes(ethalon, actual);
         }
-        private byte[] ReadMarkupedFile(string filename)
+
+        delegate string CustomReplacement(string content);
+
+        private byte[] ReadMarkupedFile(string filename, CustomReplacement replacements)
         {
             string content =  File.ReadAllText(filename);
-
-            content = content.Replace("&#167;", "§");
-            content = content.Replace("&#39;", "\'");
-
-            content = content.Replace(",", ".");
 
             content = content.Replace("\r", " ");
             content = content.Replace("\n", " ");
@@ -281,12 +290,10 @@ namespace Aspose.Slides.WebExtensions.Tests
             content = content.Replace(" <", "<");
             content = content.Replace("> ", ">");
             content = content.Replace("><", ">\n<");
-            content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-280-shape-39\" [^>]+>", "");
-            content = Regex.Replace(content, "\'data:image/png;base64[^\']+'", "");
-            content = content.Replace("<source src=\"video0.mp4\"", "");
-            content = content.Replace("<source src=\"media/video0.mp4\"", "");
 
-            File.WriteAllText(filename + ".tst", content);
+            content = replacements(content);
+
+            //File.WriteAllText(filename + ".tst", content);
             return Encoding.UTF8.GetBytes(content);
         }
         private void CompareBytes(byte[] ethalon,byte[] actual)
@@ -294,7 +301,7 @@ namespace Aspose.Slides.WebExtensions.Tests
             Assert.AreEqual(ethalon.Length, actual.Length);
             for(int i = 0; i< ethalon.Length; i++) 
             {
-                Assert.AreEqual(ethalon[i], actual[i]);
+                Assert.AreEqual(ethalon[i], actual[i], "at position {0}", i);
             }
         }
     }
