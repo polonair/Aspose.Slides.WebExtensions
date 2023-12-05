@@ -141,5 +141,7 @@
         @Raw("</div>")
     </text>
 }        
+        <button class="navigationButton" id="PrevSlide" onclick="@Raw(SlideHelper.GetPrevSlide(Model))" style="@Raw(SlideHelper.GetPrevStyle(Model))">Prev Slide</button>
+        <button class="navigationButton" id="NextSlide" onclick="@Raw(SlideHelper.GetNextSlide(Model))" style="@Raw(SlideHelper.GetNextStyle(Model))">Next Slide</button>
     </body>
 </html>
