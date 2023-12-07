@@ -49,15 +49,14 @@ namespace SinglePageApp
         {
             using (Presentation pres = new Presentation("notes.pptx"))
             {
-                WebDocumentOptionsEx options = new WebDocumentOptionsEx
+                WebDocumentOptions options = new WebDocumentOptions
                 {
                     TemplateEngine = new RazorTemplateEngine(),
                     OutputSaver = new FileOutputSaver(),
                     AnimateTransitions = false,
-                    NotesCommentsLayoutingOptions = new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull },
                 };
 
-                WebDocument document = pres.ToSinglePageWebDocument(options, "templates\\single-page", @"single-page-notes-output");
+                WebDocument document = pres.ToSinglePageWebDocument(options, "templates\\single-page", @"single-page-notes-output", new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull });
 
                 document.Save();
             }

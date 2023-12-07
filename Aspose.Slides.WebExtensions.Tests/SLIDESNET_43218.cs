@@ -42,12 +42,11 @@ namespace Aspose.Slides.WebExtensions.Tests
 
             using (Presentation pres = new Presentation(PresentationFilePath))
             {
-                WebDocumentOptionsEx options = new WebDocumentOptionsEx
-                {
-                    EmbedImages = true,
-                    NotesCommentsLayoutingOptions = new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull },
-                };
-                WebDocument document = pres.ToSinglePageWebDocument(options, TemplatePath, OutputPath);
+                WebDocument document = pres.ToSinglePageWebDocument(
+                    new WebDocumentOptions { EmbedImages = true, },
+                    TemplatePath,
+                    OutputPath,
+                    new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull });
                 document.Save();
             }
 

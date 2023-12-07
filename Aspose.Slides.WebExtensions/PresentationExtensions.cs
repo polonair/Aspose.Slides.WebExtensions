@@ -8,6 +8,7 @@ using HeyRed.Mime;
 using System.Drawing;
 using Aspose.Slides.Charts;
 using Aspose.Slides.WebExtensions.Helpers;
+using Aspose.Slides.Export;
 
 namespace Aspose.Slides.WebExtensions
 {
@@ -85,9 +86,10 @@ namespace Aspose.Slides.WebExtensions
 
         public static WebDocument ToSinglePageWebDocument(
             this Presentation pres,
-            WebDocumentOptionsEx options,
+            WebDocumentOptions options,
             string templatesPath,
-            string outputPath)
+            string outputPath,
+            INotesCommentsLayoutingOptions notesCommentsLayoutingOptions)
         {
             CheckArguments(options, templatesPath, outputPath);
 
@@ -97,7 +99,7 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("slidesPath", outputPath);
             document.Global.Put("stylesPath", outputPath);
             document.Global.Put("scriptsPath", outputPath);
-            document.Global.Put("notesPosition", options.NotesCommentsLayoutingOptions.NotesPosition.ToString());
+            document.Global.Put("notesPosition", notesCommentsLayoutingOptions.NotesPosition.ToString());
 
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
 
@@ -142,9 +144,10 @@ namespace Aspose.Slides.WebExtensions
 
         public static WebDocument ToMultiPageWebDocument(
             this Presentation pres,
-            WebDocumentOptionsEx options,
+            WebDocumentOptions options,
             string templatesPath,
-            string outputPath)
+            string outputPath,
+            INotesCommentsLayoutingOptions notesCommentsLayoutingOptions)
         {
             CheckArguments(options, templatesPath, outputPath);
 
@@ -161,7 +164,7 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("slidesPath", slidesPath);
             document.Global.Put("stylesPath", stylesPath);
             document.Global.Put("scriptsPath", scriptsPath);
-            document.Global.Put("notesPosition", options.NotesCommentsLayoutingOptions.NotesPosition.ToString());
+            document.Global.Put("notesPosition", notesCommentsLayoutingOptions.NotesPosition.ToString());
 
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
 
