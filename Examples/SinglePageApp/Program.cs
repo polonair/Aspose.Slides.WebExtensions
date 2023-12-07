@@ -53,7 +53,7 @@ namespace SinglePageApp
                 {
                     TemplateEngine = new RazorTemplateEngine(),
                     OutputSaver = new FileOutputSaver(),
-                    AnimateTransitions = false,
+                    AnimateTransitions = false
                 };
 
                 WebDocument document = pres.ToSinglePageWebDocument(options, "templates\\single-page", @"single-page-notes-output", new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull });

@@ -33,15 +33,14 @@ namespace MultiPageApp
         {
             using (Presentation pres = new Presentation("notes.pptx"))
             {
-                WebDocumentOptionsEx options = new WebDocumentOptionsEx
+                WebDocumentOptions options = new WebDocumentOptions
                 {
                     TemplateEngine = new RazorTemplateEngine(),
                     OutputSaver = new FileOutputSaver(),
-                    AnimateTransitions = false,
-                    NotesCommentsLayoutingOptions = new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull },
+                    AnimateTransitions = false
                 };
 
-                WebDocument document = pres.ToMultiPageWebDocument(options, "templates\\multi-page", @"multi-page-notes-output");
+                WebDocument document = pres.ToMultiPageWebDocument(options, "templates\\multi-page", @"multi-page-notes-output", new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull });
 
                 document.Save();
             }
