@@ -17,7 +17,8 @@ namespace Aspose.Slides.WebExtensions.Helpers
         }
         public static string SelectFont<T>(IPortionFormatEffectiveData format, TemplateContext<T> model)
         {
-            if (model is TemplateContext<Portion> portionTplCtx)
+            TemplateContext<Portion> portionTplCtx = model as TemplateContext<Portion>;
+            if (portionTplCtx != null)
             {
                 if (portionTplCtx.Object.PortionFormat.LanguageId == "he-IL")
                 {
