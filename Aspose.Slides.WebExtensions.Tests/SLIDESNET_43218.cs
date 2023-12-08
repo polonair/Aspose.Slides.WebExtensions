@@ -21,8 +21,7 @@ namespace Aspose.Slides.WebExtensions.Tests
         [Test]
         public void Test_WithNotes()
         {
-            var projectPath = "c:\\ASPOSE\\Aspose.Slides.WebExtensions\\Aspose.Slides.WebExtensions.Tests\\";
-            var RootDirectory = projectPath;
+            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43218", "WithNotes.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43218", "WithNotes");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -57,8 +56,7 @@ namespace Aspose.Slides.WebExtensions.Tests
         [Test]
         public void Test_WithoutNotes()
         {
-            var projectPath = "c:\\ASPOSE\\Aspose.Slides.WebExtensions\\Aspose.Slides.WebExtensions.Tests\\";
-            var RootDirectory = projectPath;
+            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43218", "WithoutNotes.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43218", "WithoutNotes");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
