@@ -9,11 +9,10 @@ namespace Aspose.Slides.WebExtensions.Tests
     public class SLIDESNET_44347 
     {
         [Test]
-        public void TestVideoEmbedding() 
+        public void TestVideoEmbedding()
         {
+            var RootDirectory = Path.GetFullPath(Path.Combine( TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
 
-            var projectPath = "c:\\ASPOSE\\Aspose.Slides.WebExtensions\\Aspose.Slides.WebExtensions.Tests\\";
-            var RootDirectory = projectPath;
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET-44347.pptx");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
             var OutputPath = Path.Combine(RootDirectory, "TestData", "Out", "SLIDESNET-44347");
