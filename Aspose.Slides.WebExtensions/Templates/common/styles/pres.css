@@ -14,6 +14,8 @@
       
       var fixSlides = Model.Global.Get<bool>("animateTransitions") || Model.Global.Get<bool>("navigationEnabled");      
       var margin = Model.Global.Get<int>("slideMargin");
+      var notesType = Model.Global.ContainsKey("notesPosition") ? Model.Global.Get<string>("notesPosition") : null;
+      var hasNotes = (notesType != null) && (notesType != "None");
 }
 
     body, html {
@@ -41,6 +43,20 @@
         margin: @(margin + "px");
         position: relative;
         @(fixSlides ? "position: absolute;" : "")
+    }
+
+    @if(hasNotes)
+    {
+        <text>
+        .notes {
+            width: @((Model.Object.NotesSize.Size.Width + margin / 2) + "px");
+            height: @((Model.Object.NotesSize.Size.Height + margin / 2) + "px");
+            outline: 1px solid #c6c6c6;
+            overflow: hidden;
+            margin: @(margin + "px");
+            @(fixSlides ? "position: absolute;" : "")
+        }
+        </text>
     }
     
     .navigationArea {

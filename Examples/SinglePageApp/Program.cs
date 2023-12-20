@@ -2,6 +2,7 @@
 using System.IO;
 using Aspose.Slides;
 using Aspose.Slides.Charts;
+using Aspose.Slides.Export;
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.SmartArt;
 using Aspose.Slides.WebExtensions;
@@ -43,6 +44,24 @@ namespace SinglePageApp
             }
         }
         
+
+        static void ExportWithNotes()
+        {
+            using (Presentation pres = new Presentation("notes.pptx"))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    TemplateEngine = new RazorTemplateEngine(),
+                    OutputSaver = new FileOutputSaver(),
+                    AnimateTransitions = false
+                };
+
+                WebDocument document = pres.ToSinglePageWebDocument(options, "templates\\single-page", @"single-page-notes-output", new NotesCommentsLayoutingOptions() { NotesPosition = NotesPositions.BottomFull });
+
+                document.Save();
+            }
+        }
+
         static void ExportHelloWorld()
         {
             using (Presentation pres = new Presentation())
