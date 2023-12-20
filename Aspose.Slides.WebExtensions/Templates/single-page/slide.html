@@ -143,7 +143,7 @@
      data-transition-speed="@contextObject.SlideShowTransition.Speed"
      data-transition-direction="@SlideHelper.GetSlideTransitionDirection(contextObject)"
      data-transition-extra="@SlideHelper.GetSlideTransitionExtraData(contextObject)"
-     style="@slideStyle">
+     style="@Raw(slideStyle)">
     
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
         {
