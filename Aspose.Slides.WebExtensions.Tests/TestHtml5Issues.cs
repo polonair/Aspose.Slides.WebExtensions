@@ -28,7 +28,7 @@ namespace Aspose.Slides.WebExtensions.Tests
 
             using (Presentation pres = new Presentation(PresentationFilePath))
             {
-                WebDocument document = pres.ToSinglePageWebDocument(TemplatePath, OutputPath);
+                WebDocument document = pres.ToSinglePageWebDocument(new WebDocumentOptions() { EmbedImages = true }, TemplatePath, OutputPath);
                 document.Save();
             }
 
