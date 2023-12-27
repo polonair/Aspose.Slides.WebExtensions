@@ -12,7 +12,7 @@
             contextObject.PictureFormat.CropTop, 
             contextObject.PictureFormat.CropRight, 
             contextObject.PictureFormat.CropBottom);
-    if (contextObject.PictureFormat.Picture.Image.ContentType == "image/tiff")
+    if (contextObject.PictureFormat.Picture.Image.ContentType == "image/tiff" && !Model.Global.Get<bool>("embedImages"))
     {
         ImageHelper.ConvertTiffToPng(contextObject.PictureFormat.Picture.Image, Model);
         imgSrc += ".png";
