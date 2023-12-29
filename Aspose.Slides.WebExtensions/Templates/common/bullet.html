@@ -42,7 +42,7 @@
 }
 
 <span class="portion" style="@bulletStyle">
-    @bulletSymbol
+    @Raw(bulletSymbol)
     @if (paragraphFormatEffective.Bullet.Type == BulletType.Picture)
     {
         <img src="@GetBulletImageUrl(contextObject)" style="@GetPictureBulletStyle(contextObject)" />

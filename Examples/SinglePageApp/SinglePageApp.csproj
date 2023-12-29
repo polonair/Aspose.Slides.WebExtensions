@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Aspose.Slides.NET">
-      <Version>21.11.0</Version>
+      <Version>23.12.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +84,7 @@
     <PostBuildEvent>xcopy /e /y /i /r "$(TargetDir)Templates\common\*.*" "$(TargetDir)Templates\single-page\"
 xcopy /y "$(ProjectDir)..\Data\demo.pptx" "$(TargetDir)"
 xcopy /y "$(ProjectDir)..\Data\demo-transitions.pptx" "$(TargetDir)"
-xcopy /y "$(ProjectDir)..\Data\table.pptx" "$(TargetDir)"</PostBuildEvent>
+xcopy /y "$(ProjectDir)..\Data\table.pptx" "$(TargetDir)"
+xcopy /y "$(ProjectDir)..\Data\notes.pptx" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

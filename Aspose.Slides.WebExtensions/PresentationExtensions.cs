@@ -8,6 +8,7 @@ using HeyRed.Mime;
 using System.Drawing;
 using Aspose.Slides.Charts;
 using Aspose.Slides.WebExtensions.Helpers;
+using Aspose.Slides.Export;
 
 namespace Aspose.Slides.WebExtensions
 {
@@ -76,6 +77,32 @@ namespace Aspose.Slides.WebExtensions
 
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
             
+
+            if (!options.EmbedImages)
+                document.AddThumbnailsOutput(document.Global.Get<string>("imagesPath"), pres);
+
+            return document;
+        }
+
+        public static WebDocument ToSinglePageWebDocument(
+            this Presentation pres,
+            WebDocumentOptions options,
+            string templatesPath,
+            string outputPath,
+            INotesCommentsLayoutingOptions notesCommentsLayoutingOptions)
+        {
+            CheckArguments(options, templatesPath, outputPath);
+
+            WebDocument document = new WebDocument(options);
+
+            SetGlobals(document, options, outputPath);
+            document.Global.Put("slidesPath", outputPath);
+            document.Global.Put("stylesPath", outputPath);
+            document.Global.Put("scriptsPath", outputPath);
+            document.Global.Put("notesPosition", notesCommentsLayoutingOptions.NotesPosition.ToString());
+
+            document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
+
             if (!options.EmbedImages)
                 document.AddThumbnailsOutput(document.Global.Get<string>("imagesPath"), pres);
 
@@ -103,7 +130,42 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("slidesPath", slidesPath);
             document.Global.Put("stylesPath", stylesPath);
             document.Global.Put("scriptsPath", scriptsPath);
-            
+
+            document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
+
+            document.AddMultiPageInputTemplates(templatesPath);
+            document.AddMultiPageOutputFiles(outputPath, slidesPath, localSlidesPath, pres);
+
+            if (!options.EmbedImages)
+                document.AddThumbnailsOutput(document.Global.Get<string>("imagesPath"), pres);
+
+            return document;
+        }
+
+        public static WebDocument ToMultiPageWebDocument(
+            this Presentation pres,
+            WebDocumentOptions options,
+            string templatesPath,
+            string outputPath,
+            INotesCommentsLayoutingOptions notesCommentsLayoutingOptions)
+        {
+            CheckArguments(options, templatesPath, outputPath);
+
+            WebDocument document = new WebDocument(options);
+
+            SetGlobals(document, options, outputPath);
+
+            const string localSlidesPath = "slides";
+
+            string slidesPath = Path.Combine(outputPath, localSlidesPath);
+            string stylesPath = Path.Combine(outputPath, "styles");
+            string scriptsPath = Path.Combine(outputPath, "scripts");
+
+            document.Global.Put("slidesPath", slidesPath);
+            document.Global.Put("stylesPath", stylesPath);
+            document.Global.Put("scriptsPath", scriptsPath);
+            document.Global.Put("notesPosition", notesCommentsLayoutingOptions.NotesPosition.ToString());
+
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
 
             document.AddMultiPageInputTemplates(templatesPath);

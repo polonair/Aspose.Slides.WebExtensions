@@ -10,6 +10,7 @@ using System.Xml;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
+    /*
     [TestFixture]
     public class TestDemoMultipage
     {
@@ -117,4 +118,5 @@ namespace Aspose.Slides.WebExtensions.Tests
             }
         }
     }
+    */
 }

@@ -8,13 +8,19 @@
     var slideId = "slide-" + slideNumber;
     var bckgStyle = SlideHelper.GetBackgroundStyle(Model);
     var slideStyle = "display: " + (animateTransitions ? "none" : "block") + ";" + bckgStyle;
+    var notesType = Model.Global.ContainsKey("notesPosition") ? Model.Global.Get<string>("notesPosition") : null;
+    var hasNotes = (notesType != null) && (notesType != "None");
 }
     
-@helper EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData) 
+@helper EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData, bool hasNotes, bool isSlide)
 {
     var margin = Model.Global.Get<int>("slideMargin");
     var visibleSlideNumber = animateTransitions ? 1 : slideNumber;
     var slideOriginY = ((int)(contextObject.Presentation.SlideSize.Size.Height + (margin + 1) / 2f) * (visibleSlideNumber - 1)) + (!animateTransitions ? margin * visibleSlideNumber: 0);
+	if (hasNotes) 
+	{
+		slideOriginY = ((int)((margin + 1) / 2f)) + (!animateTransitions ? margin: 0);
+	}
     var origin = new Point((!animateTransitions ? margin: 0), slideOriginY);
     
     string animationAttributes = "";
@@ -74,31 +80,95 @@
         @Include("shape", subModel)
     }  
 }
+
+@if(hasNotes)
+{
+    <text>
+	    <div
+			id="@slideId-notes"
+			class="notes">
+    </text>
+}
+
+@{
+    var masterNotes =  contextObject.Presentation.MasterNotesSlideManager.MasterNotesSlide;
+    var notesSapes = (contextObject.NotesSlideManager != null) ? contextObject.NotesSlideManager.NotesSlide : null;
+}
+
+@if(hasNotes)
+{
+    foreach(var shape in masterNotes.Shapes)
+    {
+        if (shape.Placeholder != null && shape.Placeholder.Type == PlaceholderType.SlideImage){
+			var kX = (double)shape.Width / (double)contextObject.Presentation.SlideSize.Size.Width;
+			var kY = (double)shape.Height / (double)contextObject.Presentation.SlideSize.Size.Height;
+			
+			var M = Model.Global.Get<int>("slideMargin");
+			
+			var Lsh = shape.X;
+			var Tsh = shape.Y;
+			
+			var Wsl = contextObject.Presentation.SlideSize.Size.Width;			
+			var Hsl = contextObject.Presentation.SlideSize.Size.Height;
+			
+			var tX = (Lsh - M) - ((1 - kX) * Wsl / 2);
+			var tY = (Tsh - M) - ((1 - kY) * Hsl / 2);
+			
+			string borderStyle = string.Format("border: {0};", LineHelper.GetLineStyle(shape.LineFormat.GetEffective()));
+			slideStyle += string.Format(
+				" transform: matrix({0},0,0,{1},{2},{3}); transform-origin: {4}px {5}px; {6}", 
+				NumberHelper.ToCssNumber(kX),
+				NumberHelper.ToCssNumber(kY), 
+				NumberHelper.ToCssNumber(tX),
+				NumberHelper.ToCssNumber(tY),
+				NumberHelper.ToCssNumber(contextObject.Presentation.SlideSize.Size.Width / 2),
+				NumberHelper.ToCssNumber(contextObject.Presentation.SlideSize.Size.Height / 2),
+				borderStyle);
+		}
+    }
+	if (notesSapes != null)
+	{
+		foreach(var shape in notesSapes.Shapes)
+		{
+			if (shape.Placeholder != null && shape.Placeholder.Type == PlaceholderType.SlideImage){}
+			else{
+				@EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData, hasNotes, false);
+			}
+		}
+	}
+}
     
 <div id="@slideId" class="slide master-bg" 
      data-transition-type="@contextObject.SlideShowTransition.Type"
      data-transition-speed="@contextObject.SlideShowTransition.Speed"
      data-transition-direction="@SlideHelper.GetSlideTransitionDirection(contextObject)"
      data-transition-extra="@SlideHelper.GetSlideTransitionExtraData(contextObject)"
-     style="@slideStyle">
+     style="@Raw(slideStyle)">
     
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
         {
             if(shape.Placeholder == null) {
-                @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData);
+                @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData, hasNotes, true);
             }
         }
 
         @foreach (var shape in contextObject.LayoutSlide.Shapes)
         {
             if(shape.Placeholder == null) {
-                @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData);
+                @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData, hasNotes, true);
             }
         }        
         
         @foreach (var shape in contextObject.Shapes)
         {
-            @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData);
+            @EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData, hasNotes, true);
         }
 
 </div>
+
+@if(hasNotes)
+{
+    <text>
+        @Raw("</div>")
+    </text>
+}

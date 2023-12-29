@@ -22,7 +22,7 @@
 }
 
 @{
-    <div class="shape" id="@id" style="@shapeStyle" @Raw(animationAttributes)>
+    <div class="shape" id="@id" style="@Raw(shapeStyle)" @Raw(animationAttributes)>
         @if (contextObject is AutoShape)
         {
         AutoShape shape = contextObject as AutoShape;
