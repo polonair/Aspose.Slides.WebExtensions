@@ -256,7 +256,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 spacingStyle = string.Format("letter-spacing: {0}px;", NumberHelper.ToCssNumber(format.Spacing));
 
             string fontBoldItalicStyle = GetTextFontItalicStyle(format);
-            string fontFamilyStyle = string.Format("font-family: {0};", FontHelper.SelectFont(format, model));
+            string fontFamilyStyle = string.Format("font-family: '{0}';", FontHelper.SelectFont(format, model));
             string fontHeightStyle = string.Format("font-size: {0}px;", NumberHelper.ToCssNumber(fontHeight));
             string fontCapStyle = "";
             if (format.TextCapType == TextCapType.All)
@@ -361,7 +361,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                                                     ColorHelper.GetRrbaColorString(firstPortionFormatEffective.EffectFormat.OuterShadowEffect.ShadowColor));
 
             string fontHeightStyle = string.Format("font-size: {0}px;", NumberHelper.ToCssNumber(format.Bullet.Height * firstPortionFormatEffective.FontHeight / 100f));
-            string fontFamilyStyle = string.Format("font-family: {0};", bulletFont);
+            string fontFamilyStyle = string.Format("font-family: '{0}';", bulletFont);
 
             return string.Join(" ", new string[] { fontBoldItalicStyle, fontFill, outerShadowStyle, fontHeightStyle, fontFamilyStyle });
         }

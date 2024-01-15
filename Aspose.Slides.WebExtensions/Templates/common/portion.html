@@ -28,7 +28,7 @@
 {
     @Raw("<a href=\"" + hyperlink + "\" style=\"text-decoration: none;\">");
 }
-<span class="portion" style="@GetTextStyle(contextObject, parentTextFrame, tableContentFlag)">@Raw(FixVerticalTabulation(contextObject.Text, isLast, isFirst))</span>
+<span class="portion" style="@Raw(GetTextStyle(contextObject, parentTextFrame, tableContentFlag))">@Raw(FixVerticalTabulation(contextObject.Text, isLast, isFirst))</span>
 @if (!string.IsNullOrEmpty(hyperlink))
 {
     @Raw("</a>");
