@@ -19,8 +19,8 @@
         
         animationAttributes += "data-animation-type=\"" + shapeAnimationData.Item1 + "\" ";
         animationAttributes += "data-animation-subtype=\"" + shapeAnimationData.Item2 + "\" ";
-        animationAttributes += "data-animation-duration=\"" + shapeAnimationData.Item3 + "\" ";
-        animationAttributes += "data-animation-delay=\"" + shapeAnimationData.Item4 + "\" ";
+        animationAttributes += "data-animation-duration=\"" + NumberHelper.ToCssNumber(shapeAnimationData.Item3) + "\" ";
+        animationAttributes += "data-animation-delay=\"" + NumberHelper.ToCssNumber(shapeAnimationData.Item4) + "\" ";
         animationAttributes += "data-animation-clickTarget=\"" + shapeAnimationData.Item5 + "\" ";
         animationAttributes += "data-animation-extra=\"" + shapeAnimationData.Item6 + "\" ";
         animationAttributes += "data-animation-index=\"" + shapeAnimationData.Item7 + "\" ";
@@ -77,7 +77,8 @@
     
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
         {
-            if(shape.Placeholder == null) {
+            if(contextObject.LayoutSlide.ShowMasterShapes && shape.Placeholder == null && !shape.Hidden)
+            {
                 @EmitShape(shape, contextObject, slideAnimationData);
             }
         }
@@ -91,7 +92,10 @@
         
         @foreach (var shape in contextObject.Shapes)
         {
-            @EmitShape(shape, contextObject, slideAnimationData);
+            if(!shape.Hidden)
+            {
+                @EmitShape(shape, contextObject, slideAnimationData);
+            }
         }
 
 </div>
