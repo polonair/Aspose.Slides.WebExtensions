@@ -118,7 +118,8 @@
         <div class="slide master-bg" style="@slideStyle">
             @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
             {
-                if(shape.Placeholder == null) {
+                if(contextObject.LayoutSlide.ShowMasterShapes && shape.Placeholder == null && !shape.Hidden)
+                {
                     @EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
                 }
             }
@@ -132,7 +133,10 @@
             
             @foreach (var shape in contextObject.Shapes)
             {
-                @EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
+                if(!shape.Hidden)
+                {
+                    @EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
+                }
             }
         </div>
 @if(hasNotes)
