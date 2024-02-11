@@ -1,14 +1,14 @@
 using Aspose.Slides;
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.WebExtensions;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class TestDemo
     {
         private string TemplatePath = null;
@@ -18,10 +18,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         private XmlDocument indexHtml;
         private XmlNamespaceManager namespaceManager;
 
-        [OneTimeSetUp]
-        public void Setup()
+        //[ClassInitialize]
+        public TestDemo()
         {
-            RootDirectory = TestContext.CurrentContext.TestDirectory;
+            RootDirectory = Path.GetFullPath(".");
             PresentationFilePath = Path.Combine(RootDirectory, "TestData", "demo.pptx");
             TemplatePath = Path.Combine(RootDirectory, "templates", "single-page");
             OutputPath = Path.Combine(RootDirectory, "single-page-demo-output");
@@ -48,7 +48,7 @@ namespace Aspose.Slides.WebExtensions.Tests
             return input;
         }
 
-        [Test]
+        [TestMethod]
         public void TestHeadlineConnector()
         {
             XmlElement root = indexHtml.DocumentElement;
@@ -61,7 +61,7 @@ namespace Aspose.Slides.WebExtensions.Tests
                 Assert.IsTrue(style.Contains("height: 2px"), "Headline connector's div block should be 2px high");
             }
         }
-        [Test]
+        [TestMethod]
         public void TestLinkTextColor()
         {
             XmlElement root = indexHtml.DocumentElement;

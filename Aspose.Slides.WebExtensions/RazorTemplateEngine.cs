@@ -3,9 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Aspose.Slides.Export.Web;
-using RazorEngine;
-using RazorEngine.Configuration;
-using RazorEngine.Templating;
+using RazorEngineCore;
 
 namespace Aspose.Slides.WebExtensions
 {
@@ -66,6 +64,11 @@ namespace Aspose.Slides.WebExtensions
                 throw new ArgumentException(string.Format("Can't find template \"{0}\" for type {1}. Check Input and Output types correspondence.", key, model.GetType().GenericTypeArguments[0].ToString()), "key");
 
             return m_razorService.Run(key, model.GetType(), model);
+        }
+
+        public void AddTemplate(string key, string template)
+        {
+            throw new NotImplementedException();
         }
 
         private readonly IRazorEngineService m_razorService;

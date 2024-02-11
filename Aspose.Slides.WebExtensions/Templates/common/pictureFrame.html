@@ -1,26 +1,26 @@
-﻿@model TemplateContext<PictureFrame>
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<PictureFrame>>
 
 @{
     PictureFrame contextObject = Model.Object;
-    
+
     var origin = Model.Local.Get<Point>("origin");
-    
+
     string imgSrc = ImageHelper.GetImageURL(contextObject.PictureFormat.Picture.Image, Model);
 	imgSrc = ImageHelper.Crop(
             imgSrc,
-            contextObject.PictureFormat.CropLeft, 
-            contextObject.PictureFormat.CropTop, 
-            contextObject.PictureFormat.CropRight, 
+            contextObject.PictureFormat.CropLeft,
+            contextObject.PictureFormat.CropTop,
+            contextObject.PictureFormat.CropRight,
             contextObject.PictureFormat.CropBottom);
     if (contextObject.PictureFormat.Picture.Image.ContentType == "image/tiff" && !Model.Global.Get<bool>("embedImages"))
     {
         ImageHelper.ConvertTiffToPng(contextObject.PictureFormat.Picture.Image, Model);
         imgSrc += ".png";
     }
-    
+
     string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
     string animationAttributes = "";
-    
+
     if (Model.Local.ContainsKey("animationAttributes"))
     {
         animationAttributes = Model.Local.Get<string>("animationAttributes");

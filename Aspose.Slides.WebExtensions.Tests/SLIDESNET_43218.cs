@@ -1,5 +1,4 @@
 ﻿using Aspose.Slides.Export.Web;
-using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Globalization;
@@ -8,20 +7,21 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using Aspose.Slides.Export;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class SLIDESNET_43218
     {
-        [OneTimeSetUp]
-        public void Setup()
-        {
-        }
-        [Test]
+        //[ClassInitialize]
+        //public void Setup()
+        //{
+        //}
+        [TestMethod]
         public void Test_WithNotes()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43218", "WithNotes.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43218", "WithNotes");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -53,10 +53,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_WithoutNotes()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43218", "WithoutNotes.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43218", "WithoutNotes");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -139,7 +139,7 @@ namespace Aspose.Slides.WebExtensions.Tests
 
             content = replacements(content);
 
-            File.WriteAllText(filename + ".tst", content);
+            //File.WriteAllText(filename + ".tst", content);
             return Encoding.UTF8.GetBytes(content);
         }
         private void CompareBytes(byte[] ethalon,byte[] actual)

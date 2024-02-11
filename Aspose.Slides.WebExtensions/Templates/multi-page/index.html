@@ -1,5 +1,5 @@
-﻿@model TemplateContext<Presentation>
-    
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Presentation>>
+
 @{
     Presentation contextObject = Model.Object;
     string slide1Path = Model.Global.Get<string>("slide1path");
@@ -17,7 +17,7 @@
     <frameset cols="225, *">
       <frame src="menu.html" name="menu_page" />
       <frame src="@slide1Path" name="slide_page" />
-      
+
       <noframes>
          <body>Your browser does not support frames.</body>
       </noframes>

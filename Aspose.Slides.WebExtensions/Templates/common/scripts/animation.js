@@ -1,4 +1,4 @@
-@model TemplateContext<Presentation>
+@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Presentation>>
 
 @{
     Presentation contextObject = Model.Object;
@@ -2893,7 +2893,7 @@ function ShowNext() {
         var prevSlideId = '#slide-' + currentVisiblePage++;
         var slideId = '#slide-' + currentVisiblePage;
         
-        if (@animateTransitions)
+        if ( @animateTransitions )
             PrepareAndPlayTransition(slideId, prevSlideId);
     }
 }
@@ -2904,7 +2904,7 @@ function ShowPrev() {
         var prevSlideId = '#slide-' + currentVisiblePage--;
         var slideId = '#slide-' + currentVisiblePage;
         
-        if (@animateTransitions)
+        if ( @animateTransitions )
             PrepareAndPlayTransition(slideId, prevSlideId);
     }
 }

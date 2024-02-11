@@ -1,0 +1,112 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Templates\common\autoshape.html" />
+    <None Remove="Templates\common\bullet.html" />
+    <None Remove="Templates\common\paragraph.html" />
+    <None Remove="Templates\common\pictureFrame.html" />
+    <None Remove="Templates\common\portion.html" />
+    <None Remove="Templates\common\scripts\animation.js" />
+    <None Remove="Templates\common\scripts\effects.js" />
+    <None Remove="Templates\common\scripts\navigation.js" />
+    <None Remove="Templates\common\shape.html" />
+    <None Remove="Templates\common\styles\master.css" />
+    <None Remove="Templates\common\styles\pres.css" />
+    <None Remove="Templates\common\table.html" />
+    <None Remove="Templates\common\textframe.html" />
+    <None Remove="Templates\common\videoFrame.html" />
+    <None Remove="Templates\multi-page\index.html" />
+    <None Remove="Templates\multi-page\menu.html" />
+    <None Remove="Templates\multi-page\slide.html" />
+    <None Remove="Templates\single-page-embedded\index.html" />
+    <None Remove="Templates\single-page-embedded\slide.html" />
+    <None Remove="Templates\single-page-navigation\index.html" />
+    <None Remove="Templates\single-page-navigation\slide.html" />
+    <None Remove="Templates\single-page\index.html" />
+    <None Remove="Templates\single-page\slide.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Templates\common\autoshape.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\bullet.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\paragraph.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\pictureFrame.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\portion.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\scripts\animation.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\scripts\effects.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\scripts\navigation.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\shape.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\styles\master.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\styles\pres.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\table.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\textframe.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\common\videoFrame.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\multi-page\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\multi-page\menu.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\multi-page\slide.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page-embedded\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page-embedded\slide.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page-navigation\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page-navigation\slide.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page\slide.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspose.Slides.NET" Version="23.12.0" />
+    <PackageReference Include="MimeTypesMap" Version="1.0.8" />
+    <PackageReference Include="RazorEngineCore" Version="2023.11.2" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+  </ItemGroup>
+
+</Project>

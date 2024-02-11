@@ -1,4 +1,4 @@
-﻿@model TemplateContext<Slide>
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Slide>>
 
 @{
     Slide contextObject = Model.Object;
@@ -6,17 +6,17 @@
     var slideAnimationData = SlideHelper.GetSlidesAnimationCollection(contextObject);
     var slideId = "slide-" + slideNumber;
 }
-    
-@helper EmitShape(IShape shape, Slide contextObject, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData) 
+
+@helper EmitShape(IShape shape, Slide contextObject, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData)
 {
     var margin = Model.Global.Get<int>("slideMargin");
     var origin = new Point(0, 0);
-    
+
     string animationAttributes = "";
     if (slideAnimationData.ContainsKey(shape))
     {
         var shapeAnimationData = slideAnimationData[shape];
-        
+
         animationAttributes += "data-animation-type=\"" + shapeAnimationData.Item1 + "\" ";
         animationAttributes += "data-animation-subtype=\"" + shapeAnimationData.Item2 + "\" ";
         animationAttributes += "data-animation-duration=\"" + NumberHelper.ToCssNumber(shapeAnimationData.Item3) + "\" ";
@@ -25,7 +25,7 @@
         animationAttributes += "data-animation-extra=\"" + shapeAnimationData.Item6 + "\" ";
         animationAttributes += "data-animation-index=\"" + shapeAnimationData.Item7 + "\" ";
     }
-        
+
     if (shape is AutoShape && (((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.Rectangle || ((AutoShape)shape).ShapeType == Aspose.Slides.ShapeType.NotDefined))
     {
         var subModel = Model.SubModel((AutoShape)shape);
@@ -65,16 +65,16 @@
         subModel.Local.Put("animationAttributes", animationAttributes);
 
         @Include("shape", subModel)
-    }  
+    }
 }
-    
-<div id="@slideId" class="slide master-bg" 
+
+<div id="@slideId" class="slide master-bg"
      data-transition-type="@contextObject.SlideShowTransition.Type"
      data-transition-speed="@contextObject.SlideShowTransition.Speed"
      data-transition-direction="@SlideHelper.GetSlideTransitionDirection(contextObject)"
      data-transition-extra="@SlideHelper.GetSlideTransitionExtraData(contextObject)"
      style="display: none;">
-    
+
         @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
         {
             if(contextObject.LayoutSlide.ShowMasterShapes && shape.Placeholder == null && !shape.Hidden)
@@ -88,8 +88,8 @@
             if(shape.Placeholder == null) {
                 @EmitShape(shape, contextObject, slideAnimationData);
             }
-        }        
-        
+        }
+
         @foreach (var shape in contextObject.Shapes)
         {
             if(!shape.Hidden)

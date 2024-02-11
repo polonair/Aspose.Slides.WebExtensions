@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Security.Policy;
 using Aspose.Slides.Animation;
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.SlideShow;

@@ -1,14 +1,14 @@
 ﻿using Aspose.Slides;
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.WebExtensions;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class TestHtml5Issues
     {
         private string TemplatePath = null;
@@ -18,10 +18,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         private XmlDocument indexHtml;
         private XmlNamespaceManager namespaceManager;
 
-        [OneTimeSetUp]
-        public void Setup()
+        //[ClassInitialize]
+        public TestHtml5Issues()
         {
-            RootDirectory = TestContext.CurrentContext.TestDirectory;
+            RootDirectory = Path.GetFullPath(".");
             PresentationFilePath = Path.Combine(RootDirectory, "TestData", "html5issues.pptx");
             TemplatePath = Path.Combine(RootDirectory, "templates", "single-page");
             OutputPath = Path.Combine(RootDirectory, "single-page-html5issues-output");
@@ -40,7 +40,7 @@ namespace Aspose.Slides.WebExtensions.Tests
             namespaceManager = new XmlNamespaceManager(indexHtml.NameTable);
             namespaceManager.AddNamespace("html", "http://www.w3.org/1999/xhtml");
         }
-        [Test]
+        [TestMethod]
         public void TestComplexScriptFont()
         {
             XmlElement root = indexHtml.DocumentElement;

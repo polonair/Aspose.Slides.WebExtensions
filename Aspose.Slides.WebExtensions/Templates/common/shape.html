@@ -1,8 +1,8 @@
-﻿@model TemplateContext<Shape>
-    
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Shape>>
+
 @{
     Shape contextObject = Model.Object;
-    
+
     var origin = Model.Local.Get<Point>("origin");
     var positionStyle = ShapeHelper.GetPositionStyle(contextObject, origin);
     var textStyle = "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);";
@@ -11,12 +11,12 @@
 
     string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
     string animationAttributes = "";
-    
+
     if (Model.Local.ContainsKey("animationAttributes"))
     {
         animationAttributes = Model.Local.Get<string>("animationAttributes");
     }
-    
+
     var shapeStyle = positionStyle + " background-image: url(" + imgSrc + "); background-size: 100% 100%;";
     shapeStyle += String.Format(" transform: rotate({0}deg);", (int)contextObject.Rotation);
 }

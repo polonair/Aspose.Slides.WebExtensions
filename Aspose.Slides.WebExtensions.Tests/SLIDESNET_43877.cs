@@ -1,5 +1,4 @@
 ﻿using Aspose.Slides.Export.Web;
-using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Globalization;
@@ -7,20 +6,21 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class SLIDESNET_43877
     {
-        [OneTimeSetUp]
-        public void Setup()
-        {
-        }
-        [Test]
+        //[ClassInitialize]
+        //public void Setup()
+        //{
+        //}
+        [TestMethod]
         public void Test_Demo_Transitions()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "demo-transitions.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "demo-transitions");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -58,10 +58,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_Html5issues()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "html5issues.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "html5issues");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -103,10 +103,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_Multilevel_Bullets()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "multilevel-bullets.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "multilevel-bullets");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -138,10 +138,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_Artificial()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "artificial.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "artificial");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -173,10 +173,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_SamplePPT1()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "SamplePPT1.ppt");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "SamplePPT1");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -208,10 +208,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_Table()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "table.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "table");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");

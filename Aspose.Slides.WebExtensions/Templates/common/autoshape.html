@@ -1,23 +1,23 @@
-﻿@model TemplateContext<AutoShape>
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<AutoShape>>
 
 @{
     AutoShape contextObject = Model.Object;
-    
+
     var origin = Model.Local.Get<Point>("origin");
     var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
                                         (int)contextObject.X,
                                         (int)contextObject.Y,
                                         (int)contextObject.Width,
                                         (int)contextObject.Height);
-                                        
+
     string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
     string animationAttributes = "";
-    
+
     if (Model.Local.ContainsKey("animationAttributes"))
     {
         animationAttributes = Model.Local.Get<string>("animationAttributes");
     }
-    
+
 }
 
 @functions
@@ -27,7 +27,7 @@
         string background = FillHelper.GetFillStyle(shape.FillFormat.GetEffective(), Model);
         string borderStyle = string.Format("border: {0};", LineHelper.GetLineStyle(shape.LineFormat.GetEffective()));
         string transformStyle = ((int)shape.Rotation == 0) ? "" : String.Format("transform: rotate({0}deg);", (int)shape.Rotation);
-                
+
         return string.Join(" ", new string[] {background, borderStyle, transformStyle});
     }
 }
@@ -38,8 +38,8 @@
             var subModel = Model.SubModel((TextFrame)contextObject.TextFrame);
             subModel.Local.Put("origin", origin);
             subModel.Local.Put("parent", contextObject);
-            
-            @Include("textframe", subModel)        
+
+            @Include("textframe", subModel)
         }
     </div>
 }

@@ -1,4 +1,4 @@
-﻿@model TemplateContext<Slide>
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Slide>>
 
 @{
     Slide contextObject = Model.Object;
@@ -9,7 +9,8 @@
     var slideStyle = "";
 }
 
-@helper EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, bool hasNotes, bool isSlide) 
+@{
+    void EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, bool hasNotes, bool isSlide)
 {
     var margin = Model.Global.Get<int>("slideMargin");
     var origin = new Point(margin, 0);
@@ -48,8 +49,8 @@
         subModel.Local.Put("origin", origin);
 
         @Include("shape", subModel)
-    }  
-}
+    }
+}}
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -80,23 +81,23 @@
         if (shape.Placeholder != null && shape.Placeholder.Type == PlaceholderType.SlideImage){
 			var kX = (double)shape.Width / (double)contextObject.Presentation.SlideSize.Size.Width;
 			var kY = (double)shape.Height / (double)contextObject.Presentation.SlideSize.Size.Height;
-			
+
 			var M = Model.Global.Get<int>("slideMargin");
-			
+
 			var Lsh = shape.X;
 			var Tsh = shape.Y;
-			
-			var Wsl = contextObject.Presentation.SlideSize.Size.Width;			
+
+			var Wsl = contextObject.Presentation.SlideSize.Size.Width;
 			var Hsl = contextObject.Presentation.SlideSize.Size.Height;
-			
+
 			var tX = (Lsh - M) - ((1 - kX) * Wsl / 2);
 			var tY = (Tsh - M) - ((1 - kY) * Hsl / 2);
-			
+
 			string borderStyle = string.Format("border: {0};", LineHelper.GetLineStyle(shape.LineFormat.GetEffective()));
 			slideStyle += string.Format(
-				" transform: matrix({0},0,0,{1},{2},{3}); transform-origin: {4}px {5}px; {6}", 
+				" transform: matrix({0},0,0,{1},{2},{3}); transform-origin: {4}px {5}px; {6}",
 				NumberHelper.ToCssNumber(kX),
-				NumberHelper.ToCssNumber(kY), 
+				NumberHelper.ToCssNumber(kY),
 				NumberHelper.ToCssNumber(tX),
 				NumberHelper.ToCssNumber(tY),
 				NumberHelper.ToCssNumber(contextObject.Presentation.SlideSize.Size.Width / 2),
@@ -110,32 +111,32 @@
 		{
 			if (shape.Placeholder != null && shape.Placeholder.Type == PlaceholderType.SlideImage){}
 			else{
-				@EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, false);
+				EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, false);
 			}
 		}
 	}
-}            
+}
         <div class="slide master-bg" style="@slideStyle">
             @foreach (var shape in contextObject.LayoutSlide.MasterSlide.Shapes)
             {
                 if(contextObject.LayoutSlide.ShowMasterShapes && shape.Placeholder == null && !shape.Hidden)
                 {
-                    @EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
+                    EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
                 }
             }
 
             @foreach (var shape in contextObject.LayoutSlide.Shapes)
             {
                 if(shape.Placeholder == null) {
-                    @EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
+                    EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
                 }
-            }        
-            
+            }
+
             @foreach (var shape in contextObject.Shapes)
             {
                 if(!shape.Hidden)
                 {
-                    @EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
+                    EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
                 }
             }
         </div>
@@ -144,7 +145,7 @@
     <text>
         @Raw("</div>")
     </text>
-}        
+}
         <button class="navigationButton" id="PrevSlide" onclick="@Raw(SlideHelper.GetPrevSlide(Model))" style="@Raw(SlideHelper.GetPrevStyle(Model))">Prev Slide</button>
         <button class="navigationButton" id="NextSlide" onclick="@Raw(SlideHelper.GetNextSlide(Model))" style="@Raw(SlideHelper.GetNextStyle(Model))">Next Slide</button>
     </body>
