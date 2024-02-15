@@ -13,7 +13,8 @@ namespace SinglePageApp
     {
         static void Main(string[] args)
         {
-            ExportDefault();
+            //ExportDefault();
+            ExportWithComments();
 
             Console.WriteLine("HTML export is complete...");
         }
@@ -26,7 +27,26 @@ namespace SinglePageApp
                 document.Save();
             }
         }
-        
+
+        static void ExportWithComments()
+        {
+            using (Presentation pres = new Presentation("comments.pptx"))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    TemplateEngine = new RazorTemplateEngine(),
+                    OutputSaver = new FileOutputSaver(),
+                    AnimateTransitions = false
+                };
+                WebDocument document = pres.ToSinglePageWebDocument(
+                    options, 
+                    "templates\\single-page", 
+                    @"single-page-output",  
+                    new NotesCommentsLayoutingOptions() { CommentsPosition = CommentsPositions.Bottom });
+                document.Save();
+            }
+        }
+
         static void ExportDefaultAnimated()
         {
             using (Presentation pres = new Presentation("demo-transitions.pptx"))

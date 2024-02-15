@@ -9,7 +9,9 @@
     var bckgStyle = SlideHelper.GetBackgroundStyle(Model);
     var slideStyle = "display: " + (animateTransitions ? "none" : "block") + ";" + bckgStyle;
     var notesType = Model.Global.ContainsKey("notesPosition") ? Model.Global.Get<string>("notesPosition") : null;
+    var commentsType = Model.Global.ContainsKey("commentsPosition") ? Model.Global.Get<string>("commentsPosition") : null;
     var hasNotes = (notesType != null) && (notesType != "None");
+    var hasComments = (commentsType != null) && (commentsType != "None");
 }
 
 @{
@@ -170,6 +172,20 @@
                 EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData, hasNotes, true);
             }
         }
+
+@if(hasComments)
+{
+    int cnt = 0;
+    foreach (var comment in SlideHelper.GetCommentsOrdered(contextObject))
+    {
+        string position = string.Format("left: {0}px; top: {1}px; z-index: {2};", NumberHelper.ToCssNumber(comment.Position.X), NumberHelper.ToCssNumber(comment.Position.Y), 10);
+        if (comment.ParentComment != null)
+        {
+            position = string.Format("left: {0}px; top: {1}px; z-index: {2};", NumberHelper.ToCssNumber(comment.ParentComment.Position.X), NumberHelper.ToCssNumber(comment.ParentComment.Position.Y), 1);
+        }
+        <div class="comment-mark" style="@position">@Raw(comment.Author.Initials + (++cnt).ToString())</div>
+    }
+}
 
 </div>
 

@@ -44,6 +44,11 @@
             }
 
             @Include("slide", TemplateContextHelper.SubModel<Presentation, Slide>(Model, slide))
+            
+            if (slide.GetSlideComments(null) != null && slide.GetSlideComments(null).Length > 0)
+            {
+                @Include("comments", Model.SubModel(slide))
+            }
         }
 
         <div id="svgdiv">

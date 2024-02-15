@@ -276,5 +276,29 @@ namespace Aspose.Slides.WebExtensions.Helpers
             }
             return backgroundStyle;
         }
+        public static IEnumerable<IComment> GetCommentsOrdered(Slide slide)
+        {
+            List<IComment> allSlideComments = new List<IComment>(slide.GetSlideComments(null));
+            List<IComment> orderedComments = new List<IComment>();
+
+            allSlideComments.Sort((a, b) => (int)a.CreatedTime.Subtract(b.CreatedTime).TotalMilliseconds);
+
+            foreach (IComment comment in allSlideComments)
+            {
+                if (comment.ParentComment == null) orderedComments.Add(comment);
+            }
+
+            for (int index = 0; index < orderedComments.Count; index++)
+            {
+                IComment current = orderedComments[index];
+                foreach (var comm in allSlideComments)
+                {
+                    if (comm.ParentComment == current) orderedComments.Insert(++index, comm);
+                }
+            }
+
+
+            return orderedComments;
+        }
     }
 }
