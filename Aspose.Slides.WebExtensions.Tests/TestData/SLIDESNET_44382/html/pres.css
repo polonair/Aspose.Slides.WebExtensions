@@ -11,20 +11,20 @@
     }
 
     .bg {
-            
-            
-            
-            
+            width: 980px;
+            height: 560px;
+            overflow: hidden;
+            position: fixed;
     }
     
     .slide {
-        width: 798.75px;
-        height: 600.25px;
+        width: 965px;
+        height: 545px;
         outline: 1px solid #c6c6c6;
         overflow: hidden;
         margin: 10px;
         position: relative;
-        
+        position: absolute;
     }
 
     

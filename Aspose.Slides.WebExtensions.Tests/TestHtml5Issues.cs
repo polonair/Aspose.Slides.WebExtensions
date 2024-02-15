@@ -48,7 +48,7 @@ namespace Aspose.Slides.WebExtensions.Tests
 
             Assert.IsNotNull(span, "Target portion span not found");
             string style = span.Attributes["style"].Value;
-            Assert.IsTrue(style.Contains("font-family: Arial;"), "Wrong font set for target portion span");
+            Assert.IsTrue(style.Contains("font-family: 'Arial';"), "Wrong font set for target portion span");
         }
     }
 }
