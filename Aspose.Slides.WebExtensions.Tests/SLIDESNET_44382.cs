@@ -1,22 +1,22 @@
 ﻿using Aspose.Slides.Export.Web;
-using NUnit.Framework;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class SLIDESNET_44382
     {
-        [OneTimeSetUp]
-        public void Setup()
-        {
-        }
-        [Test]
+        //[OneTimeSetUp]
+        //public void Setup()
+        //{
+        //}
+        [TestMethod]
         public void Test_44382()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_44382", "SLIDESNET-44382.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_44382", "html");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");

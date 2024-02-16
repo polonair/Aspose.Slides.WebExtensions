@@ -2884,7 +2884,7 @@ function ShowNext() {
         var prevSlideId = '#slide-' + currentVisiblePage++;
         var slideId = '#slide-' + currentVisiblePage;
         
-        if (true)
+        if ( true )
             PrepareAndPlayTransition(slideId, prevSlideId);
     }
 }
@@ -2895,7 +2895,7 @@ function ShowPrev() {
         var prevSlideId = '#slide-' + currentVisiblePage--;
         var slideId = '#slide-' + currentVisiblePage;
         
-        if (true)
+        if ( true )
             PrepareAndPlayTransition(slideId, prevSlideId);
     }
 }
