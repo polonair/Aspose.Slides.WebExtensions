@@ -1,7 +1,7 @@
 ﻿using Aspose.Slides.Export.Web;
-using Aspose.Slides.Export;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
@@ -29,8 +29,8 @@ namespace Aspose.Slides.WebExtensions.Tests
             foreach (string dirPath in Directory.GetDirectories(sourcePath2, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath2, TemplatePath));
             foreach (string newPath in Directory.GetFiles(sourcePath2, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath2, TemplatePath), true);
 
-            //Assert..DoesNotThrow(() =>
-            //{
+            try
+            {
                 using (Presentation pres = new Presentation(PresentationFilePath))
                 {
                     WebDocument document = pres.ToSinglePageWebDocument(
@@ -39,7 +39,11 @@ namespace Aspose.Slides.WebExtensions.Tests
                         OutputPath);
                     document.Save();
                 }
-            //});
+            }
+            catch(Exception e)
+            {
+                Assert.Fail("Unexpected exception thrown " + e.Message);
+            }
         }
     }
 }

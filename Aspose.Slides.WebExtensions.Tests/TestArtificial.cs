@@ -1,8 +1,5 @@
-﻿using Aspose.Slides;
-using Aspose.Slides.Export.Web;
-using Aspose.Slides.WebExtensions;
+﻿using Aspose.Slides.Export.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;

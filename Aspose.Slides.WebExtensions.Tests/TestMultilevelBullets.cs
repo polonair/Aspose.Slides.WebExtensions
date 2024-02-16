@@ -1,6 +1,4 @@
-﻿using Aspose.Slides;
-using Aspose.Slides.Export.Web;
-using Aspose.Slides.WebExtensions;
+﻿using Aspose.Slides.Export.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -18,7 +16,6 @@ namespace Aspose.Slides.WebExtensions.Tests
         private static XmlDocument indexHtml;
         private static XmlNamespaceManager namespaceManager;
 
-        //[ClassInitialize]
         static TestMultilevelBullets()
         {
             RootDirectory = Path.GetFullPath(".");

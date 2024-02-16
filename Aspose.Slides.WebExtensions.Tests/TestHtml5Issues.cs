@@ -1,9 +1,6 @@
-﻿using Aspose.Slides;
-using Aspose.Slides.Export.Web;
-using Aspose.Slides.WebExtensions;
+﻿using Aspose.Slides.Export.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace Aspose.Slides.WebExtensions.Tests
@@ -18,7 +15,6 @@ namespace Aspose.Slides.WebExtensions.Tests
         private XmlDocument indexHtml;
         private XmlNamespaceManager namespaceManager;
 
-        //[ClassInitialize]
         public TestHtml5Issues()
         {
             RootDirectory = Path.GetFullPath(".");
