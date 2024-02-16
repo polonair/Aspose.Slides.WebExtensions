@@ -11,15 +11,15 @@ namespace Aspose.Slides.WebExtensions.Tests
     [TestClass]
     public class TestMultilevelBullets
     {
-        private string TemplatePath = null;
-        private string PresentationFilePath = null;
-        private string OutputPath = null;
-        private string RootDirectory = null;
-        private XmlDocument indexHtml;
-        private XmlNamespaceManager namespaceManager;
+        private static string TemplatePath = null;
+        private static string PresentationFilePath = null;
+        private static string OutputPath = null;
+        private static string RootDirectory = null;
+        private static XmlDocument indexHtml;
+        private static XmlNamespaceManager namespaceManager;
 
         //[ClassInitialize]
-        public TestMultilevelBullets()
+        static TestMultilevelBullets()
         {
             RootDirectory = Path.GetFullPath(".");
             PresentationFilePath = Path.Combine(RootDirectory, "TestData", "multilevel-bullets.pptx");
