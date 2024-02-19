@@ -1,45 +1,34 @@
 ﻿// Copyright (c) 2001-2020 Aspose Pty Ltd. All Rights Reserved.
 
-using System.Collections.Generic;
 using System;
-using RazorEngineCore;
-using System.Linq;
-using System.Drawing;
+using System.Collections.Generic;
 using Aspose.Slides.Export.Web;
-using System.Threading;
+using System.Drawing;
+using System.Linq;
+using RazorEngineCore;
 
 namespace Aspose.Slides.WebExtensions
 {
     class RazorEngineService : IRazorEngineService
     {
-        IRazorEngine razorEngine;
-        IDictionary<string, string> parts = new Dictionary<string, string>();
-        IDictionary<string, IRazorEngineCompiledTemplate<TemplateBase>> cash = new Dictionary<string, IRazorEngineCompiledTemplate<TemplateBase>>();
-        internal static IRazorEngineService Create(TemplateServiceConfiguration config)
-        {
-            return new RazorEngineService();
-            //throw new NotImplementedException();
-        }
-
-        public RazorEngineService()
-        {
-            razorEngine = new RazorEngine();
-        }
-
         public void AddTemplate(string key, string template)
         {
-            parts.Add(key, template);
+            m_commonParts.Add(key, template);
         }
+        public void Compile(string key, Type modelType) { }
+        public string Run(string key, Type type, object model)
+        {
+            var template = new CompiledTemplate(
+                GetCompiledOrCashed(m_commonParts[key]),
+                m_commonParts.ToDictionary(k => k.Key, v => GetCompiledOrCashed(v.Value)));
 
-        public void Compile(string key, Type modelType)
-        {
-            //throw new NotImplementedException();
+            return template.Run(model);
         }
-        IRazorEngineCompiledTemplate<TemplateBase> CashCompile(string content)
+        IRazorEngineCompiledTemplate<TemplateBase> GetCompiledOrCashed(string content)
         {
-            IRazorEngineCompiledTemplate<TemplateBase> cmp = null;
-            if (cash.TryGetValue(content, out cmp)) return cmp;
-            return cash[content] = razorEngine.Compile<TemplateBase>(content, builder =>
+            IRazorEngineCompiledTemplate<TemplateBase> result = null;
+            if (m_compiledCash.TryGetValue(content, out result)) return result;
+            return m_compiledCash[content] = m_razorEngine.Compile<TemplateBase>(content, builder =>
             {
                 builder.AddUsing("System");
                 builder.AddUsing("System.Drawing");
@@ -54,20 +43,16 @@ namespace Aspose.Slides.WebExtensions
                 builder.AddAssemblyReference(typeof(FontStyle));
                 builder.AddAssemblyReference(typeof(Dictionary<,>));
                 builder.AddAssemblyReference(typeof(TemplateContext<>));
-                try { builder.AddAssemblyReferenceByName("System.Collections"); }
-                catch { }
                 builder.AddAssemblyReferenceByName("System.Drawing.Common");
                 builder.AddAssemblyReference(GetType());
-                //builder.IncludeDebuggingInfo();
+                try { builder.AddAssemblyReferenceByName("System.Collections"); }
+                catch { }
             });
         }
-        public string Run(string key, Type type, object model)
-        {
-            var t = new CompiledTemplate(
-                CashCompile(parts[key]),
-                parts.ToDictionary(k => k.Key, v => CashCompile(v.Value)));
+        internal static IRazorEngineService Create() => new RazorEngineService();
 
-            return t.Run(model);
-        }
+        IRazorEngine m_razorEngine = new RazorEngine();
+        IDictionary<string, string> m_commonParts = new Dictionary<string, string>();
+        IDictionary<string, IRazorEngineCompiledTemplate<TemplateBase>> m_compiledCash = new Dictionary<string, IRazorEngineCompiledTemplate<TemplateBase>>();
     }
 }

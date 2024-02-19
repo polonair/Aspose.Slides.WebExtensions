@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using Aspose.Slides.Export.Web;
-using RazorEngineCore;
 
 namespace Aspose.Slides.WebExtensions
 {
@@ -11,52 +10,18 @@ namespace Aspose.Slides.WebExtensions
     {
         public RazorTemplateEngine()
         {
-            var config = new TemplateServiceConfiguration
-            {
-                DisableTempFileLocking = false,
-                CachingProvider = new DefaultCachingProvider(t => { })
-            };
-            
-            config.Namespaces.Add("System");
-            config.Namespaces.Add("System.Drawing");
-            config.Namespaces.Add("System.Drawing.Imaging");
-            config.Namespaces.Add("Aspose.Slides");
-            config.Namespaces.Add("Aspose.Slides.Export.Web");
-            config.Namespaces.Add("Aspose.Slides.WebExtensions.Helpers");
-
-            m_razorService = RazorEngineService.Create(config);
-
-            Engine.Razor = m_razorService;
-
+            m_razorService = RazorEngineService.Create();
             m_templateTypes = new Dictionary<string, Type>();
         }
-
         public void AddTemplate(string key, string template, Type modelType)
         {
-            try
-            {
-                if (m_templateTypes.ContainsKey(key))
-                    throw new ArgumentException(string.Format("Template \"{0}\" has been added already. Can't add a template with same key twice.", key), "key");
+            if (m_templateTypes.ContainsKey(key))
+                throw new ArgumentException(string.Format("Template \"{0}\" has been added already. Can't add a template with same key twice.", key), "key");
 
-                m_razorService.AddTemplate(key, template);
-                m_razorService.Compile(key, modelType);
-                m_templateTypes.Add(key, modelType);
-            }
-            catch (TemplateCompilationException ex)
-            {
-                string razorErrors = "";
-                foreach (var err in ex.CompilerErrors)
-                {
-                    if (!string.IsNullOrEmpty(razorErrors))
-                        razorErrors += Environment.NewLine + Environment.NewLine;
-
-                    razorErrors += string.Format("{0}, line {1} , column {2}", err.ErrorText, err.Line, err.Column);
-                }
-
-                throw new Exception(razorErrors);
-            }
+            m_razorService.AddTemplate(key, template);
+            m_razorService.Compile(key, modelType);
+            m_templateTypes.Add(key, modelType);
         }
-
         public string Compile(string key, object model)
         {
             Type templateType = null;
@@ -65,11 +30,7 @@ namespace Aspose.Slides.WebExtensions
 
             return m_razorService.Run(key, model.GetType(), model);
         }
-
-        public void AddTemplate(string key, string template)
-        {
-            throw new NotImplementedException();
-        }
+        public void AddTemplate(string key, string template) => throw new NotImplementedException();
 
         private readonly IRazorEngineService m_razorService;
         private readonly Dictionary<string, Type> m_templateTypes;

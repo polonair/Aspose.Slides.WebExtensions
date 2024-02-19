@@ -7,74 +7,29 @@ namespace Aspose.Slides.WebExtensions
 {
     public class CompiledTemplate
     {
-        private readonly IRazorEngineCompiledTemplate<TemplateBase> compiledTemplate;
-        private readonly Dictionary<string, IRazorEngineCompiledTemplate<TemplateBase>> compiledParts;
-
-        public CompiledTemplate(IRazorEngineCompiledTemplate<TemplateBase> compiledTemplate, Dictionary<string, IRazorEngineCompiledTemplate<TemplateBase>> compiledParts)
+        public CompiledTemplate(IRazorEngineCompiledTemplate<TemplateBase> templateCompiled, Dictionary<string, IRazorEngineCompiledTemplate<TemplateBase>> partsCompiled)
         {
-            this.compiledTemplate = compiledTemplate;
-            this.compiledParts = compiledParts;
+            m_templateCompiled = templateCompiled;
+            m_partsCompiled = partsCompiled;
         }
-
         public string Run(object model)
         {
-            return this.Run(this.compiledTemplate, model);
+            return Run(m_templateCompiled, model);
         }
-
         public string Run(IRazorEngineCompiledTemplate<TemplateBase> template, object model)
         {
             TemplateBase templateReference = null;
-            //template.EnableDebugging();
             string result = template.Run(instance =>
             {
-                //if (!(model is AnonymousTypeWrapper))
-                //{
-                //    model = new AnonymousTypeWrapper(model);
-                //}
-
                 instance.Model = model;
-                instance.IncludeCallback = (key, includeModel) => this.Run(this.compiledParts[key], includeModel);
+                instance.IncludeCallback = (key, includeModel) => Run(m_partsCompiled[key], includeModel);
 
                 templateReference = instance;
             });
-
-            if (templateReference.Layout == null)
-            {
-                return result;
-            }
-
-            return this.compiledParts[templateReference.Layout].Run(instance =>
-            {
-                //if (!(model is AnonymousTypeWrapper))
-                //{
-                //    model = new AnonymousTypeWrapper(model);
-                //}
-
-                instance.Model = model;
-                instance.IncludeCallback = (key, includeModel) => this.Run(this.compiledParts[key], includeModel);
-                instance.RenderBodyCallback = () => result;
-            });
+            return result;
         }
 
-        public void Save()
-        {
-            /*
-            TODO
-
-            this.compiledTemplate.SaveToFile();
-            this.compiledTemplate.SaveToStream();
-
-            foreach (var compiledPart in this.compiledParts)
-            {
-                compiledPart.Value.SaveToFile();
-                compiledPart.Value.SaveToStream();
-            }
-            */
-        }
-
-        public void Load()
-        {
-            // TODO
-        }
+        private readonly IRazorEngineCompiledTemplate<TemplateBase> m_templateCompiled;
+        private readonly Dictionary<string, IRazorEngineCompiledTemplate<TemplateBase>> m_partsCompiled;
     }
 }
