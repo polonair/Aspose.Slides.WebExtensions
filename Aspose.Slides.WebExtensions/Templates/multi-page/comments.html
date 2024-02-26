@@ -1,0 +1,37 @@
+@model TemplateContext<Slide>
+    
+@{
+    Slide contextObject = Model.Object;
+    int slideNumber = SlideHelper.GetVisibleSlideNumber(contextObject);
+    var slideId = "slide-" + slideNumber + "-comments";
+    
+    var notesType = Model.Global.ContainsKey("notesPosition") ? Model.Global.Get<string>("notesPosition") : null;
+    var commentsType = Model.Global.ContainsKey("commentsPosition") ? Model.Global.Get<string>("commentsPosition") : null;
+    var hasNotes = (notesType != null) && (notesType != "None");
+    var hasComments = (commentsType != null) && (commentsType != "None");
+    int cnt = 0;
+}
+ 
+@if(hasComments)
+{
+
+<div id="@slideId" class="slide comments master-bg" style="margin-top: 6em;">
+
+    <div class="comments-header">Slide @slideNumber</div>
+        
+        @foreach (var comment in SlideHelper.GetCommentsOrdered(contextObject))
+        {
+            <div class="comment @Raw(comment.ParentComment!=null?"comment-child":"")">
+                <div class="comment-avatar">
+                    @Raw(comment.Author.Initials + (++cnt).ToString())
+                </div>
+                <div class="comment-content">
+                    <div class="comment-text">@Raw(comment.Text)</div>
+                    <div class="comment-origin">@Raw(comment.Author.Name) @comment.CreatedTime.ToString()</div>
+                </div>
+            </div>
+        }
+
+</div>
+
+}

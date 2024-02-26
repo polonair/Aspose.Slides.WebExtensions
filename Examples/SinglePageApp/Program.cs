@@ -13,8 +13,7 @@ namespace SinglePageApp
     {
         static void Main(string[] args)
         {
-            //ExportDefault();
-            ExportWithComments();
+            ExportDefault();
 
             Console.WriteLine("HTML export is complete...");
         }

@@ -7,6 +7,8 @@
     var notesType = Model.Global.ContainsKey("notesPosition") ? Model.Global.Get<string>("notesPosition") : null;
     var hasNotes = (notesType != null) && (notesType != "None");
     var slideStyle = "";
+    var commentsType = Model.Global.ContainsKey("commentsPosition") ? Model.Global.Get<string>("commentsPosition") : null;
+    var hasComments = (commentsType != null) && (commentsType != "None");
 }
 
 @{
@@ -139,6 +141,20 @@
                     EmitShape(shape, contextObject, animateTransitions, slideNumber, hasNotes, true);
                 }
             }
+
+@if(hasComments)
+{
+    int cnt = 0;
+    foreach (var comment in SlideHelper.GetCommentsOrdered(contextObject))
+    {
+        string position = string.Format("left: {0}px; top: {1}px; z-index: {2};", NumberHelper.ToCssNumber(comment.Position.X), NumberHelper.ToCssNumber(comment.Position.Y), 10);
+        if (comment.ParentComment != null)
+        {
+            position = string.Format("left: {0}px; top: {1}px; z-index: {2};", NumberHelper.ToCssNumber(comment.ParentComment.Position.X), NumberHelper.ToCssNumber(comment.ParentComment.Position.Y), 1);
+        }
+        <div class="comment-mark" style="@position">@Raw(comment.Author.Initials + (++cnt).ToString())</div>
+    }
+}
         </div>
 @if(hasNotes)
 {
@@ -148,5 +164,11 @@
 }
         <button class="navigationButton" id="PrevSlide" onclick="@Raw(SlideHelper.GetPrevSlide(Model))" style="@Raw(SlideHelper.GetPrevStyle(Model))">Prev Slide</button>
         <button class="navigationButton" id="NextSlide" onclick="@Raw(SlideHelper.GetNextSlide(Model))" style="@Raw(SlideHelper.GetNextStyle(Model))">Next Slide</button>
+ 
+            @if (contextObject.GetSlideComments(null) != null && contextObject.GetSlideComments(null).Length > 0)
+            {
+                @Include("comments", Model.SubModel(contextObject))
+            }
+
     </body>
 </html>
