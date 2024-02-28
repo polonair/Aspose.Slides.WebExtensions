@@ -9,7 +9,8 @@
     var slideStyle = "display: " + (animateTransitions ? "none" : "block") + ";";
 }
 
-@helper EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData)
+@{
+    void EmitShape(IShape shape, Slide contextObject, bool animateTransitions, int slideNumber, Dictionary<IShape, Tuple<string, string, float, float, string, string, int>> slideAnimationData)
 {
     var margin = Model.Global.Get<int>("slideMargin");
     var visibleSlideNumber = animateTransitions ? 1 : slideNumber;
@@ -82,7 +83,7 @@
     {
         @Raw(substitutionMarkup);
     }
-}
+} }
 
 <div id="@slideId" class="slide master-bg"
      data-transition-type="@contextObject.SlideShowTransition.Type"
