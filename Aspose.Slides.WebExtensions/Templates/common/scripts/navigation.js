@@ -1,4 +1,4 @@
-@model TemplateContext<Presentation>
+@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Presentation>>
 
 @{
     Presentation contextObject = Model.Object;

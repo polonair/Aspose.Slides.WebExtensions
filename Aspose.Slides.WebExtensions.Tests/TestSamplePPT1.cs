@@ -1,27 +1,24 @@
-﻿using Aspose.Slides;
-using Aspose.Slides.Export.Web;
-using Aspose.Slides.WebExtensions;
-using NUnit.Framework;
+﻿using Aspose.Slides.Export.Web;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class TestSamplePPT1
     {
-        private string TemplatePath = null;
-        private string PresentationFilePath = null;
-        private string OutputPath = null;
-        private string RootDirectory = null;
-        private XmlDocument indexHtml;
-        private XmlNamespaceManager namespaceManager;
+        private static string TemplatePath = null;
+        private static string PresentationFilePath = null;
+        private static string OutputPath = null;
+        private static string RootDirectory = null;
+        private static XmlDocument indexHtml;
+        private static XmlNamespaceManager namespaceManager;
 
-        [OneTimeSetUp]
-        public void Setup()
+        static TestSamplePPT1()
         {
-            RootDirectory = TestContext.CurrentContext.TestDirectory;
+            RootDirectory = Path.GetFullPath(".");
             PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SamplePPT1.ppt");
             TemplatePath = Path.Combine(RootDirectory, "templates", "single-page");
             OutputPath = Path.Combine(RootDirectory, "single-page-sample-ppt1-animated-output");
@@ -47,7 +44,7 @@ namespace Aspose.Slides.WebExtensions.Tests
             namespaceManager = new XmlNamespaceManager(indexHtml.NameTable);
             namespaceManager.AddNamespace("html", "http://www.w3.org/1999/xhtml");
         }
-        [Test]
+        [TestMethod]
         public void TestSvgDivPathsBlock()
         {
             XmlElement root = indexHtml.DocumentElement;
@@ -61,7 +58,7 @@ namespace Aspose.Slides.WebExtensions.Tests
             string viewbox = svg.Attributes["viewBox"].Value;
             Assert.AreEqual("0 0 793.75 595.25", viewbox, "div#svgdivpaths block viewBox attribute should be equal to '0 0 793.75 595.25'");
         }
-        [Test]
+        [TestMethod]
         public void TestAnimationJs()
         {
             string animationsJsPath = Path.Combine(OutputPath, "animation.js");
@@ -69,7 +66,7 @@ namespace Aspose.Slides.WebExtensions.Tests
             Assert.IsTrue(animationsJsContent.Contains("var frameWidth = 793.75;"), "animation.js should contain string 'var frameWidth = 793.75;'");
             Assert.IsTrue(animationsJsContent.Contains("var frameHeight = 595.25;"), "animation.js should contain string 'var frameHeight = 595.25;'");
         }
-        [Test]
+        [TestMethod]
         public void TestPresCss()
         {
             string pressCssPath = Path.Combine(OutputPath, "pres.css");

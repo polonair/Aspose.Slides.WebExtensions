@@ -1,7 +1,6 @@
 ﻿using Aspose.Slides;
 using Aspose.Slides.Export.Web;
 using Aspose.Slides.WebExtensions;
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +10,7 @@ using System.Xml;
 namespace Aspose.Slides.WebExtensions.Tests
 {
     /*
-    [TestFixture]
+    [TestClass]
     public class TestDemoMultipage
     {
         public class SlideDocument
@@ -59,7 +58,7 @@ namespace Aspose.Slides.WebExtensions.Tests
         private string OutputPath = null;
         private string RootDirectory = null;
 
-        [OneTimeSetUp]
+        [ClassInitialize]
         public void Setup()
         {
             RootDirectory = TestContext.CurrentContext.TestDirectory;

@@ -1,17 +1,17 @@
 ﻿using Aspose.Slides.Export.Web;
-using Aspose.Slides.Export;
-using NUnit.Framework;
 using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class SLIDESNET_44347 
     {
-        [Test]
+        [TestMethod]
         public void TestVideoEmbedding()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine( TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
 
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET-44347.pptx");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -29,7 +29,7 @@ namespace Aspose.Slides.WebExtensions.Tests
             foreach (string dirPath in Directory.GetDirectories(sourcePath2, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(sourcePath2, TemplatePath));
             foreach (string newPath in Directory.GetFiles(sourcePath2, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(sourcePath2, TemplatePath), true);
 
-            Assert.DoesNotThrow(() =>
+            try
             {
                 using (Presentation pres = new Presentation(PresentationFilePath))
                 {
@@ -39,7 +39,11 @@ namespace Aspose.Slides.WebExtensions.Tests
                         OutputPath);
                     document.Save();
                 }
-            });
+            }
+            catch(Exception e)
+            {
+                Assert.Fail("Unexpected exception thrown " + e.Message);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿@model TemplateContext<Presentation>
-    
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Presentation>>
+
 @{
     Presentation contextObject = Model.Object;
 }
@@ -21,24 +21,24 @@
             {
                 continue;
             }
-            
+
             var slidePage =  Model.Global.Get<string>("slide" + slide.SlideNumber + "path");
             var thumbnailSource = "images\\thumbnail" + slide.SlideNumber + ".png";
-            
+
             if (Model.Global.Get<bool>("embedImages"))
             {
                 using (var ms = new System.IO.MemoryStream())
                 {
                     var slideThumbnail = slide.GetThumbnail();
-                    slideThumbnail.Save(ms, ImageFormat.Png);
+                    
                     thumbnailSource = "data:image/png;base64, " + Convert.ToBase64String(ms.ToArray());
                 }
             }
-            
+
             <a href = "@slidePage" target = "slide_page" class="thumbnail"><img src="@thumbnailSource"/></a>
             <br />
             <br />
         }
    </body>
-    
+
 </html>

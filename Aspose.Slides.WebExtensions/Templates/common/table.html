@@ -1,18 +1,18 @@
-@model TemplateContext<Table>
+@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Table>>
 
 @{
     Table contextObject = Model.Object;
-    
+
     var origin = Model.Local.Get<Point>("origin");
     var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
                                         (int)contextObject.X,
                                         (int)contextObject.Y,
                                         (int)contextObject.Width,
                                         (int)contextObject.Height);
-                                        
+
     string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
     string animationAttributes = "";
-    
+
     if (Model.Local.ContainsKey("animationAttributes"))
     {
         animationAttributes = Model.Local.Get<string>("animationAttributes");
@@ -24,14 +24,14 @@
     string GetCellStyle(ICell cell)
     {
         var cellFormat = cell.CellFormat.GetEffective();
-    
+
         string background = FillHelper.GetFillStyle(cellFormat.FillFormat, Model);
         string borderLeft = string.Format("border-left: {0};", LineHelper.GetLineStyle(cellFormat.BorderLeft));
         string borderTop = string.Format("border-top: {0};", LineHelper.GetLineStyle(cellFormat.BorderTop));
         string borderRight = string.Format("border-right: {0};", LineHelper.GetLineStyle(cellFormat.BorderRight));
         string borderBottom = string.Format("border-bottom: {0};", LineHelper.GetLineStyle(cellFormat.BorderBottom));
         string verticalAlign = TextHelper.GetVerticalAlignmentStyle(cell.TextAnchorType);
-        
+
         return string.Join(" ", new string[] {background, borderLeft, borderTop, borderRight, borderBottom, verticalAlign});
     }
 }
@@ -53,14 +53,14 @@
                         for(int k = 0; k < cell.TextFrame.Paragraphs.Count; k++)
                         {
                             var para = (Paragraph)cell.TextFrame.Paragraphs[k];
-                        
+
                             var subModel = Model.SubModel(para);
                             double[] margins = new double[] { cell.MarginLeft, cell.MarginTop, cell.MarginRight, cell.MarginBottom };
                             subModel.Local.Put("margins", margins);
                             subModel.Local.Put("parent", cell.TextFrame);
                             subModel.Local.Put("parentContainerSize", new SizeF((float)cell.Width, (float)cell.Height));
                             subModel.Local.Put("tableContent", true);
-                            
+
                             @Include("paragraph", subModel)
                         }
                     }

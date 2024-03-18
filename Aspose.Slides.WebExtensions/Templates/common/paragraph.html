@@ -1,16 +1,16 @@
-﻿@model TemplateContext<Paragraph>
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Paragraph>>
 
 @{
     Paragraph contextObject = Model.Object;
-    
+
     var parentTextFrame = Model.Local.Get<TextFrame>("parent");
     var tableContentFlag = Model.Local.Get<bool>("tableContent");
     var parentContainerSize = Model.Local.Get<SizeF>("parentContainerSize");
     bool isFirst = Model.Local.ContainsKey("isFirst") && Model.Local.Get<bool>("isFirst");
     bool isLast = Model.Local.ContainsKey("isLast") && Model.Local.Get<bool>("isLast");
-    
+
     var paragraphFormatEffective = contextObject.ParagraphFormat.GetEffective();
-    
+
     double[] margins = TextHelper.GetParagraphMargins(paragraphFormatEffective, parentTextFrame, parentContainerSize, Model);
     var marginStyle = "margin-left: " + (int)margins[0] + "px; margin-top: " + (int)margins[1] + "px; margin-right: " + (int)margins[2] + "px; margin-bottom: " + (int)margins[3] + "px; ";
     var paddingStyle = "";
@@ -22,9 +22,9 @@
         {
             paddingStyle += "padding-top: " + (int)(-paragraphFormatEffective.SpaceBefore) + "px; ";
         }
-        else 
+        else
         {
-            paddingStyle += "padding-top: " + (int)(spaceFixCoefficient * fontHeight * paragraphFormatEffective.SpaceBefore/100) + "px; ";        
+            paddingStyle += "padding-top: " + (int)(spaceFixCoefficient * fontHeight * paragraphFormatEffective.SpaceBefore/100) + "px; ";
         }
     }
     if (!isLast)
@@ -33,9 +33,9 @@
         {
             paddingStyle += "padding-bottom: " + (int)(-paragraphFormatEffective.SpaceAfter) + "px; ";
         }
-        else 
+        else
         {
-            paddingStyle += "padding-bottom: " + (int)(spaceFixCoefficient * fontHeight * paragraphFormatEffective.SpaceAfter/100) + "px; ";        
+            paddingStyle += "padding-bottom: " + (int)(spaceFixCoefficient * fontHeight * paragraphFormatEffective.SpaceAfter/100) + "px; ";
         }
     }
     var paragraphStyle = marginStyle + paddingStyle + GetTextStyle(contextObject);
@@ -54,8 +54,8 @@
     {
         @Raw(Include("bullet", Model).ToString().Replace(Environment.NewLine, ""))
     }
-    @foreach (Portion portion in contextObject.Portions) 
-    { 
+    @foreach (Portion portion in contextObject.Portions)
+    {
         var subModel = Model.SubModel(portion);
         subModel.Local.Put("parentTextFrame", parentTextFrame);
         subModel.Local.Put("tableContent", tableContentFlag);

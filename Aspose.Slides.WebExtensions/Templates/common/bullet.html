@@ -1,22 +1,22 @@
-@model TemplateContext<Paragraph>
+@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Paragraph>>
 
 @{
     Paragraph contextObject = Model.Object;
     TextFrame parentTextFrame = Model.Local.Get<TextFrame>("parent");
     var tableContentFlag = Model.Local.Get<bool>("tableContent");
-    
+
     var paragraphFormatEffective = contextObject.ParagraphFormat.GetEffective();
-    
-    double[] margins = new double[] { - Math.Abs(paragraphFormatEffective.Indent), 
-                                        0, 
+
+    double[] margins = new double[] { - Math.Abs(paragraphFormatEffective.Indent),
+                                        0,
                                         0,
                                         0 };
-                                        
+
     if (paragraphFormatEffective.Bullet.Type == BulletType.Picture)
     {
         margins[2] -= TextHelper.GetPictureBulletSize(paragraphFormatEffective, Model);
     }
-    
+
     var bulletSymbol = paragraphFormatEffective.Bullet.ActualBulletValue;
     var marginStyle = "margin-left: " + (int)margins[0] + "px; margin-top: " + (int)margins[1] + "px; margin-right: " + (int)margins[2] + "px; margin-bottom: " + (int)margins[3] + "px; ";
     var fixBullet = "display: inline-block; width: " + (int)Math.Abs(paragraphFormatEffective.Indent) + "px; ";
@@ -29,12 +29,12 @@
     {
         return TextHelper.GetTextBulletStyle(para.ParagraphFormat.GetEffective(), textFrame.TextFrameFormat.GetEffective(), isTableContent, Model);
     }
-    
+
     string GetBulletImageUrl(Paragraph para)
     {
         return ImageHelper.GetImageURL(para.ParagraphFormat.GetEffective().Bullet.Picture.Image, Model);
     }
-    
+
     string GetPictureBulletStyle(Paragraph para)
     {
         return TextHelper.GetPictureBulletStyle(para.ParagraphFormat.GetEffective(), Model);

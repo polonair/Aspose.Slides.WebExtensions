@@ -1,3 +1,4 @@
+
 const entranceBouncePath = anime.path('#entranceBouncePath');
 const exitBouncePath = anime.path('#exitBouncePath');
 const entranceSpiralPath = anime.path('#entranceSpiralPath');

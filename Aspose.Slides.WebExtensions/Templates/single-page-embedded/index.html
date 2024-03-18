@@ -1,6 +1,6 @@
-﻿@model TemplateContext<Presentation>    
-        
-@{    
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Presentation>>
+
+@{
     Presentation contextObject = Model.Object;
     var transitionsEnabled = Model.Global.Get<bool>("animateTransitions");
     if (!transitionsEnabled)
@@ -13,15 +13,15 @@
     var prevSlideButtonPosition = "left: " + (slideWidth / 2 - 100 - 5) + "px; top: " + (slideHeight + 40) + "px;";
     var nextSlideButtonPosition = "left: " + (slideWidth / 2 + 5) + "px; top: " + (slideHeight + 40) + "px;";
 }
-    
-<!DOCTYPE html>    
-    
-<html     
-    xmlns="http://www.w3.org/1999/xhtml"    
-    xmlns:svg="http://www.w3.org/2000/svg"    
-    xmlns:xlink="http://www.w3.org/1999/xlink">    
-<head>    
-    <meta charset="utf-8" />    
+
+<!DOCTYPE html>
+
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+<head>
+    <meta charset="utf-8" />
     <title>@contextObject.DocumentProperties.Title</title>
     <style>
         @Include("styles-pres", Model)
@@ -43,23 +43,23 @@
         @Include("scripts-navigation", Model)
     </script>
 </head>
-<body>    
+<body>
     <div class="bg">
         <div id="flash" class="slide" style="background-color: #FFFFFF; outline: 0; display: none;">
         </div>
         <div id="blackboard" class="slide" style="background-color: #000000; outline: 0; display: none;">
         </div>
-        
-        @foreach (Slide slide in contextObject.Slides)    
-        {    
-            if (slide.Hidden)    
-            {    
-                continue;    
-            }    
-                
-            @Include("slide", Model.SubModel(slide))    
+
+        @foreach (Slide slide in contextObject.Slides)
+        {
+            if (slide.Hidden)
+            {
+                continue;
+            }
+
+            @Include("slide", Model.SubModel(slide))
         }
-        
+
         <div id="svgdiv">
             <svg width="0" height="0" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
                 <defs>
@@ -88,8 +88,8 @@
             </svg>
         </div>
     </div>
-        
-    <button class="navigationButton" id="PrevSlide" style="@prevSlideButtonPosition">Prev Slide</button>    
-    <button class="navigationButton" id="NextSlide" style="@nextSlideButtonPosition">Next Slide</button>    
+
+    <button class="navigationButton" id="PrevSlide" style="@prevSlideButtonPosition">Prev Slide</button>
+    <button class="navigationButton" id="NextSlide" style="@nextSlideButtonPosition">Next Slide</button>
 </body>
 </html>

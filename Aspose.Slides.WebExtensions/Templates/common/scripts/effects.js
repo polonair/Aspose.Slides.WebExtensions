@@ -1,4 +1,4 @@
-@model TemplateContext<Presentation>
+@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Presentation>>
 
 const entranceBouncePath = anime.path('#entranceBouncePath');
 const exitBouncePath = anime.path('#exitBouncePath');

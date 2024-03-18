@@ -1,9 +1,9 @@
-﻿@model TemplateContext<TextFrame>
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<TextFrame>>
 
 @{
     TextFrame contextObject = Model.Object;
     var textFrameFormatEffective = contextObject.TextFrameFormat.GetEffective();
-    
+
     var origin = Model.Local.Get<Point>("origin");
     var parentAutoShape = Model.Local.Get<AutoShape>("parent");
 }
@@ -14,7 +14,7 @@
     {
         string positioningStyle = TextHelper.GetTextPositioningStyle(textFrame, Model.Local.Get<AutoShape>("parent"));
         string columnsParameters = TextHelper.GetTextFrameColumnsStyle(textFrame.TextFrameFormat.GetEffective());
-        
+
         return string.Join(" ", new string[] {positioningStyle, columnsParameters});
     }
 }

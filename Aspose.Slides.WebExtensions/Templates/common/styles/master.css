@@ -1,7 +1,7 @@
-﻿@model TemplateContext<MasterSlide>
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<MasterSlide>>
 
 @{
-    var effectiveBg = Model.Object.Background.GetEffective();
+    IBackgroundEffectiveData effectiveBg = Model.Object.Background.GetEffective();
     var backgroundStyle = FillHelper.GetFillStyle(effectiveBg.FillFormat, Model);
 }
 

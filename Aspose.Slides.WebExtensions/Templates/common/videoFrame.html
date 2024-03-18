@@ -1,8 +1,8 @@
-﻿@model TemplateContext<VideoFrame>
+﻿@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<VideoFrame>>
 
 @{
     VideoFrame contextObject = Model.Object;
-    
+
     var origin = Model.Local.Get<Point>("origin");
     var positionStyle = string.Format("left: {0}px; top: {1}px; width: {2}px; height: {3}px;",
                                         (int)contextObject.X,
@@ -15,10 +15,10 @@
 
     string videoSrc = VideoHelper.GetVideoURL(contextObject, Model);
     string contentType = contextObject.EmbeddedVideo.ContentType;
-        
+
     string id = "slide-" + contextObject.Slide.SlideId + "-shape-" + contextObject.UniqueId;
     string animationAttributes = "";
-    
+
     if (Model.Local.ContainsKey("animationAttributes"))
     {
         animationAttributes = Model.Local.Get<string>("animationAttributes");

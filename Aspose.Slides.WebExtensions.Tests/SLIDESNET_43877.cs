@@ -1,26 +1,17 @@
 ﻿using Aspose.Slides.Export.Web;
-using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Drawing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aspose.Slides.WebExtensions.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class SLIDESNET_43877
     {
-        [OneTimeSetUp]
-        public void Setup()
-        {
-        }
-        [Test]
+        [TestMethod]
         public void Test_Demo_Transitions()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "demo-transitions.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "demo-transitions");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -47,7 +38,7 @@ namespace Aspose.Slides.WebExtensions.Tests
                 WebDocument document = pres.ToSinglePageWebDocument(options, TemplatePath, OutputPath);
                 document.Save();
             }
-            CompareDir(EthalonPath, OutputPath, _ =>
+            TestUtils.CompareDir(EthalonPath, OutputPath, _ =>
             {
                 _ = Regex.Replace(_, "<div class=\"shape\" id=\"slide-280-shape-39\" [^>]+>", "");
                 _ = Regex.Replace(_, "<div class=\"shape\" id=\"slide-2147483662-shape-7\" [^>]+>", "");
@@ -58,10 +49,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_Html5issues()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "html5issues.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "html5issues");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -89,7 +80,7 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath, _ =>
+            TestUtils.CompareDir(EthalonPath, OutputPath, _ =>
             {
                 string content = _;
                 content = Regex.Replace(content, "<div class=\"shape\" id=\"slide-277-shape-0\" [^>]+>", "");
@@ -103,10 +94,10 @@ namespace Aspose.Slides.WebExtensions.Tests
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_Multilevel_Bullets()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "multilevel-bullets.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "multilevel-bullets");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -134,14 +125,14 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath, _ => Regex.Replace(_, "<div class=\"shape\" id=\"slide-2147493457-shape-0\" [^>]+>", ""));
+            TestUtils.CompareDir(EthalonPath, OutputPath, _ => Regex.Replace(_, "<div class=\"shape\" id=\"slide-2147493457-shape-0\" [^>]+>", ""));
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_Artificial()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "artificial.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "artificial");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -169,14 +160,14 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath, _ => _);
+            TestUtils.CompareDir(EthalonPath, OutputPath, _ => _);
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_SamplePPT1()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "SamplePPT1.ppt");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "SamplePPT1");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -204,14 +195,14 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath, _ => Regex.Replace(_, "<div class=\"shape\" id=\"slide-257-shape-6\" [^>]+>", ""));
+            TestUtils.CompareDir(EthalonPath, OutputPath, _ => Regex.Replace(_, "<div class=\"shape\" id=\"slide-257-shape-6\" [^>]+>", ""));
         }
 
 
-        [Test]
+        [TestMethod]
         public void Test_Table()
         {
-            var RootDirectory = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", ".."));
+            var RootDirectory = Path.GetFullPath("../../../");
             var PresentationFilePath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "table.pptx");
             var EthalonPath = Path.Combine(RootDirectory, "TestData", "SLIDESNET_43877", "table");
             var TemplatePath = Path.Combine(RootDirectory, "TestData", "Out", "templates");
@@ -239,70 +230,7 @@ namespace Aspose.Slides.WebExtensions.Tests
                 document.Save();
             }
 
-            CompareDir(EthalonPath, OutputPath, _ => _);
-        }
-
-        private void CompareDir(string ethalonPath, string outputPath, CustomReplacement replacements)
-        {
-            int cnt = 0;
-            string[] actualFiles = Directory.GetFiles(outputPath, "*", SearchOption.AllDirectories);
-            string[] ethalonFiles = Directory.GetFiles(ethalonPath, "*", SearchOption.AllDirectories);
-
-            foreach (string actualFile in actualFiles)
-            {
-                foreach (string ethalonFile in ethalonFiles)
-                {
-                    if (Path.GetFileName(actualFile) == Path.GetFileName(ethalonFile))
-                    {
-                        cnt++;
-                        CompareFiles(ethalonFile,actualFile, replacements);
-                    }
-                }
-            }
-            Assert.AreEqual(ethalonFiles.Length, cnt);
-        }
-        private void CompareFiles(string ethalonFile, string actualFile, CustomReplacement replacements)
-        {
-            byte[] ethalon = File.ReadAllBytes(ethalonFile);;
-            byte[] actual = File.ReadAllBytes(actualFile);;
-            string ext = Path.GetExtension(ethalonFile);
-            if (ext == ".html" || ext == ".js" || ext == ".css")
-            {
-                ethalon = ReadMarkupedFile(ethalonFile, replacements);
-                actual = ReadMarkupedFile(actualFile, replacements);
-            }
-            CompareBytes(ethalon, actual);
-        }
-
-        delegate string CustomReplacement(string content);
-
-        private byte[] ReadMarkupedFile(string filename, CustomReplacement replacements)
-        {
-            string content =  File.ReadAllText(filename);
-
-            content = content.Replace("\r", " ");
-            content = content.Replace("\n", " ");
-            content = content.Replace("\t", " ");
-
-            while (content.IndexOf("  ") >= 0)
-                content = content.Replace("  ", " ");
-
-            content = content.Replace(" <", "<");
-            content = content.Replace("> ", ">");
-            content = content.Replace("><", ">\n<");
-
-            content = replacements(content);
-
-            //File.WriteAllText(filename + ".tst", content);
-            return Encoding.UTF8.GetBytes(content);
-        }
-        private void CompareBytes(byte[] ethalon,byte[] actual)
-        {
-            Assert.AreEqual(ethalon.Length, actual.Length);
-            for(int i = 0; i< ethalon.Length; i++) 
-            {
-                Assert.AreEqual(ethalon[i], actual[i], "at position {0}", i);
-            }
+            TestUtils.CompareDir(EthalonPath, OutputPath, _ => _);
         }
     }
 }
