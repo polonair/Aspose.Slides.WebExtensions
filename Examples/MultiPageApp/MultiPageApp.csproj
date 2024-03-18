@@ -25,9 +25,8 @@
   </ItemGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-xcopy /y "$(ProjectDir)..\Data\comments.pptx" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /e /y /i /r &quot;$(TargetDir)Templates\common\*.*&quot; &quot;$(TargetDir)Templates\multi-page\&quot;&#xD;&#xA;xcopy /y &quot;$(ProjectDir)..\Data\demo.pptx&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;xcopy /y &quot;$(ProjectDir)..\Data\demo-transitions.pptx&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;xcopy /y &quot;$(ProjectDir)..\Data\notes.pptx&quot; &quot;$(TargetDir)&quot;" />
+    <Exec Command="xcopy /e /y /i /r &quot;$(TargetDir)Templates\common\*.*&quot; &quot;$(TargetDir)Templates\multi-page\&quot;&#xD;&#xA;xcopy /y &quot;$(ProjectDir)..\Data\demo.pptx&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;xcopy /y &quot;$(ProjectDir)..\Data\demo-transitions.pptx&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;xcopy /y &quot;$(ProjectDir)..\Data\notes.pptx&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;xcopy /y &quot;$(ProjectDir)..\Data\comments.pptx&quot; &quot;$(TargetDir)&quot;" />
   </Target>
 </Project>
