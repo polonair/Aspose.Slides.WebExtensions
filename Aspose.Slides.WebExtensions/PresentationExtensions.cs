@@ -100,6 +100,7 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("stylesPath", outputPath);
             document.Global.Put("scriptsPath", outputPath);
             document.Global.Put("notesPosition", notesCommentsLayoutingOptions.NotesPosition.ToString());
+            document.Global.Put("commentsPosition", notesCommentsLayoutingOptions.CommentsPosition.ToString());
 
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
 
@@ -165,6 +166,7 @@ namespace Aspose.Slides.WebExtensions
             document.Global.Put("stylesPath", stylesPath);
             document.Global.Put("scriptsPath", scriptsPath);
             document.Global.Put("notesPosition", notesCommentsLayoutingOptions.NotesPosition.ToString());
+            document.Global.Put("commentsPosition", notesCommentsLayoutingOptions.CommentsPosition.ToString());
 
             document.AddCommonInputOutput(options, templatesPath, outputPath, pres);
 
@@ -208,6 +210,7 @@ namespace Aspose.Slides.WebExtensions
 
             document.Input.AddTemplate<Presentation>("index", Path.Combine(templatesPath, "index.html"));
             document.Input.AddTemplate<Slide>("slide", Path.Combine(templatesPath, "slide.html"));
+            document.Input.AddTemplate<Slide>("comments", Path.Combine(templatesPath, "comments.html"));
             document.Input.AddTemplate<AutoShape>("autoshape", Path.Combine(templatesPath, "autoshape.html"));
             document.Input.AddTemplate<TextFrame>("textframe", Path.Combine(templatesPath, "textframe.html"));
             document.Input.AddTemplate<Paragraph>("paragraph", Path.Combine(templatesPath, "paragraph.html"));

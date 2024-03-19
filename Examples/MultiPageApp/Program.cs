@@ -29,6 +29,25 @@ namespace MultiPageApp
             }
         }
 
+        static void ExportWithComments()
+        {
+            using (Presentation pres = new Presentation("comments.pptx"))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    TemplateEngine = new RazorTemplateEngine(),
+                    OutputSaver = new FileOutputSaver(),
+                    AnimateTransitions = false
+                };
+                WebDocument document = pres.ToMultiPageWebDocument(
+                    options,
+                    "templates\\multi-page",
+                    @"multi-page-output",
+                    new NotesCommentsLayoutingOptions() { CommentsPosition = CommentsPositions.Bottom });
+                document.Save();
+            }
+        }
+
         static void ExportWithNotes()
         {
             using (Presentation pres = new Presentation("notes.pptx"))

@@ -73,6 +73,9 @@
     <Content Include="Templates\common\videoFrame.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Templates\multi-page\comments.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\multi-page\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -93,6 +96,9 @@
     </Content>
     <Content Include="Templates\single-page-navigation\slide.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\single-page\comments.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\single-page\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
