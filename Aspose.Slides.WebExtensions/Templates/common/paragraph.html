@@ -50,6 +50,8 @@
 }
 
 <p style="@paragraphStyle">
+@if (contextObject.Portions.Count != 0)
+{
     @if (paragraphFormatEffective.Bullet.Type != BulletType.None)
     {
         @Raw(Include("bullet", Model).ToString().Replace(Environment.NewLine, ""))
@@ -64,4 +66,5 @@
         subModel.Local.Put("paragraph", contextObject);
         @Raw(Include("portion", subModel).ToString().Replace(Environment.NewLine, ""));
     }
+}
 </p>
