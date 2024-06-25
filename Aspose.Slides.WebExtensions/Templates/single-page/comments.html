@@ -10,12 +10,17 @@
     var hasNotes = (notesType != null) && (notesType != "None");
     var hasComments = (commentsType != null) && (commentsType != "None");
     int cnt = 0;
+    string blockClasses = "comments";
+    if (commentsType != "Right")
+    {
+        blockClasses = "slide " + blockClasses + " master-bg";
+    }
 }
  
 @if(hasComments)
 {
 
-<div id="@slideId" class="slide comments master-bg">
+<div id="@slideId" class="@blockClasses">
 
     <div class="comments-header">Slide @slideNumber</div>
         

@@ -12,6 +12,7 @@
     var commentsType = Model.Global.ContainsKey("commentsPosition") ? Model.Global.Get<string>("commentsPosition") : null;
     var hasNotes = (notesType != null) && (notesType != "None");
     var hasComments = (commentsType != null) && (commentsType != "None");
+    var commentsAreaWidth = Model.Global.ContainsKey("commentsAreaWidth") ? Model.Global.Get<int>("commentsAreaWidth") : 170;
 }
 
 @{
@@ -159,7 +160,7 @@
 
         @foreach (var shape in contextObject.LayoutSlide.Shapes)
         {
-            if(shape.Placeholder == null) 
+            if(shape.Placeholder == null)
             {
                 EmitShape(shape, contextObject, animateTransitions, slideNumber, slideAnimationData, hasNotes, true);
             }
@@ -184,6 +185,10 @@
             position = string.Format("left: {0}px; top: {1}px; z-index: {2};", NumberHelper.ToCssNumber(comment.ParentComment.Position.X), NumberHelper.ToCssNumber(comment.ParentComment.Position.Y), 1);
         }
         <div class="comment-mark" style="@position">@Raw(comment.Author.Initials + (++cnt).ToString())</div>
+    }
+    if (commentsType == "Right")
+    {
+        @Include("comments", Model.SubModel(contextObject))
     }
 }
 
