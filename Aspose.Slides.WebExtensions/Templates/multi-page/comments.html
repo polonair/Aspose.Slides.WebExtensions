@@ -1,4 +1,4 @@
-@model TemplateContext<Slide>
+@inherits RazorEngineCore.RazorEngineTemplateBase<TemplateContext<Slide>>
     
 @{
     Slide contextObject = Model.Object;
@@ -10,12 +10,18 @@
     var hasNotes = (notesType != null) && (notesType != "None");
     var hasComments = (commentsType != null) && (commentsType != "None");
     int cnt = 0;
+    string blockClasses = "comments";
+    if (commentsType != "Right")
+    {
+        blockClasses = "slide " + blockClasses + " master-bg";
+    }
+    string marginTop = commentsType != "Right" ? "style=\"margin-top: 6em;\"" : "";
 }
  
 @if(hasComments)
 {
 
-<div id="@slideId" class="slide comments master-bg" style="margin-top: 6em;">
+<div id="@slideId" class="@blockClasses" @marginTop>
 
     <div class="comments-header">Slide @slideNumber</div>
         
