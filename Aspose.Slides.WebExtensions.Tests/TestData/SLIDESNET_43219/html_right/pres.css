@@ -8,7 +8,6 @@
         margin: 0 !important;
         padding: 0 !important;
         background-color: #e6e6e6;
-        min-width: 1150px;        
     }
 
     .bg {
@@ -25,7 +24,6 @@
         overflow: hidden;
         margin: 10px;
         position: relative;
-        float: left;
         
     }
 
@@ -33,41 +31,40 @@
     /*padding: 2em;*/
     font-family: sans-serif;
 
-            background-color: #87cdeb;
-            height: 542px;
-            width: 170px;
-            float: left;
-            margin: 10px 10px 10px -179px;
-            border: 2px solid #2f528f;
+            display: block;
             position: relative;
-            z-index: 10;
-         }
+            left: 960px;
+            width: 171px;
+            height: 541px;
+            font-size: 0.7em;
+            background: #87cdeb;
+            border: 2px solid #2f528f;
+        }
 .comments-header {
-    display: none;
     border-bottom: 1px solid black;
     margin: 1em;
     font-size: 1.5em;
     padding: 0.3em;
-}
+
+            display: none;
+        }
 .comment {
     display: flex;
     flex-direction: row;
     margin: 0.5em;
 }
 .comment-child {
-    
 }
 .comment-avatar {
     margin-left: 5px;
     width: 3em;
     height: 3em;
-    text-align: center;    
-    font-size: 0.7em;
+    text-align: center;
+    font-size: 1.1em;
     font-weight: bold;
 }
 .comment-content {
     margin-left: 5px;
-    font-size: 0.7em;
 }
 .comment-text {
 }

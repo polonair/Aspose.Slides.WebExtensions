@@ -46,7 +46,7 @@
                 continue;
             }
 
-            @Include("slide", TemplateContextHelper.SubModel<Presentation, Slide>(Model, slide))
+            @Include("slide", Model.SubModel(slide))
             
             if (slide.GetSlideComments(null) != null && slide.GetSlideComments(null).Length > 0 && commentsType != "Right")
             {
