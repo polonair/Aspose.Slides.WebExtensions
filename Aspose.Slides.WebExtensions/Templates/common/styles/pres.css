@@ -16,6 +16,16 @@
       var margin = Model.Global.Get<int>("slideMargin");
       var notesType = Model.Global.ContainsKey("notesPosition") ? Model.Global.Get<string>("notesPosition") : null;
       var hasNotes = (notesType != null) && (notesType != "None");
+      var commentsType = Model.Global.ContainsKey("commentsPosition") ? Model.Global.Get<string>("commentsPosition") : null;
+      var hasComments = (commentsType != null) && (commentsType != "None");
+      var commentsAreaWidth = Model.Global.ContainsKey("commentsAreaWidth") ? Model.Global.Get<int>("commentsAreaWidth") : 170;
+
+      float slideWidth = Model.Object.SlideSize.Size.Width + margin / 2;
+      float slideHeight = Model.Object.SlideSize.Size.Height + margin / 2;
+      if (commentsType == "Right")
+      {
+          slideWidth += commentsAreaWidth;
+      }
 }
 
     body, html {
@@ -36,8 +46,8 @@
     }
     
     .slide {
-        width: @(NumberHelper.ToCssNumber(Model.Object.SlideSize.Size.Width + margin / 2) + "px");
-        height: @(NumberHelper.ToCssNumber(Model.Object.SlideSize.Size.Height + margin / 2) + "px");
+        width: @(NumberHelper.ToCssNumber(slideWidth) + "px");
+        height: @(NumberHelper.ToCssNumber(slideHeight) + "px");
         outline: 1px solid #c6c6c6;
         overflow: hidden;
         margin: @(margin + "px");
@@ -48,12 +58,31 @@
 .comments {
     /*padding: 2em;*/
     font-family: sans-serif;
+    @if(hasComments && commentsType == "Right")
+    {
+        <text>
+            display: block;
+            position: relative;
+            left: @(NumberHelper.ToCssNumber(Model.Object.SlideSize.Size.Width) + "px");
+            width: @(NumberHelper.ToCssNumber(commentsAreaWidth + 1) + "px");
+            height: @(NumberHelper.ToCssNumber(Model.Object.SlideSize.Size.Height + 1) + "px");
+            font-size: 0.7em;
+            background: #87cdeb;
+            border: 2px solid #2f528f;
+        </text>
+    }
 }
 .comments-header {
     border-bottom: 1px solid black;
     margin: 1em;
     font-size: 1.5em;
     padding: 0.3em;
+    @if(commentsType == "Right")
+    {
+        <text>
+            display: none;
+        </text>
+    }
 }
 .comment {
     display: flex;
@@ -61,7 +90,12 @@
     margin: 0.5em;
 }
 .comment-child {
-    margin-left: 3em;
+    @if (commentsType != "Right") 
+    {
+        <text>
+            margin-left: 3em;
+        </text>
+    }
 }
 .comment-avatar {
     margin-left: 5px;

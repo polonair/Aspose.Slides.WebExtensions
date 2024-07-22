@@ -15,7 +15,7 @@ namespace MultiPageApp
     {
         static void Main(string[] args)
         {
-            ExportDefault();
+            ExportWithCommentsRightSided();
 
             Console.WriteLine("HTML export is complete...");
         }
@@ -48,6 +48,24 @@ namespace MultiPageApp
             }
         }
 
+        static void ExportWithCommentsRightSided()
+        {
+            using (Presentation pres = new Presentation("comments.pptx"))
+            {
+                WebDocumentOptions options = new WebDocumentOptions
+                {
+                    TemplateEngine = new RazorTemplateEngine(),
+                    OutputSaver = new FileOutputSaver(),
+                    AnimateTransitions = false
+                };
+                WebDocument document = pres.ToMultiPageWebDocument(
+                    options,
+                    "templates\\multi-page",
+                    @"multi-page-output",
+                    new NotesCommentsLayoutingOptions() { CommentsPosition = CommentsPositions.Right });
+                document.Save();
+            }
+        }
         static void ExportWithNotes()
         {
             using (Presentation pres = new Presentation("notes.pptx"))

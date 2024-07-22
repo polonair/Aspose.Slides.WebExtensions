@@ -154,6 +154,10 @@
         }
         <div class="comment-mark" style="@position">@Raw(comment.Author.Initials + (++cnt).ToString())</div>
     }
+    if (commentsType == "Right")
+    {
+        @Include("comments", Model.SubModel(contextObject))
+    }
 }
         </div>
 @if(hasNotes)
@@ -165,7 +169,7 @@
         <button class="navigationButton" id="PrevSlide" onclick="@Raw(SlideHelper.GetPrevSlide(Model))" style="@Raw(SlideHelper.GetPrevStyle(Model))">Prev Slide</button>
         <button class="navigationButton" id="NextSlide" onclick="@Raw(SlideHelper.GetNextSlide(Model))" style="@Raw(SlideHelper.GetNextStyle(Model))">Next Slide</button>
  
-            @if (contextObject.GetSlideComments(null) != null && contextObject.GetSlideComments(null).Length > 0)
+            @if (contextObject.GetSlideComments(null) != null && contextObject.GetSlideComments(null).Length > 0 && commentsType != "Right")
             {
                 @Include("comments", Model.SubModel(contextObject))
             }
