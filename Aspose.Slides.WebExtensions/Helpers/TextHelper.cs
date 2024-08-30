@@ -274,6 +274,12 @@ namespace Aspose.Slides.WebExtensions.Helpers
                 lineSpacingStyle = TextHelper.GetLineSpacingStyle(nestingFormat, fontHeight);
             }
 
+            string highlight = null;
+            if (!format.HighlightColor.IsEmpty)
+            {
+                highlight += string.Format("background-color: {0};", ColorHelper.GetRrbaColorString(format.HighlightColor));
+            }
+
             return string.Join(" ", new string[] {
                             fontBoldItalicStyle,
                             fontFamilyStyle,
@@ -286,6 +292,7 @@ namespace Aspose.Slides.WebExtensions.Helpers
                             spacingStyle,
                             fontCapStyle,
                             whiteSpacePreStyle,
+                            highlight,
                             lineSpacingStyle });
 
         }
